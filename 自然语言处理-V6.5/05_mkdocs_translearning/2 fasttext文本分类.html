@@ -1,0 +1,1806 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>2 fasttext文本分类 - 自然语言处理基础V6.5</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="自然语言处理基础V6.5" class="md-header__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            自然语言处理基础V6.5
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2 fasttext文本分类
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="自然语言处理基础V6.5" class="md-nav__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    自然语言处理基础V6.5
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章 自然语言处理入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章 自然语言处理入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章 自然语言处理入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_mkdocs_NLP/1_%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8.html" class="md-nav__link">
+        1 自然语言处理入门
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章 文本预处理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章 文本预处理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章 文本预处理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/1%20%E8%AE%A4%E8%AF%86%E6%96%87%E6%9C%AC%E9%A2%84%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        1 认识文本预处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/2%20%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        2 文本处理的基本方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/3%20%E6%96%87%E6%9C%AC%E5%BC%A0%E9%87%8F%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        3 文本张量表示方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/4%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90.html" class="md-nav__link">
+        4 文本数据分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/5%20%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        5 文本特征处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/6%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA.html" class="md-nav__link">
+        6 文本数据增强
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/7%20jieba%E8%AF%8D%E6%80%A7%E5%AF%B9%E7%85%A7%E8%A1%A8.html" class="md-nav__link">
+        7 jieba词性对照表
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章 RNN及其变体
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章 RNN及其变体" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章 RNN及其变体
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/1%20%E8%AE%A4%E8%AF%86RNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        1 认识RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/2%20%E4%BC%A0%E7%BB%9FRNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        2 传统RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/3%20LSTM%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        3 LSTM模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/4%20GRU%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        4 GRU模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/5%20RNN%E6%A1%88%E4%BE%8B-%E4%BA%BA%E5%90%8D%E5%88%86%E7%B1%BB%E5%99%A8.html" class="md-nav__link">
+        5 RNN案例 人名分类器
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/6%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D1.html" class="md-nav__link">
+        6 注意力机制介绍1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/7%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D2.html" class="md-nav__link">
+        7 注意力机制介绍2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/8%20RNN%E6%A1%88%E4%BE%8B-seq2seq%E8%8B%B1%E8%AF%91%E6%B3%95.html" class="md-nav__link">
+        8 RNN案例 seq2seq英译法
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章 Transformer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章 Transformer" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章 Transformer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/1%20Transformer%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 Transformer背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/2%20%E8%AE%A4%E8%AF%86Transformer%E6%9E%B6%E6%9E%84.html" class="md-nav__link">
+        2 认识Transformer架构
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/3%20%E8%BE%93%E5%85%A5%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        3 输入部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        4 编码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/5%20%E8%A7%A3%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        5 解码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/6%20%E8%BE%93%E5%87%BA%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        6 输出部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/7%20%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA.html" class="md-nav__link">
+        7 模型构建
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章 迁移学习
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章 迁移学习" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章 迁移学习
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="1%20fasttext%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 fasttext工具介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          2 fasttext文本分类
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="2%20fasttext%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB.html" class="md-nav__link md-nav__link--active">
+        2 fasttext文本分类
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 文本分类介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="1 文本分类介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    1.1 文本分类概念
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    1.2 文本分类种类
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-fasttext" class="md-nav__link">
+    2 Fasttext模型架构
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 文本分类的过程
+  </a>
+  
+    <nav class="md-nav" aria-label="3 文本分类的过程">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 获取数据
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 训练集与验证集的划分
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 训练模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    3.4 使用模型进行预测并评估
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35" class="md-nav__link">
+    3.5 模型调优
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5 模型调优">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    1 原始数据处理:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 数据处理后进行训练并测试:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    3 增加训练轮数:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 调整学习率:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-n-gram" class="md-nav__link">
+    5 增加n-gram特征:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    6 修改损失计算方式:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    7 自动超参数调优:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    8 实际生产中多标签多分类问题的损失计算方式
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36" class="md-nav__link">
+    3.6 模型保存与重加载
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    4 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3%20%E8%AE%AD%E7%BB%83%E8%AF%8D%E5%90%91%E9%87%8F.html" class="md-nav__link">
+        3 训练词向量
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="4%20%E8%AF%8D%E5%90%91%E9%87%8F%E8%BF%81%E7%A7%BB.html" class="md-nav__link">
+        4 词向量迁移
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="5%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5.html" class="md-nav__link">
+        5 迁移学习概念
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="6%20NLP%E4%B8%AD%E7%9A%84%E5%B8%B8%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        6 NLP中的常用预训练模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="7%20Transformers%E5%BA%93%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        7 Transformers库使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="8%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5.html" class="md-nav__link">
+        8 迁移学习实践
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="9%20NLP%E4%B8%AD%E7%9A%84%E6%A0%87%E5%87%86%E6%95%B0%E6%8D%AE%E9%9B%86%28%E6%8B%93%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        9 NLP中的标准数据集(拓展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章 Bert系列模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章 Bert系列模型" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章 Bert系列模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/1%20BERT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 BERT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/2%20BERT%E6%A8%A1%E5%9E%8B%E7%89%B9%E7%82%B9.html" class="md-nav__link">
+        2 BERT模型特点
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/3%20BERT%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        3 BERT系列模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/4%20ELMo%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        4 ELMo模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/5%20GPT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        5 GPT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/6%20BERT%20GPT%20ELMo%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%B9%E6%AF%94.html" class="md-nav__link">
+        6 BERT GPT ELMo模型的对比
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          第七章 Transformer精选问答(拓展资料)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第七章 Transformer精选问答(拓展资料)" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          第七章 Transformer精选问答(拓展资料)
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/1%20Transformer%20%E5%90%84%E5%AD%90%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8.html" class="md-nav__link">
+        1 Transformer 各子模块作用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/2%20Transformer%20Decoder%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        2 Transformer Decoder模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/3%20Self-attention%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        3 Self attention机制详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/4%20Multi-head%20Attention%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        4 Multi head Attention详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/5%20Transformer%E4%BC%98%E5%8A%BF.html" class="md-nav__link">
+        5 Transformer优势
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 文本分类介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="1 文本分类介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    1.1 文本分类概念
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    1.2 文本分类种类
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-fasttext" class="md-nav__link">
+    2 Fasttext模型架构
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 文本分类的过程
+  </a>
+  
+    <nav class="md-nav" aria-label="3 文本分类的过程">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 获取数据
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 训练集与验证集的划分
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 训练模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    3.4 使用模型进行预测并评估
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35" class="md-nav__link">
+    3.5 模型调优
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5 模型调优">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    1 原始数据处理:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 数据处理后进行训练并测试:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    3 增加训练轮数:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 调整学习率:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-n-gram" class="md-nav__link">
+    5 增加n-gram特征:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    6 修改损失计算方式:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    7 自动超参数调优:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    8 实际生产中多标签多分类问题的损失计算方式
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36" class="md-nav__link">
+    3.6 模型保存与重加载
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    4 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>2 fasttext文本分类</h1>
+
+<h3 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>了解什么是文本分类及其种类.</li>
+<li>了解fasttext分类模型的架构</li>
+<li>掌握fasttext工具进行文本分类的过程.</li>
+</ul>
+<h2 id="1">1 文本分类介绍<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<h3 id="11">1.1 文本分类概念<a class="headerlink" href="#11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>文本分类的是将文档（例如电子邮件，帖子，文本消息，产品评论等）分配给一个或多个类别. 当今文本分类的实现多是使用机器学习方法从训练数据中提取分类规则以进行分类, 因此构建文本分类器需要带标签的数据.</li>
+</ul>
+<h3 id="12">1.2 文本分类种类<a class="headerlink" href="#12" title="Permanent link">&para;</a></h3>
+<ul>
+<li>二分类: 
+    * 文本被分类两个类别中, 往往这两个类别是对立面, 比如: 判断一句评论是好评还是差评.</li>
+<li>单标签多分类: 
+    * 文本被分入到多个类别中, 且每条文本只能属于某一个类别(即被打上某一个标签), 比如: 输入一个人名, 判断它是来自哪个国家的人名. </li>
+<li>多标签多分类: 
+    * 文本被分人到多个类别中, 但每条文本可以属于多个类别(即被打上多个标签), 比如: 输入一段描述, 判断可能是和哪些兴趣爱好有关, 一段描述中可能即讨论了美食, 又太讨论了游戏爱好.</li>
+</ul>
+<h2 id="2-fasttext">2 Fasttext模型架构<a class="headerlink" href="#2-fasttext" title="Permanent link">&para;</a></h2>
+<ul>
+<li>FastText 模型架构和 Word2Vec 中的 CBOW 模型很类似, 不同之处在于, FastText 预测标签, 而 CBOW 模型预测中间词.</li>
+</ul>
+<ul>
+<li>FastText的模型分为三层架构: <ul>
+<li>输入层: 是对文档embedding之后的向量, 包含N-gram特征</li>
+<li>隐藏层: 是对输入数据的求和平均</li>
+<li>输出层: 是文档对应的label</li>
+</ul>
+</li>
+</ul>
+<div align=center><img src="./img/image-20221224222050666.png" style="zoom:45%" ><img/></div>
+
+<hr />
+<h2 id="3">3 文本分类的过程<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<ul>
+<li>第一步: 获取数据</li>
+<li>第二步: 训练集与验证集的划分</li>
+<li>第三步: 训练模型</li>
+<li>第四步: 使用模型进行预测并评估</li>
+<li>第五步: 模型调优</li>
+<li>第六步: 模型保存与重加载 </li>
+</ul>
+<hr />
+<h3 id="31">3.1 获取数据<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<p>数据集介绍，本案例烹饪相关的数据集, 它是由facebook AI实验室提供的演示数据集</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 数据集在虚拟机/root/data/cooking下</span>
+
+<span class="c1"># 查看数据的前10条</span>
+$ head cooking.stackexchange.txt
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>__label__sauce __label__cheese How much does potato starch affect a cheese sauce recipe?
+__label__food-safety __label__acidity Dangerous pathogens capable of growing in acidic environments
+__label__cast-iron __label__stove How do I cover up the white spots on my cast iron stove?
+__label__restaurant Michelin Three Star Restaurant; but if the chef is not there
+__label__knife-skills __label__dicing Without knife skills, how can I quickly and accurately dice vegetables?
+__label__storage-method __label__equipment __label__bread What&#39;s the purpose of a bread box?
+__label__baking __label__food-safety __label__substitutions __label__peanuts how to seperate peanut oil from roasted peanuts at home?
+__label__chocolate American equivalent for British chocolate terms
+__label__baking __label__oven __label__convection Fan bake vs bake
+__label__sauce __label__storage-lifetime __label__acidity __label__mayonnaise Regulation and balancing of readymade packed mayonnaise and other sauces
+</code></pre></div>
+<blockquote>
+<ul>
+<li>数据说明:</li>
+<li>cooking.stackexchange.txt中的每一行都包含一个标签列表，后跟相应的文档, 标签列表以类似"__label__sauce __label__cheese"的形式展现, 代表有两个标签sauce和cheese, 所有标签__label__均以前缀开头，这是fastText识别标签或单词的方式. 标签之后的一段话就是文本信息.如: How much does potato starch affect a cheese sauce recipe?</li>
+</ul>
+</blockquote>
+<h3 id="32">3.2 训练集与验证集的划分<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 查看数据总数</span>
+<span class="err">$</span> <span class="n">wc</span> <span class="n">cooking</span><span class="o">.</span><span class="n">stackexchange</span><span class="o">.</span><span class="n">txt</span> 
+
+<span class="mi">15404</span>  <span class="mi">169582</span> <span class="mi">1401900</span> <span class="n">cooking</span><span class="o">.</span><span class="n">stackexchange</span><span class="o">.</span><span class="n">txt</span> 
+<span class="c1"># 多少行 多少单词 占用字节数(多大)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># 12404条数据作为训练数据</span>
+$ head -n <span class="m">12404</span> cooking.stackexchange.txt &gt; cooking.train
+<span class="c1"># 3000条数据作为验证数据</span>
+$ tail -n <span class="m">3000</span> cooking.stackexchange.txt &gt; cooking.valid
+</code></pre></div>
+<h3 id="33">3.3 训练模型<a class="headerlink" href="#33" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 导入fasttext</span>
+<span class="kn">import</span> <span class="nn">fasttext</span>
+<span class="c1"># 使用fasttext的train_supervised方法进行文本分类模型的训练</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">train_supervised</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="s2">&quot;data/cooking/cooking.train&quot;</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>结果输出</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 获得结果</span>
+<span class="n">Read</span> <span class="mi">0</span><span class="n">M</span> <span class="n">words</span>
+<span class="c1"># 不重复的词汇总数</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">words</span><span class="p">:</span>  <span class="mi">14543</span>
+<span class="c1"># 标签总数</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">labels</span><span class="p">:</span> <span class="mi">735</span>
+<span class="c1"># Progress: 训练进度, 因为我们这里显示的是最后的训练完成信息, 所以进度是100%</span>
+<span class="c1"># words/sec/thread: 每个线程每秒处理的平均词汇数</span>
+<span class="c1"># lr: 当前的学习率, 因为训练完成所以学习率是0</span>
+<span class="c1"># avg.loss: 训练过程的平均损失 </span>
+<span class="c1"># ETA: 预计剩余训练时间, 因为已训练完成所以是0</span>
+<span class="n">Progress</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span> <span class="n">words</span><span class="o">/</span><span class="n">sec</span><span class="o">/</span><span class="n">thread</span><span class="p">:</span>   <span class="mi">60162</span> <span class="n">lr</span><span class="p">:</span>  <span class="mf">0.000000</span> <span class="n">avg</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span> <span class="mf">10.056812</span> <span class="n">ETA</span><span class="p">:</span>   <span class="mi">0</span><span class="n">h</span> <span class="mi">0</span><span class="n">m</span> <span class="mi">0</span><span class="n">s</span>
+</code></pre></div>
+<h3 id="34">3.4 使用模型进行预测并评估<a class="headerlink" href="#34" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 使用模型预测一段输入文本, 通过我们常识, 可知预测是正确的, 但是对应预测概率并不大</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s2">&quot;Which baking dish is best to bake a banana bread ?&quot;</span><span class="p">)</span>
+<span class="c1"># 元组中的第一项代表标签, 第二项代表对应的概率</span>
+<span class="p">((</span><span class="s1">&#39;__label__baking&#39;</span><span class="p">,),</span> <span class="n">array</span><span class="p">([</span><span class="mf">0.06550845</span><span class="p">]))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code># 通过我们常识可知预测是错误的
+&gt;&gt;&gt; model.predict(&quot;Why not put knives in the dishwasher?&quot;)
+((&#39;__label__food-safety&#39;,), array([0.07541209]))
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># 为了评估模型到底表现如何, 我们在3000条的验证集上进行测试</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="s2">&quot;data/cooking/cooking.valid&quot;</span><span class="p">)</span>
+<span class="c1"># 元组中的每项分别代表, 验证集样本数量, 精度以及召回率 </span>
+<span class="c1"># 我们看到模型精度和召回率表现都很差, 接下来我们讲学习如何进行优化.</span>
+<span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="mf">0.124</span><span class="p">,</span> <span class="mf">0.0541</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="35">3.5 模型调优<a class="headerlink" href="#35" title="Permanent link">&para;</a></h3>
+<h4 id="1_1">1 原始数据处理:<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code># 通过查看数据, 我们发现数据中存在许多标点符号与单词相连以及大小写不统一, 
+# 这些因素对我们最终的分类目标没有益处, 反是增加了模型提取分类规律的难度,
+# 因此我们选择将它们去除或转化
+
+# 处理前的部分数据
+__label__fish Arctic char available in North-America
+__label__pasta __label__salt __label__boiling When cooking pasta in salted water how much of the salt is absorbed?
+__label__coffee Emergency Coffee via Chocolate Covered Coffee Beans?
+__label__cake Non-beet alternatives to standard red food dye
+__label__cheese __label__lentils Could cheese &quot;halt&quot; the tenderness of cooking lentils?
+__label__asian-cuisine __label__chili-peppers __label__kimchi __label__korean-cuisine What kind of peppers are used in Gochugaru ()?
+__label__consistency Pavlova Roll failure
+__label__eggs __label__bread What qualities should I be looking for when making the best French Toast?
+__label__meat __label__flour __label__stews __label__braising Coating meat in flour before browning, bad idea?
+__label__food-safety Raw roast beef on the edge of safe?
+__label__pork __label__food-identification How do I determine the cut of a pork steak prior to purchasing it?
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># 通过服务器终端进行简单的数据预处理</span>
+<span class="c1"># 使标点符号与单词分离并统一使用小写字母</span>
+&gt;&gt; cat cooking.stackexchange.txt <span class="p">|</span> sed -e <span class="s2">&quot;s/\([.\!?,&#39;/()]\)/ \1 /g&quot;</span> <span class="p">|</span> tr <span class="s2">&quot;[:upper:]&quot;</span> <span class="s2">&quot;[:lower:]&quot;</span> &gt; cooking.preprocessed.txt
+&gt;&gt; head -n <span class="m">12404</span> cooking.preprocessed.txt &gt; cooking.pre.train
+&gt;&gt; tail -n <span class="m">3000</span> cooking.preprocessed.txt &gt; cooking.pre.valid
+</code></pre></div>
+<div class="highlight"><pre><span></span><code># 处理后的部分数据
+__label__fish arctic char available in north-america
+__label__pasta __label__salt __label__boiling when cooking pasta in salted water how much of the salt is absorbed ?
+__label__coffee emergency coffee via chocolate covered coffee beans ?
+__label__cake non-beet alternatives to standard red food dye
+__label__cheese __label__lentils could cheese &quot;halt&quot; the tenderness of cooking lentils ?
+__label__asian-cuisine __label__chili-peppers __label__kimchi __label__korean-cuisine what kind of peppers are used in gochugaru  (  )  ?
+__label__consistency pavlova roll failure
+__label__eggs __label__bread what qualities should i be looking for when making the best french toast ?
+__label__meat __label__flour __label__stews __label__braising coating meat in flour before browning ,  bad idea ?
+__label__food-safety raw roast beef on the edge of safe ?
+__label__pork __label__food-identification how do i determine the cut of a pork steak prior to purchasing it ?
+</code></pre></div>
+<h4 id="2">2 数据处理后进行训练并测试:<a class="headerlink" href="#2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 重新训练</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">train_supervised</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="s2">&quot;data/cooking/cooking.pre.train&quot;</span><span class="p">)</span>
+<span class="n">Read</span> <span class="mi">0</span><span class="n">M</span> <span class="n">words</span>
+
+<span class="c1"># 不重复的词汇总数减少很多, 因为之前会把带大写字母或者与标点符号相连接的单词都认为是新的单词</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">words</span><span class="p">:</span>  <span class="mi">8952</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">labels</span><span class="p">:</span> <span class="mi">735</span>
+
+<span class="c1"># 我们看到平均损失有所下降</span>
+<span class="n">Progress</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span> <span class="n">words</span><span class="o">/</span><span class="n">sec</span><span class="o">/</span><span class="n">thread</span><span class="p">:</span>   <span class="mi">65737</span> <span class="n">lr</span><span class="p">:</span>  <span class="mf">0.000000</span> <span class="n">avg</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>  <span class="mf">9.966091</span> <span class="n">ETA</span><span class="p">:</span>   <span class="mi">0</span><span class="n">h</span> <span class="mi">0</span><span class="n">m</span> <span class="mi">0</span><span class="n">s</span>
+
+<span class="c1"># 重新测试</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="s2">&quot;data/cooking/cooking.pre.valid&quot;</span><span class="p">)</span>
+<span class="c1"># 我们看到精度和召回率都有所提升</span>
+<span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="mf">0.161</span><span class="p">,</span> <span class="mf">0.06962663975782038</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="3_1">3 增加训练轮数:<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 设置train_supervised方法中的参数epoch来增加训练轮数, 默认的轮数是5次</span>
+<span class="c1"># 增加轮数意味着模型能够有更多机会在有限数据中调整分类规律, 当然这也会增加训练时间</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">train_supervised</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="s2">&quot;data/cooking/cooking.pre.train&quot;</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">Read</span> <span class="mi">0</span><span class="n">M</span> <span class="n">words</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">words</span><span class="p">:</span>  <span class="mi">8952</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">labels</span><span class="p">:</span> <span class="mi">735</span>
+
+<span class="c1"># 我们看到平均损失继续下降</span>
+<span class="n">Progress</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span> <span class="n">words</span><span class="o">/</span><span class="n">sec</span><span class="o">/</span><span class="n">thread</span><span class="p">:</span>   <span class="mi">66283</span> <span class="n">lr</span><span class="p">:</span>  <span class="mf">0.000000</span> <span class="n">avg</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>  <span class="mf">7.203885</span> <span class="n">ETA</span><span class="p">:</span>   <span class="mi">0</span><span class="n">h</span> <span class="mi">0</span><span class="n">m</span> <span class="mi">0</span><span class="n">s</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="s2">&quot;data/cooking/cooking.pre.valid&quot;</span><span class="p">)</span>
+<span class="c1"># 我们看到精度已经提升到了42%, 召回率提升至18%.</span>
+<span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="mf">0.4206666666666667</span><span class="p">,</span> <span class="mf">0.1819230214790255</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="4">4 调整学习率:<a class="headerlink" href="#4" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 设置train_supervised方法中的参数lr来调整学习率, 默认的学习率大小是0.1</span>
+<span class="c1"># 增大学习率意味着增大了梯度下降的步长使其在有限的迭代步骤下更接近最优点</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">train_supervised</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="s2">&quot;data/cooking/cooking.pre.train&quot;</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">Read</span> <span class="mi">0</span><span class="n">M</span> <span class="n">words</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">words</span><span class="p">:</span>  <span class="mi">8952</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">labels</span><span class="p">:</span> <span class="mi">735</span>
+
+<span class="c1"># 平均损失继续下降</span>
+<span class="n">Progress</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span> <span class="n">words</span><span class="o">/</span><span class="n">sec</span><span class="o">/</span><span class="n">thread</span><span class="p">:</span>   <span class="mi">66027</span> <span class="n">lr</span><span class="p">:</span>  <span class="mf">0.000000</span> <span class="n">avg</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>  <span class="mf">4.278283</span> <span class="n">ETA</span><span class="p">:</span>   <span class="mi">0</span><span class="n">h</span> <span class="mi">0</span><span class="n">m</span> <span class="mi">0</span><span class="n">s</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="s2">&quot;data/cooking/cooking.pre.valid&quot;</span><span class="p">)</span>
+<span class="c1"># 我们看到精度已经提升到了47%, 召回率提升至20%.</span>
+<span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="mf">0.47633333333333333</span><span class="p">,</span> <span class="mf">0.20599682860025947</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="5-n-gram">5 增加n-gram特征:<a class="headerlink" href="#5-n-gram" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 设置train_supervised方法中的参数wordNgrams来添加n-gram特征, 默认是1, 也就是没有n-gram特征</span>
+<span class="c1"># 我们这里将其设置为2意味着添加2-gram特征, 这些特征帮助模型捕捉前后词汇之间的关联, 更好的提取分类规则用于模型分类, 当然这也会增加模型训时练占用的资源和时间.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">train_supervised</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="s2">&quot;data/cooking/cooking.pre.train&quot;</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">wordNgrams</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">Read</span> <span class="mi">0</span><span class="n">M</span> <span class="n">words</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">words</span><span class="p">:</span>  <span class="mi">8952</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">labels</span><span class="p">:</span> <span class="mi">735</span>
+
+<span class="c1"># 平均损失继续下降</span>
+<span class="n">Progress</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span> <span class="n">words</span><span class="o">/</span><span class="n">sec</span><span class="o">/</span><span class="n">thread</span><span class="p">:</span>   <span class="mi">65084</span> <span class="n">lr</span><span class="p">:</span>  <span class="mf">0.000000</span> <span class="n">avg</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>  <span class="mf">3.189422</span> <span class="n">ETA</span><span class="p">:</span>   <span class="mi">0</span><span class="n">h</span> <span class="mi">0</span><span class="n">m</span> <span class="mi">0</span><span class="n">s</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="s2">&quot;data/cooking/cooking.pre.valid&quot;</span><span class="p">)</span>
+<span class="c1"># 我们看到精度已经提升到了49%, 召回率提升至21%.</span>
+<span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="mf">0.49233333333333335</span><span class="p">,</span> <span class="mf">0.2129162462159435</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="6">6 修改损失计算方式:<a class="headerlink" href="#6" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 随着我们不断的添加优化策略, 模型训练速度也越来越慢</span>
+<span class="c1"># 为了能够提升fasttext模型的训练效率, 减小训练时间</span>
+<span class="c1"># 设置train_supervised方法中的参数loss来修改损失计算方式(等效于输出层的结构), 默认是softmax层结构</span>
+<span class="c1"># 我们这里将其设置为&#39;hs&#39;, 代表层次softmax结构, 意味着输出层的结构(计算方式)发生了变化, 将以一种更低复杂度的方式来计算损失.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">train_supervised</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="s2">&quot;data/cooking/cooking.pre.train&quot;</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">wordNgrams</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;hs&#39;</span><span class="p">)</span>
+<span class="n">Read</span> <span class="mi">0</span><span class="n">M</span> <span class="n">words</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">words</span><span class="p">:</span>  <span class="mi">8952</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">labels</span><span class="p">:</span> <span class="mi">735</span>
+<span class="n">Progress</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span> <span class="n">words</span><span class="o">/</span><span class="n">sec</span><span class="o">/</span><span class="n">thread</span><span class="p">:</span> <span class="mi">1341740</span> <span class="n">lr</span><span class="p">:</span>  <span class="mf">0.000000</span> <span class="n">avg</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>  <span class="mf">2.225962</span> <span class="n">ETA</span><span class="p">:</span>   <span class="mi">0</span><span class="n">h</span> <span class="mi">0</span><span class="n">m</span> <span class="mi">0</span><span class="n">s</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="s2">&quot;data/cooking/cooking.pre.valid&quot;</span><span class="p">)</span>
+<span class="c1"># 我们看到精度和召回率稍有波动, 但训练时间却缩短到仅仅几秒</span>
+<span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="mf">0.483</span><span class="p">,</span> <span class="mf">0.20887991927346114</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="7">7 自动超参数调优:<a class="headerlink" href="#7" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 手动调节和寻找超参数是非常困难的, 因为参数之间可能相关, 并且不同数据集需要的超参数也不同, </span>
+<span class="c1"># 因此可以使用fasttext的autotuneValidationFile参数进行自动超参数调优.</span>
+<span class="c1"># autotuneValidationFile参数需要指定验证数据集所在路径, 它将在验证集上使用随机搜索方法寻找可能最优的超参数.</span>
+<span class="c1"># 使用autotuneDuration参数可以控制随机搜索的时间, 默认是300s, 根据不同的需求, 我们可以延长或缩短时间.</span>
+<span class="c1"># 验证集路径&#39;cooking.valid&#39;, 随机搜索600秒</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">train_supervised</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="s1">&#39;data/cooking/cooking.pre.train&#39;</span><span class="p">,</span> <span class="n">autotuneValidationFile</span><span class="o">=</span><span class="s1">&#39;data/cooking/cooking.pre.valid&#39;</span><span class="p">,</span> <span class="n">autotuneDuration</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+
+<span class="n">Progress</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span> <span class="n">Trials</span><span class="p">:</span>   <span class="mi">38</span> <span class="n">Best</span> <span class="n">score</span><span class="p">:</span>  <span class="mf">0.376170</span> <span class="n">ETA</span><span class="p">:</span>   <span class="mi">0</span><span class="n">h</span> <span class="mi">0</span><span class="n">m</span> <span class="mi">0</span><span class="n">s</span>
+<span class="n">Training</span> <span class="n">again</span> <span class="k">with</span> <span class="n">best</span> <span class="n">arguments</span>
+<span class="n">Read</span> <span class="mi">0</span><span class="n">M</span> <span class="n">words</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">words</span><span class="p">:</span>  <span class="mi">8952</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">labels</span><span class="p">:</span> <span class="mi">735</span>
+<span class="n">Progress</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span> <span class="n">words</span><span class="o">/</span><span class="n">sec</span><span class="o">/</span><span class="n">thread</span><span class="p">:</span>   <span class="mi">63791</span> <span class="n">lr</span><span class="p">:</span>  <span class="mf">0.000000</span> <span class="n">avg</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>  <span class="mf">1.888165</span> <span class="n">ETA</span><span class="p">:</span>   <span class="mi">0</span><span class="n">h</span> <span class="mi">0</span><span class="n">m</span> <span class="mi">0</span><span class="n">s</span>
+</code></pre></div>
+<h4 id="8">8 实际生产中多标签多分类问题的损失计算方式<a class="headerlink" href="#8" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 针对多标签多分类问题, 使用&#39;softmax&#39;或者&#39;hs&#39;有时并不是最佳选择, 因为我们最终得到的应该是多个标签, 而softmax却只能最大化一个标签. </span>
+<span class="c1"># 所以我们往往会选择为每个标签使用独立的二分类器作为输出层结构, </span>
+<span class="c1"># 对应的损失计算方式为&#39;ova&#39;表示one vs all.</span>
+<span class="c1"># 这种输出层的改变意味着我们在统一语料下同时训练多个二分类模型,</span>
+<span class="c1"># 对于二分类模型来讲, lr不宜过大, 这里我们设置为0.2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">train_supervised</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="s2">&quot;data/cooking/cooking.pre.train&quot;</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">wordNgrams</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;ova&#39;</span><span class="p">)</span>
+<span class="n">Read</span> <span class="mi">0</span><span class="n">M</span> <span class="n">words</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">words</span><span class="p">:</span>  <span class="mi">8952</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">labels</span><span class="p">:</span> <span class="mi">735</span>
+<span class="n">Progress</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span> <span class="n">words</span><span class="o">/</span><span class="n">sec</span><span class="o">/</span><span class="n">thread</span><span class="p">:</span>   <span class="mi">65044</span> <span class="n">lr</span><span class="p">:</span>  <span class="mf">0.000000</span> <span class="n">avg</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>  <span class="mf">7.713312</span> <span class="n">ETA</span><span class="p">:</span>   <span class="mi">0</span><span class="n">h</span> <span class="mi">0</span><span class="n">m</span> <span class="mi">0</span><span class="n">s</span> 
+
+<span class="c1"># 我们使用模型进行单条样本的预测, 来看一下它的输出结果.</span>
+<span class="c1"># 参数k代表指定模型输出多少个标签, 默认为1, 这里设置为-1, 意味着尽可能多的输出.</span>
+<span class="c1"># 参数threshold代表显示的标签概率阈值, 设置为0.5, 意味着显示概率大于0.5的标签</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s2">&quot;Which baking dish is best to bake a banana bread ?&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># 我看到根据输入文本, 输出了它的三个最有可能的标签</span>
+<span class="p">((</span><span class="sa">u</span><span class="s1">&#39;__label__baking&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;__label__bananas&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;__label__bread&#39;</span><span class="p">),</span> <span class="n">array</span><span class="p">([</span><span class="mf">1.00000</span><span class="p">,</span> <span class="mf">0.939923</span><span class="p">,</span> <span class="mf">0.592677</span><span class="p">]))</span>
+</code></pre></div>
+<h3 id="36">3.6 模型保存与重加载<a class="headerlink" href="#36" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 使用model的save_model方法保存模型到指定目录</span>
+<span class="c1"># 你可以在指定目录下找到model_cooking.bin文件</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="s2">&quot;data/model/model_cooking.bin&quot;</span><span class="p">)</span>
+
+<span class="c1"># 使用fasttext的load_model进行模型的重加载</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;data/model/model_cooking.bin&quot;</span><span class="p">)</span>
+
+<span class="c1"># 重加载后的模型使用方法和之前完全相同</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s2">&quot;Which baking dish is best to bake a banana bread ?&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="p">((</span><span class="sa">u</span><span class="s1">&#39;__label__baking&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;__label__bananas&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;__label__bread&#39;</span><span class="p">),</span> <span class="n">array</span><span class="p">([</span><span class="mf">1.00000</span><span class="p">,</span> <span class="mf">0.939923</span><span class="p">,</span> <span class="mf">0.592677</span><span class="p">]))</span>
+</code></pre></div>
+<h2 id="4_1">4 小结<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>学习了什么是文本分类:
+    * 文本分类的是将文档（例如电子邮件，帖子，文本消息，产品评论等）分配给一个或多个类别. 当今文本分类的实现多是使用机器学习方法从训练数据中提取分类规则以进行分类, 因此构建文本分类器需要带标签的数据.</li>
+<li>了解了Fasttext在进行文本分类时的模型架构</li>
+<li>文本分类的种类:
+    * 二分类:
+        * 文本被分类两个类别中, 往往这两个类别是对立面, 比如: 判断一句评论是好评还是差评.
+    * 单标签多分类:
+        * 文本被分入到多个类别中, 且每条文本只能属于某一个类别(即被打上某一个标签), 比如: 输入一个人名, 判断它是来自哪个国家的人名.
+    * 多标签多分类:
+        * 文本被分人到多个类别中, 但每条文本可以属于多个类别(即被打上多个标签), 比如: 输入一段描述, 判断可能是和哪些兴趣爱好有关, 一段描述中可能即讨论了美食, 又太讨论了游戏爱好.</li>
+</ul>
+<ul>
+<li>使用fasttext工具进行文本分类的过程:
+    * 第一步: 获取数据
+    * 第二步: 训练集与验证集的划分
+    * 第三步: 训练模型
+    * 第四步: 使用模型进行预测并评估
+    * 第五步: 模型调优
+    * 第六步: 模型保存与重加载</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="1%20fasttext%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 1 fasttext工具介绍" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              1 fasttext工具介绍
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="3%20%E8%AE%AD%E7%BB%83%E8%AF%8D%E5%90%91%E9%87%8F.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 3 训练词向量" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              3 训练词向量
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

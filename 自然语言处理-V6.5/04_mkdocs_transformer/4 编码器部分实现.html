@@ -1,0 +1,2855 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>4 编码器部分实现 - 自然语言处理基础V6.5</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="自然语言处理基础V6.5" class="md-header__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            自然语言处理基础V6.5
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              4 编码器部分实现
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="自然语言处理基础V6.5" class="md-nav__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    自然语言处理基础V6.5
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章 自然语言处理入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章 自然语言处理入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章 自然语言处理入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_mkdocs_NLP/1_%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8.html" class="md-nav__link">
+        1 自然语言处理入门
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章 文本预处理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章 文本预处理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章 文本预处理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/1%20%E8%AE%A4%E8%AF%86%E6%96%87%E6%9C%AC%E9%A2%84%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        1 认识文本预处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/2%20%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        2 文本处理的基本方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/3%20%E6%96%87%E6%9C%AC%E5%BC%A0%E9%87%8F%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        3 文本张量表示方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/4%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90.html" class="md-nav__link">
+        4 文本数据分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/5%20%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        5 文本特征处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/6%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA.html" class="md-nav__link">
+        6 文本数据增强
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/7%20jieba%E8%AF%8D%E6%80%A7%E5%AF%B9%E7%85%A7%E8%A1%A8.html" class="md-nav__link">
+        7 jieba词性对照表
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章 RNN及其变体
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章 RNN及其变体" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章 RNN及其变体
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/1%20%E8%AE%A4%E8%AF%86RNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        1 认识RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/2%20%E4%BC%A0%E7%BB%9FRNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        2 传统RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/3%20LSTM%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        3 LSTM模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/4%20GRU%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        4 GRU模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/5%20RNN%E6%A1%88%E4%BE%8B-%E4%BA%BA%E5%90%8D%E5%88%86%E7%B1%BB%E5%99%A8.html" class="md-nav__link">
+        5 RNN案例 人名分类器
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/6%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D1.html" class="md-nav__link">
+        6 注意力机制介绍1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/7%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D2.html" class="md-nav__link">
+        7 注意力机制介绍2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/8%20RNN%E6%A1%88%E4%BE%8B-seq2seq%E8%8B%B1%E8%AF%91%E6%B3%95.html" class="md-nav__link">
+        8 RNN案例 seq2seq英译法
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章 Transformer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章 Transformer" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章 Transformer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="1%20Transformer%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 Transformer背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="2%20%E8%AE%A4%E8%AF%86Transformer%E6%9E%B6%E6%9E%84.html" class="md-nav__link">
+        2 认识Transformer架构
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3%20%E8%BE%93%E5%85%A5%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        3 输入部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          4 编码器部分实现
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link md-nav__link--active">
+        4 编码器部分实现
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 编码器介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 掩码张量
+  </a>
+  
+    <nav class="md-nav" aria-label="2 掩码张量">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    2.1 掩码张量介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    2.2 掩码张量的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23" class="md-nav__link">
+    2.3 生成掩码张量的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24" class="md-nav__link">
+    2.4 掩码张量的可视化
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25" class="md-nav__link">
+    2.5 掩码张量总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 注意力机制
+  </a>
+  
+    <nav class="md-nav" aria-label="3 注意力机制">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 注意力计算规则的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-mask" class="md-nav__link">
+    3.2 带有mask的输入参数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 注意力机制总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 多头注意力机制
+  </a>
+  
+    <nav class="md-nav" aria-label="4 多头注意力机制">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    4.1 多头注意力机制概念
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    4.2 多头注意力机制结构图
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    4.3 多头注意力机制的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44" class="md-nav__link">
+    4.4 多头注意力机制的代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45" class="md-nav__link">
+    4.5 多头注意力机制总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    5 前馈全连接层
+  </a>
+  
+    <nav class="md-nav" aria-label="5 前馈全连接层">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    5.1 前馈全连接层
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    5.2 前馈全连接层的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53" class="md-nav__link">
+    5.3 前馈全连接层总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    6 规范化层
+  </a>
+  
+    <nav class="md-nav" aria-label="6 规范化层">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    6.1 规范化层的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62" class="md-nav__link">
+    6.2 规范化层的代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63" class="md-nav__link">
+    6.3 规范化层总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    7 子层连接结构
+  </a>
+  
+    <nav class="md-nav" aria-label="7 子层连接结构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71" class="md-nav__link">
+    7.1 子层连接结构
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72" class="md-nav__link">
+    7.2 子层连接结构的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73" class="md-nav__link">
+    7.3 子层连接结构总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    8 编码器层
+  </a>
+  
+    <nav class="md-nav" aria-label="8 编码器层">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81" class="md-nav__link">
+    8.1 编码器层的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82" class="md-nav__link">
+    8.2 编码器层的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83" class="md-nav__link">
+    8.3 编码器层总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    9 编码器
+  </a>
+  
+    <nav class="md-nav" aria-label="9 编码器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91" class="md-nav__link">
+    9.1 编码器的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92" class="md-nav__link">
+    9.2 编码器的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93" class="md-nav__link">
+    9.3 编码器总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="5%20%E8%A7%A3%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        5 解码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="6%20%E8%BE%93%E5%87%BA%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        6 输出部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="7%20%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA.html" class="md-nav__link">
+        7 模型构建
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章 迁移学习
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章 迁移学习" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章 迁移学习
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/1%20fasttext%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 fasttext工具介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/2%20fasttext%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB.html" class="md-nav__link">
+        2 fasttext文本分类
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/3%20%E8%AE%AD%E7%BB%83%E8%AF%8D%E5%90%91%E9%87%8F.html" class="md-nav__link">
+        3 训练词向量
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/4%20%E8%AF%8D%E5%90%91%E9%87%8F%E8%BF%81%E7%A7%BB.html" class="md-nav__link">
+        4 词向量迁移
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/5%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5.html" class="md-nav__link">
+        5 迁移学习概念
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/6%20NLP%E4%B8%AD%E7%9A%84%E5%B8%B8%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        6 NLP中的常用预训练模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/7%20Transformers%E5%BA%93%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        7 Transformers库使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/8%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5.html" class="md-nav__link">
+        8 迁移学习实践
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/9%20NLP%E4%B8%AD%E7%9A%84%E6%A0%87%E5%87%86%E6%95%B0%E6%8D%AE%E9%9B%86%28%E6%8B%93%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        9 NLP中的标准数据集(拓展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章 Bert系列模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章 Bert系列模型" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章 Bert系列模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/1%20BERT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 BERT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/2%20BERT%E6%A8%A1%E5%9E%8B%E7%89%B9%E7%82%B9.html" class="md-nav__link">
+        2 BERT模型特点
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/3%20BERT%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        3 BERT系列模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/4%20ELMo%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        4 ELMo模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/5%20GPT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        5 GPT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/6%20BERT%20GPT%20ELMo%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%B9%E6%AF%94.html" class="md-nav__link">
+        6 BERT GPT ELMo模型的对比
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          第七章 Transformer精选问答(拓展资料)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第七章 Transformer精选问答(拓展资料)" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          第七章 Transformer精选问答(拓展资料)
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/1%20Transformer%20%E5%90%84%E5%AD%90%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8.html" class="md-nav__link">
+        1 Transformer 各子模块作用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/2%20Transformer%20Decoder%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        2 Transformer Decoder模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/3%20Self-attention%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        3 Self attention机制详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/4%20Multi-head%20Attention%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        4 Multi head Attention详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/5%20Transformer%E4%BC%98%E5%8A%BF.html" class="md-nav__link">
+        5 Transformer优势
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 编码器介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 掩码张量
+  </a>
+  
+    <nav class="md-nav" aria-label="2 掩码张量">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    2.1 掩码张量介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    2.2 掩码张量的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23" class="md-nav__link">
+    2.3 生成掩码张量的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24" class="md-nav__link">
+    2.4 掩码张量的可视化
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25" class="md-nav__link">
+    2.5 掩码张量总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 注意力机制
+  </a>
+  
+    <nav class="md-nav" aria-label="3 注意力机制">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 注意力计算规则的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-mask" class="md-nav__link">
+    3.2 带有mask的输入参数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 注意力机制总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 多头注意力机制
+  </a>
+  
+    <nav class="md-nav" aria-label="4 多头注意力机制">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    4.1 多头注意力机制概念
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    4.2 多头注意力机制结构图
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    4.3 多头注意力机制的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44" class="md-nav__link">
+    4.4 多头注意力机制的代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45" class="md-nav__link">
+    4.5 多头注意力机制总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    5 前馈全连接层
+  </a>
+  
+    <nav class="md-nav" aria-label="5 前馈全连接层">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    5.1 前馈全连接层
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    5.2 前馈全连接层的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53" class="md-nav__link">
+    5.3 前馈全连接层总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    6 规范化层
+  </a>
+  
+    <nav class="md-nav" aria-label="6 规范化层">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    6.1 规范化层的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62" class="md-nav__link">
+    6.2 规范化层的代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63" class="md-nav__link">
+    6.3 规范化层总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    7 子层连接结构
+  </a>
+  
+    <nav class="md-nav" aria-label="7 子层连接结构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71" class="md-nav__link">
+    7.1 子层连接结构
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72" class="md-nav__link">
+    7.2 子层连接结构的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73" class="md-nav__link">
+    7.3 子层连接结构总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    8 编码器层
+  </a>
+  
+    <nav class="md-nav" aria-label="8 编码器层">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81" class="md-nav__link">
+    8.1 编码器层的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82" class="md-nav__link">
+    8.2 编码器层的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83" class="md-nav__link">
+    8.3 编码器层总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    9 编码器
+  </a>
+  
+    <nav class="md-nav" aria-label="9 编码器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91" class="md-nav__link">
+    9.1 编码器的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92" class="md-nav__link">
+    9.2 编码器的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93" class="md-nav__link">
+    9.3 编码器总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>4 编码器部分实现</h1>
+
+<h3 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>了解编码器中各个组成部分的作用.</li>
+<li>掌握编码器中各个组成部分的实现过程.</li>
+</ul>
+<h2 id="1">1 编码器介绍<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>编码器部分:
+* 由N个编码器层堆叠而成
+* 每个编码器层由两个子层连接结构组成
+* 第一个子层连接结构包括一个多头自注意力子层和规范化层以及一个残差连接
+* 第二个子层连接结构包括一个前馈全连接子层和规范化层以及一个残差连接</p>
+<p><center><img src="./img/7.png" height="auto" width="auto"/></center></p>
+<h2 id="2">2 掩码张量<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<h3 id="21">2.1 掩码张量介绍<a class="headerlink" href="#21" title="Permanent link">&para;</a></h3>
+<ul>
+<li>掩代表遮掩，码就是我们张量中的数值，它的尺寸不定，里面一般只有1和0的元素，代表位置被遮掩或者不被遮掩，至于是0位置被遮掩还是1位置被遮掩可以自定义，因此它的作用就是让另外一个张量中的一些数值被遮掩，也可以说被替换, 它的表现形式是一个张量.</li>
+</ul>
+<h3 id="22">2.2 掩码张量的作用<a class="headerlink" href="#22" title="Permanent link">&para;</a></h3>
+<ul>
+<li>在transformer中, 掩码张量的主要作用在应用attention(将在下一小节讲解)时，有一些生成的attention张量中的值计算有可能已知了未来信息而得到的，未来信息被看到是因为训练时会把整个输出结果都一次性进行Embedding，但是理论上解码器的的输出却不是一次就能产生最终结果的，而是一次次通过上一次结果综合得出的，因此，未来的信息可能被提前利用. 所以，我们会进行遮掩. 关于解码器的有关知识将在后面的章节中讲解.</li>
+</ul>
+<h3 id="23">2.3 生成掩码张量的代码分析<a class="headerlink" href="#23" title="Permanent link">&para;</a></h3>
+<ul>
+<li>上三角矩阵和np.triu函数演示</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 上三角矩阵：下面矩阵中0组成的形状为上三角矩阵</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">[[[0. 1. 1. 1. 1.]</span>
+<span class="sd">  [0. 0. 1. 1. 1.]</span>
+<span class="sd">  [0. 0. 0. 1. 1.]</span>
+<span class="sd">  [0. 0. 0. 0. 1.]</span>
+<span class="sd">  [0. 0. 0. 0. 0.]]]</span>
+
+<span class="sd"># nn.triu()函数功能介绍 </span>
+<span class="sd"># def triu（m, k）</span>
+<span class="sd">    # m：表示一个矩阵</span>
+<span class="sd">    # K：表示对角线的起始位置（k取值默认为0）</span>
+<span class="sd">    # return: 返回函数的上三角矩阵</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="k">def</span> <span class="nf">dm_test_nptriu</span><span class="p">():</span>
+    <span class="c1"># 测试产生上三角矩阵</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]],</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]],</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]],</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="c1"># 结果输出：</span>
+<span class="p">[[</span><span class="mi">0</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mi">2</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">3</span> <span class="mi">3</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">4</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">]]</span>
+
+<span class="p">[[</span><span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mi">2</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">3</span> <span class="mi">3</span> <span class="mi">3</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">4</span> <span class="mi">4</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">5</span><span class="p">]]</span>
+
+<span class="p">[[</span><span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">2</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mi">2</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">3</span> <span class="mi">3</span> <span class="mi">3</span> <span class="mi">3</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">4</span> <span class="mi">4</span> <span class="mi">4</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">5</span> <span class="mi">5</span><span class="p">]]</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>生成掩码函数</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 下三角矩阵作用: 生成字符时,希望模型不要使用当前字符和后面的字符。</span>
+    <span class="c1"># 使用遮掩mask，防止未来的信息可能被提前利用</span>
+    <span class="c1"># 实现方法： 1 - 上三角矩阵</span>
+<span class="c1"># 函数 subsequent_mask 实现分析</span>
+<span class="c1"># 产生上三角矩阵 np.triu(m=np.ones((1, size, size)), k=1).astype(&#39;uint8&#39;)</span>
+<span class="c1"># 返回下三角矩阵 torch.from_numpy(1 - my_mask )</span>
+<span class="k">def</span> <span class="nf">subsequent_mask</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="c1"># 产生上三角矩阵 产生一个方阵</span>
+    <span class="n">subsequent_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">)),</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;uint8&#39;</span><span class="p">)</span>
+    <span class="c1"># 返回下三角矩阵</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">subsequent_mask</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_subsequent_mask</span><span class="p">():</span>
+    <span class="c1"># 产生5*5的下三角矩阵</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">subsequent_mask</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;下三角矩阵---&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">sm</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">下三角矩阵</span><span class="o">---&gt;</span>
+ <span class="n">tensor</span><span class="p">([[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="24">2.4 掩码张量的可视化<a class="headerlink" href="#24" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">subsequent_mask</span><span class="p">(</span><span class="mi">20</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<p><center><img src="./img/12.png" height="auto" width="auto"/></center></p>
+<blockquote>
+<ul>
+<li>效果分析:</li>
+<li>通过观察可视化方阵, 黄色是1的部分, 这里代表被遮掩, 紫色代表没有被遮掩的信息, 横坐标代表目标词汇的位置, 纵坐标代表可查看的位置; </li>
+<li>我们看到, 在0的位置我们一看望过去都是黄色的, 都被遮住了，1的位置一眼望过去还是黄色, 说明第一次词还没有产生, 从第二个位置看过去, 就能看到位置1的词, 其他位置看不到, 以此类推.</li>
+</ul>
+</blockquote>
+<h3 id="25">2.5 掩码张量总结<a class="headerlink" href="#25" title="Permanent link">&para;</a></h3>
+<ul>
+<li>学习了什么是掩码张量:
+    * 掩代表遮掩，码就是我们张量中的数值，它的尺寸不定，里面一般只有1和0的元素，代表位置被遮掩或者不被遮掩，至于是0位置被遮掩还是1位置被遮掩可以自定义，因此它的作用就是让另外一个张量中的一些数值被遮掩, 也可以说被替换, 它的表现形式是一个张量.</li>
+</ul>
+<ul>
+<li>学习了掩码张量的作用:
+    * 在transformer中, 掩码张量的主要作用在应用attention(将在下一小节讲解)时，有一些生成的attetion张量中的值计算有可能已知量未来信息而得到的，未来信息被看到是因为训练时会把整个输出结果都一次性进行Embedding，但是理论上解码器的的输出却不是一次就能产生最终结果的，而是一次次通过上一次结果综合得出的，因此，未来的信息可能被提前利用. 所以，我们会进行遮掩. 关于解码器的有关知识将在后面的章节中讲解.</li>
+</ul>
+<ul>
+<li>学习并实现了生成向后遮掩的掩码张量函数: subsequent_mask
+    * 它的输入是size, 代表掩码张量的大小.
+    * 它的输出是一个最后两维形成1方阵的下三角阵.
+    * 最后对生成的掩码张量进行了可视化分析, 更深一步理解了它的用途.</li>
+</ul>
+<h2 id="3">3 注意力机制<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<p>我们这里使用的注意力的计算规则:
+$$
+Attention(Q,K,V)=Softmax(\frac{Q\cdot K^T}{\sqrt{d_{k}}})\cdot V
+$$</p>
+<h3 id="31">3.1 注意力计算规则的代码分析<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 自注意力机制函数attention 实现思路分析</span>
+<span class="c1"># attention(query, key, value, mask=None, dropout=None)</span>
+<span class="c1"># 1 求查询张量特征尺寸大小 d_k</span>
+<span class="c1"># 2 求查询张量q的权重分布socres  q@k^T /math.sqrt(d_k)</span>
+<span class="c1"># 形状[2,4,512] @ [2,512,4] ---&gt;[2,4,4]</span>
+<span class="c1"># 3 是否对权重分布scores进行 scores.masked_fill(mask == 0, -1e9)</span>
+<span class="c1"># 4 求查询张量q的权重分布 p_attn F.softmax()</span>
+<span class="c1"># 5 是否对p_attn进行dropout if dropout is not None:</span>
+<span class="c1"># 6 求查询张量q的注意力结果表示 [2,4,4]@[2,4,512] ---&gt;[2,4,512]</span>
+<span class="c1"># 7 返回q的注意力结果表示 q的权重分布</span>
+
+<span class="k">def</span> <span class="nf">attention</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># query, key, value：代表注意力的三个输入张量</span>
+    <span class="c1"># mask：代表掩码张量</span>
+    <span class="c1"># dropout：传入的dropout实例化对象</span>
+
+    <span class="c1"># 1 求查询张量特征尺寸大小</span>
+    <span class="n">d_k</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># 2 求查询张量q的权重分布socres  q@k^T /math.sqrt(d_k)</span>
+    <span class="c1"># [2,4,512] @ [2,512,4] ---&gt;[2,4,4]</span>
+    <span class="n">scores</span> <span class="o">=</span>  <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">d_k</span><span class="p">)</span>
+
+   <span class="c1"># 3 是否对权重分布scores 进行 masked_fill</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># 根据mask矩阵0的位置 对sorces矩阵对应位置进行掩码</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">masked_fill</span><span class="p">(</span><span class="n">mask</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e9</span><span class="p">)</span>
+
+    <span class="c1"># 4 求查询张量q的权重分布 softmax</span>
+    <span class="n">p_attn</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># 5 是否对p_attn进行dropout</span>
+    <span class="k">if</span> <span class="n">dropout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">p_attn</span> <span class="o">=</span> <span class="n">dropout</span><span class="p">(</span><span class="n">p_attn</span><span class="p">)</span>
+
+    <span class="c1"># 返回 查询张量q的注意力结果表示 bmm-matmul运算, 注意力查询张量q的权重分布p_attn</span>
+    <span class="c1"># [2,4,4]*[2,4,512] ---&gt;[2,4,512]</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">p_attn</span><span class="p">,</span> <span class="n">value</span><span class="p">),</span> <span class="n">p_attn</span>
+</code></pre></div>
+<ul>
+<li>tensor.masked_fill演示:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">input</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">input</span> 
+<span class="n">Variable</span> <span class="n">containing</span><span class="p">:</span>
+ <span class="mf">2.0344</span> <span class="o">-</span><span class="mf">0.5450</span>  <span class="mf">0.3365</span> <span class="o">-</span><span class="mf">0.1888</span> <span class="o">-</span><span class="mf">2.1803</span>
+ <span class="mf">1.5221</span> <span class="o">-</span><span class="mf">0.3823</span>  <span class="mf">0.8414</span>  <span class="mf">0.7836</span> <span class="o">-</span><span class="mf">0.8481</span>
+<span class="o">-</span><span class="mf">0.0345</span> <span class="o">-</span><span class="mf">0.8643</span>  <span class="mf">0.6476</span> <span class="o">-</span><span class="mf">0.2713</span>  <span class="mf">1.5645</span>
+ <span class="mf">0.8788</span> <span class="o">-</span><span class="mf">2.2142</span>  <span class="mf">0.4022</span>  <span class="mf">0.1997</span>  <span class="mf">0.1474</span>
+ <span class="mf">2.9109</span>  <span class="mf">0.6006</span> <span class="o">-</span><span class="mf">0.6745</span> <span class="o">-</span><span class="mf">1.7262</span>  <span class="mf">0.6977</span>
+<span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span> <span class="n">of</span> <span class="n">size</span> <span class="mi">5</span><span class="n">x5</span><span class="p">]</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">mask</span>
+<span class="n">Variable</span> <span class="n">containing</span><span class="p">:</span>
+ <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>
+ <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>
+ <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>
+ <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>
+ <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">0</span>
+<span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span> <span class="n">of</span> <span class="n">size</span> <span class="mi">5</span><span class="n">x5</span><span class="p">]</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">input</span><span class="o">.</span><span class="n">masked_fill</span><span class="p">(</span><span class="n">mask</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e9</span><span class="p">)</span>
+<span class="n">Variable</span> <span class="n">containing</span><span class="p">:</span>
+<span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span>
+<span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span>
+<span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span>
+<span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span>
+<span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span> <span class="o">-</span><span class="mf">1.0000e+09</span>
+<span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span> <span class="n">of</span> <span class="n">size</span> <span class="mi">5</span><span class="n">x5</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_attention</span><span class="p">():</span>
+
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>   <span class="c1"># 词嵌入维度是512维</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="mi">1000</span>    <span class="c1"># 词表大小是1000</span>
+
+    <span class="c1"># 输入x 是一个使用Variable封装的长整型张量, 形状是2 x 4</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">421</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="p">[</span><span class="mi">491</span><span class="p">,</span> <span class="mi">998</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">221</span><span class="p">]]))</span>
+    <span class="n">my_embeddings</span> <span class="o">=</span>  <span class="n">Embeddings</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">my_embeddings</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.1</span>   <span class="c1"># 置0比率为0.1</span>
+    <span class="n">max_len</span> <span class="o">=</span> <span class="mi">60</span>    <span class="c1"># 句子最大长度</span>
+
+    <span class="n">my_pe</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+    <span class="n">pe_result</span> <span class="o">=</span> <span class="n">my_pe</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="n">key</span> <span class="o">=</span> <span class="n">value</span> <span class="o">=</span> <span class="n">pe_result</span> <span class="c1"># torch.Size([2, 4, 512])</span>
+    <span class="n">attn1</span><span class="p">,</span> <span class="n">p_attn1</span> <span class="o">=</span> <span class="n">attention</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;编码阶段 对注意力权重分布 不做掩码&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;注意力权重 p_attn1---&gt;&#39;</span><span class="p">,</span><span class="n">p_attn1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">p_attn1</span><span class="p">)</span>  <span class="c1"># torch.Size([2, 4, 4])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;注意力表示结果 attn1---&gt;&#39;</span><span class="p">,</span> <span class="n">attn1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">attn1</span><span class="p">)</span>  <span class="c1"># torch.Size([2, 4, 512])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*&#39;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;编码阶段 对注意力权重分布 做掩码&#39;</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">attn2</span><span class="p">,</span> <span class="n">p_attn2</span> <span class="o">=</span> <span class="n">attention</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;注意力权重 p_attn2---&gt;&quot;</span><span class="p">,</span> <span class="n">p_attn2</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">p_attn2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;注意力表示结果 attn2---&gt;&quot;</span><span class="p">,</span> <span class="n">attn2</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">attn2</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>对注意力权重分布不做掩码</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">编码阶段</span> <span class="n">对注意力权重分布</span> <span class="n">不做掩码</span>
+<span class="n">注意力权重</span> <span class="n">p_attn1</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span> 
+ <span class="n">tensor</span><span class="p">([[[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]],</span>
+
+        <span class="p">[[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]]],</span> <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">SoftmaxBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">注意力表示结果</span> <span class="n">attn1</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">512</span><span class="p">])</span> 
+ <span class="n">tensor</span><span class="p">([[[</span> <span class="mf">44.7449</span><span class="p">,</span>  <span class="mf">54.3616</span><span class="p">,</span>  <span class="mf">26.8261</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">19.0635</span><span class="p">,</span> <span class="o">-</span><span class="mf">18.6284</span><span class="p">,</span>  <span class="mf">31.5430</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">15.6625</span><span class="p">,</span>  <span class="mf">22.7993</span><span class="p">,</span>   <span class="mf">0.8864</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>   <span class="mf">5.7670</span><span class="p">,</span> <span class="o">-</span><span class="mf">13.6669</span><span class="p">,</span> <span class="o">-</span><span class="mf">24.4659</span><span class="p">],</span>
+         <span class="p">[</span>  <span class="mf">7.5418</span><span class="p">,</span>  <span class="mf">37.0576</span><span class="p">,</span> <span class="o">-</span><span class="mf">16.9318</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">44.9160</span><span class="p">,</span>  <span class="mf">14.9246</span><span class="p">,</span>   <span class="mf">3.9773</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">12.6941</span><span class="p">,</span>   <span class="mf">7.1106</span><span class="p">,</span> <span class="o">-</span><span class="mf">16.8938</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">41.8852</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.2939</span><span class="p">,</span> <span class="o">-</span><span class="mf">23.8751</span><span class="p">]],</span>
+
+        <span class="p">[[</span> <span class="mf">35.8076</span><span class="p">,</span> <span class="o">-</span><span class="mf">28.2593</span><span class="p">,</span>   <span class="mf">0.0000</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">18.0751</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.6109</span><span class="p">,</span> <span class="o">-</span><span class="mf">18.9212</span><span class="p">],</span>
+         <span class="p">[</span>  <span class="mf">0.0000</span><span class="p">,</span>  <span class="mf">13.4511</span><span class="p">,</span>  <span class="mf">60.3647</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">3.1866</span><span class="p">,</span> <span class="o">-</span><span class="mf">30.1779</span><span class="p">,</span>  <span class="mf">22.9219</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">24.6156</span><span class="p">,</span>  <span class="mf">31.9683</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.5262</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">24.2111</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.0382</span><span class="p">,</span>   <span class="mf">6.7247</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">33.4411</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.6284</span><span class="p">,</span>  <span class="o">-</span><span class="mf">4.9740</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">11.4844</span><span class="p">,</span>   <span class="mf">0.0000</span><span class="p">,</span>   <span class="mf">7.1890</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">UnsafeViewBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="32-mask">3.2 带有mask的输入参数<a class="headerlink" href="#32-mask" title="Permanent link">&para;</a></h3>
+<blockquote>
+<ul>
+<li>带有mask的输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="o">**************************************************</span>
+<span class="n">编码阶段</span> <span class="n">对注意力权重分布</span> <span class="n">做掩码</span>
+<span class="n">注意力权重</span> <span class="n">p_attn2</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span> 
+ <span class="n">tensor</span><span class="p">([[[</span><span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">]],</span>
+
+        <span class="p">[[</span><span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">,</span> <span class="mf">0.2500</span><span class="p">]]],</span> <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">SoftmaxBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">注意力表示结果</span> <span class="n">attn2</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">512</span><span class="p">])</span> 
+ <span class="n">tensor</span><span class="p">([[[</span><span class="mf">12.3296</span><span class="p">,</span> <span class="mf">30.3323</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5283</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="mf">27.9079</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.6661</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.2052</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">12.3296</span><span class="p">,</span> <span class="mf">30.3323</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5283</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="mf">27.9079</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.6661</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.2052</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">12.3296</span><span class="p">,</span> <span class="mf">30.3323</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5283</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="mf">27.9079</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.6661</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.2052</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">12.3296</span><span class="p">,</span> <span class="mf">30.3323</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5283</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="mf">27.9079</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.6661</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.2052</span><span class="p">]],</span>
+
+        <span class="p">[[</span><span class="mf">11.1583</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8671</span><span class="p">,</span> <span class="mf">13.2161</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.4971</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.9567</span><span class="p">,</span>  <span class="mf">4.4786</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">11.1583</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8671</span><span class="p">,</span> <span class="mf">13.2161</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.4971</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.9567</span><span class="p">,</span>  <span class="mf">4.4786</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">11.1583</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8671</span><span class="p">,</span> <span class="mf">13.2161</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.4971</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.9567</span><span class="p">,</span>  <span class="mf">4.4786</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">11.1583</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8671</span><span class="p">,</span> <span class="mf">13.2161</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.4971</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.9567</span><span class="p">,</span>  <span class="mf">4.4786</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">UnsafeViewBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="33">3.3 注意力机制总结<a class="headerlink" href="#33" title="Permanent link">&para;</a></h3>
+<ul>
+<li>学习并实现了注意力计算规则的函数: attention
+    * 它的输入就是Q，K，V以及mask和dropout, mask用于掩码, dropout用于随机置0.
+    * 它的输出有两个, query的注意力表示以及注意力张量. </li>
+</ul>
+<h2 id="4">4 多头注意力机制<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<h3 id="41">4.1 多头注意力机制概念<a class="headerlink" href="#41" title="Permanent link">&para;</a></h3>
+<ul>
+<li>从多头注意力的结构图中，貌似这个所谓的多个头就是指多组线性变换层，其实并不是，我只有使用了一组线性变化层，即三个变换张量对Q，K，V分别进行线性变换，这些变换不会改变原有张量的尺寸，因此每个变换矩阵都是方阵，得到输出结果后，多头的作用才开始显现，每个头开始从词义层面分割输出的张量，也就是每个头都想获得一组Q，K，V进行注意力机制的计算，但是句子中的每个词的表示只获得一部分，也就是只分割了最后一维的词嵌入向量. 这就是所谓的多头，将每个头的获得的输入送到注意力机制中, 就形成多头注意力机制.</li>
+</ul>
+<h3 id="42">4.2 多头注意力机制结构图<a class="headerlink" href="#42" title="Permanent link">&para;</a></h3>
+<p><center><img src="./img/13.png" height="auto" width="auto"/></center></p>
+<h3 id="43">4.3 多头注意力机制的作用<a class="headerlink" href="#43" title="Permanent link">&para;</a></h3>
+<ul>
+<li>这种结构设计能让每个注意力机制去优化每个词汇的不同特征部分，从而均衡同一种注意力机制可能产生的偏差，让词义拥有来自更多元的表达，实验表明可以从而提升模型效果.</li>
+</ul>
+<h3 id="44">4.4 多头注意力机制的代码实现<a class="headerlink" href="#44" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 多头注意力机制类 MultiHeadedAttention 实现思路分析</span>
+<span class="c1"># 1 init函数  (self, head, embedding_dim, dropout=0.1)</span>
+    <span class="c1"># 每个头特征尺寸大小self.d_k  多少个头self.head  线性层列表self.linears</span>
+    <span class="c1"># self.linears = clones(nn.Linear(embedding_dim, embedding_dim), 4)</span>
+    <span class="c1"># 注意力权重分布self.attn=None  dropout层self.dropout</span>
+<span class="c1"># 2 forward(self, query, key, value, mask=None)</span>
+    <span class="c1"># 2-1 掩码增加一个维度[8,4,4] --&gt;[1,8,4,4] 求多少批次batch_size</span>
+    <span class="c1"># 2-2 数据经过线性层 切成8个头,view(batch_size, -1, self.head, self.d_k), transpose(1,2)数据形状变化</span>
+    <span class="c1">#     数据形状变化[2,4,512] ---&gt; [2,4,8,64] ---&gt; [2,8,4,64]</span>
+    <span class="c1"># 2-3 24个头 一起送入到attention函数中求 x, self.attn</span>
+    <span class="c1"># attention([2,8,4,64],[2,8,4,64],[2,8,4,64],[1,8,4,4]) ==&gt; x[2,8,4,64], self.attn[2,8,4,4]]</span>
+    <span class="c1"># 2-4 数据形状再变化回来 x.transpose(1,2).contiguous().view(,,)</span>
+    <span class="c1"># 数据形状变化 [2,8,4,64] ---&gt; [2,4,8,64] ---&gt; [2,4,512]</span>
+    <span class="c1"># 2-5 返回最后线性层结果 return self.linears[-1](x)</span>
+
+<span class="c1"># 深度copy模型 输入模型对象和copy的个数 存储到模型列表中</span>
+<span class="k">def</span> <span class="nf">clones</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">module</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)])</span>
+
+<span class="k">class</span> <span class="nc">MultiHeadedAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">MultiHeadedAttention</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 确认数据特征能否被被整除 eg 特征尺寸256 % 头数8</span>
+        <span class="k">assert</span> <span class="n">embedding_dim</span> <span class="o">%</span> <span class="n">head</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="c1"># 计算每个头特征尺寸 特征尺寸256 // 头数8 = 64</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_k</span> <span class="o">=</span> <span class="n">embedding_dim</span> <span class="o">//</span> <span class="n">head</span>
+        <span class="c1"># 多少头数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">head</span>
+        <span class="c1"># 四个线性层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linears</span> <span class="o">=</span> <span class="n">clones</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">embedding_dim</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="c1"># 注意力权重分布</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attn</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># dropout层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">dropout</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># 若使用掩码，则掩码增加一个维度[8,4,4] --&gt;[1,8,4,4]</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># 求数据多少行 eg:[2,4,512] 则batch_size=2</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># 数据形状变化[2,4,512] ---&gt; [2,4,8,64] ---&gt; [2,8,4,64]</span>
+        <span class="c1"># 4代表4个单词 8代表8个头 让句子长度4和句子特征64靠在一起 更有利捕捉句子特征</span>
+        <span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_k</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">model</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linears</span><span class="p">,</span> <span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="p">)</span> <span class="p">]</span>
+
+        <span class="c1"># myoutptlist_data = []</span>
+        <span class="c1"># for model, x in zip(self.linears, (query, key, value)):</span>
+        <span class="c1">#     print(&#39;x---&gt;&#39;, x.shape) # [2,4,512]</span>
+        <span class="c1">#     myoutput = model(x)</span>
+        <span class="c1">#     print(&#39;myoutput---&gt;&#39;,  myoutput.shape)  # [2,4,512]</span>
+        <span class="c1">#     # [2,4,512] --&gt; [2,4,8,64] --&gt; [2,8,4,64]</span>
+        <span class="c1">#     tmpmyoutput = myoutput.view(batch_size, -1,  self.head, self.d_k).transpose(1, 2)</span>
+        <span class="c1">#     myoutptlist_data.append( tmpmyoutput )</span>
+        <span class="c1"># mylen = len(myoutptlist_data)   # mylen:3</span>
+        <span class="c1"># query = myoutptlist_data[0]     # [2,8,4,64]</span>
+        <span class="c1"># key = myoutptlist_data[1]       # [2,8,4,64]</span>
+        <span class="c1"># value = myoutptlist_data[2]     # [2,8,4,64]</span>
+
+        <span class="c1"># 注意力结果表示x形状 [2,8,4,64] 注意力权重attn形状：[2,8,4,4]</span>
+        <span class="c1"># attention([2,8,4,64],[2,8,4,64],[2,8,4,64],[1,8,4,4]) ==&gt; x[2,8,4,64], self.attn[2,8,4,4]]</span>
+        <span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn</span> <span class="o">=</span> <span class="n">attention</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">)</span>
+
+        <span class="c1"># 数据形状变化 [2,8,4,64] ---&gt; [2,4,8,64] ---&gt; [2,4,512]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">d_k</span><span class="p">)</span>
+
+        <span class="c1"># 返回最后变化后的结果 [2,4,512]---&gt; [2,4,512]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linears</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">](</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>tensor.view演示:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">16</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>  <span class="c1"># the size -1 is inferred from other dimensions</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">z</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># Swaps 2nd and 3rd dimension</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># Does not change tensor layout in memory</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+<span class="kc">False</span>
+</code></pre></div>
+<ul>
+<li>torch.transpose演示:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span>
+<span class="n">tensor</span><span class="p">([[</span> <span class="mf">1.0028</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9893</span><span class="p">,</span>  <span class="mf">0.5809</span><span class="p">],</span>
+        <span class="p">[</span><span class="o">-</span><span class="mf">0.1669</span><span class="p">,</span>  <span class="mf">0.7299</span><span class="p">,</span>  <span class="mf">0.4942</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">tensor</span><span class="p">([[</span> <span class="mf">1.0028</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1669</span><span class="p">],</span>
+        <span class="p">[</span><span class="o">-</span><span class="mf">0.9893</span><span class="p">,</span>  <span class="mf">0.7299</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mf">0.5809</span><span class="p">,</span>  <span class="mf">0.4942</span><span class="p">]])</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>函数调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 测试多头注意力机制</span>
+<span class="k">def</span> <span class="nf">dm_test_MultiHeadedAttention</span><span class="p">():</span>
+
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>  <span class="c1"># 词嵌入维度是512维</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># 词表大小是1000</span>
+    <span class="c1"># 输入x 是一个使用Variable封装的长整型张量, 形状是2 x 4</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">421</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="p">[</span><span class="mi">491</span><span class="p">,</span> <span class="mi">998</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">221</span><span class="p">]]))</span>
+
+    <span class="n">my_embeddings</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">my_embeddings</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># 置0比率为0.1</span>
+    <span class="n">max_len</span> <span class="o">=</span> <span class="mi">60</span>   <span class="c1"># 句子最大长度</span>
+    <span class="n">my_pe</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+    <span class="n">pe_result</span> <span class="o">=</span> <span class="n">my_pe</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">head</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c1"># 头数head</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">key</span> <span class="o">=</span> <span class="n">value</span> <span class="o">=</span> <span class="n">pe_result</span>  <span class="c1"># torch.Size([2, 4, 512])</span>
+
+    <span class="c1"># 输入的掩码张量mask</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">my_mha</span> <span class="o">=</span> <span class="n">MultiHeadedAttention</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">my_mha</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;多头注意机制后的x&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;多头注意力机制的注意力权重分布&#39;</span><span class="p">,</span> <span class="n">my_mha</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>多头注意机制后的x torch.Size([2, 4, 512]) 
+tensor([[[-2.9384,  2.5006, -0.8888,  ..., -6.1134, -6.5651, -5.7406],
+         [-0.9007,  0.9144, -1.2935,  ..., -6.6897, -6.7292, -6.2146],
+         [-3.5213,  1.2106, -4.2973,  ..., -5.6040, -7.7500, -2.3606],
+         [-1.3711,  4.1226, -3.8623,  ..., -6.0207, -8.6360, -4.6519]],
+
+        [[ 6.1754,  3.4284, -5.4673,  ..., -7.7355, -6.7766, -4.9681],
+         [ 5.4382,  6.4217, -4.3761,  ..., -8.3668, -3.1675, -6.6081],
+         [ 9.0191,  3.2935, -4.4196,  ..., -5.2750, -5.3374, -5.1187],
+         [ 5.8635,  4.2653, -4.7956,  ..., -9.4884, -8.6182, -4.5732]]],
+       grad_fn=&lt;AddBackward0&gt;)
+多头注意力机制的注意力权重分布 torch.Size([2, 8, 4, 4])
+</code></pre></div>
+<h3 id="45">4.5 多头注意力机制总结<a class="headerlink" href="#45" title="Permanent link">&para;</a></h3>
+<ul>
+<li>学习了什么是多头注意力机制:
+    * 每个头开始从词义层面分割输出的张量，也就是每个头都想获得一组Q，K，V进行注意力机制的计算，但是句子中的每个词的表示只获得一部分，也就是只分割了最后一维的词嵌入向量. 这就是所谓的多头.将每个头的获得的输入送到注意力机制中, 就形成了多头注意力机制.</li>
+</ul>
+<ul>
+<li>学习了多头注意力机制的作用:
+    * 这种结构设计能让每个注意力机制去优化每个词汇的不同特征部分，从而均衡同一种注意力机制可能产生的偏差，让词义拥有来自更多元的表达，实验表明可以从而提升模型效果.</li>
+</ul>
+<ul>
+<li>学习并实现了多头注意力机制的类: MultiHeadedAttention
+    * 因为多头注意力机制中需要使用多个相同的线性层, 首先实现了克隆函数clones.
+    * clones函数的输入是module，N，分别代表克隆的目标层，和克隆个数.
+    * clones函数的输出是装有N个克隆层的Module列表.
+    * 接着实现MultiHeadedAttention类, 它的初始化函数输入是h, d_model, dropout分别代表头数，词嵌入维度和置零比率.
+    * 它的实例化对象输入是Q, K, V以及掩码张量mask.
+    * 它的实例化对象输出是通过多头注意力机制处理的Q的注意力表示.</li>
+</ul>
+<h2 id="5">5 前馈全连接层<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<h3 id="51">5.1 前馈全连接层<a class="headerlink" href="#51" title="Permanent link">&para;</a></h3>
+<ul>
+<li>在Transformer中前馈全连接层就是具有两层线性层的全连接网络.</li>
+</ul>
+<ul>
+<li>前馈全连接层的作用:
+    * 考虑注意力机制可能对复杂过程的拟合程度不够, 通过增加两层网络来增强模型的能力.</li>
+</ul>
+<h3 id="52">5.2 前馈全连接层的代码分析<a class="headerlink" href="#52" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 前馈全连接层 PositionwiseFeedForward 实现思路分析</span>
+<span class="c1"># 1 init函数  (self,  d_model, d_ff, dropout=0.1):</span>
+   <span class="c1"># 定义线性层self.w1 self.w2, self.dropout层</span>
+<span class="c1"># 2 forward(self, x)</span>
+   <span class="c1"># 数据经过self.w1(x) -&gt; F.relu() -&gt;self.dropout() -&gt;self.w2 返回</span>
+
+<span class="k">class</span> <span class="nc">PositionwiseFeedForward</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">d_model</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="c1"># d_model  第1个线性层输入维度</span>
+        <span class="c1"># d_ff     第2个线性层输出维度</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PositionwiseFeedForward</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 定义线性层w1 w2 dropout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_ff</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span> <span class="n">dropout</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="c1"># 数据依次经过第1个线性层 relu激活层 dropout层，然后是第2个线性层</span>
+        <span class="k">return</span>  <span class="bp">self</span><span class="o">.</span><span class="n">w2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w1</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
+</code></pre></div>
+<ul>
+<li>ReLU函数公式: ReLU(x)=max(0, x)</li>
+</ul>
+<ul>
+<li>ReLU函数图像:</li>
+</ul>
+<p><center><img src="./img/ReLU.png" height="auto" width="auto"/></center></p>
+<blockquote>
+<ul>
+<li>函数调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_PositionwiseFeedForward</span><span class="p">():</span>
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>  <span class="c1"># 词嵌入维度是512维</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># 词表大小是1000</span>
+    <span class="c1"># 输入x 是一个使用Variable封装的长整型张量, 形状是2 x 4</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">421</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="p">[</span><span class="mi">491</span><span class="p">,</span> <span class="mi">998</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">221</span><span class="p">]]))</span>
+
+    <span class="n">my_embeddings</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">my_embeddings</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># 置0比率为0.1</span>
+    <span class="n">max_len</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># 句子最大长度</span>
+    <span class="n">my_pe</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+    <span class="n">pe_result</span> <span class="o">=</span> <span class="n">my_pe</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">head</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c1"># 头数head</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">key</span> <span class="o">=</span> <span class="n">value</span> <span class="o">=</span> <span class="n">pe_result</span>  <span class="c1"># torch.Size([2, 4, 512])</span>
+
+    <span class="c1"># 输入的掩码张量mask</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">my_mha</span> <span class="o">=</span> <span class="n">MultiHeadedAttention</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">my_mha</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+    <span class="c1"># 测试前馈全链接层</span>
+    <span class="n">my_PFF</span> <span class="o">=</span> <span class="n">PositionwiseFeedForward</span><span class="p">(</span><span class="n">d_model</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">d_ff</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">ff_result</span> <span class="o">=</span> <span class="n">my_PFF</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x---&gt;&#39;</span><span class="p">,</span> <span class="n">ff_result</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">ff_result</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">x</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">512</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[[</span><span class="o">-</span><span class="mf">0.1989</span><span class="p">,</span>  <span class="mf">0.5191</span><span class="p">,</span>  <span class="mf">1.3063</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">0.1391</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8836</span><span class="p">,</span>  <span class="mf">0.5450</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.2717</span><span class="p">,</span>  <span class="mf">0.6541</span><span class="p">,</span>  <span class="mf">0.9768</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1452</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8929</span><span class="p">,</span>  <span class="mf">0.9798</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.3297</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1791</span><span class="p">,</span>  <span class="mf">0.8489</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">0.6890</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0303</span><span class="p">,</span>  <span class="mf">1.1638</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.0308</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2209</span><span class="p">,</span>  <span class="mf">1.3144</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6433</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.1207</span><span class="p">,</span>  <span class="mf">0.6042</span><span class="p">]],</span>
+
+        <span class="p">[[</span><span class="o">-</span><span class="mf">1.3265</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.3563</span><span class="p">,</span>  <span class="mf">0.6005</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4166</span><span class="p">,</span>  <span class="mf">0.1078</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0522</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.2736</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5544</span><span class="p">,</span>  <span class="mf">1.3333</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1704</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3514</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1901</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.0454</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.1244</span><span class="p">,</span>  <span class="mf">1.4875</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5366</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0143</span><span class="p">,</span>  <span class="mf">0.1453</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">1.2958</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.6615</span><span class="p">,</span>  <span class="mf">0.4268</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5896</span><span class="p">,</span>  <span class="mf">0.1486</span><span class="p">,</span>  <span class="mf">0.1122</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">AddBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="53">5.3 前馈全连接层总结<a class="headerlink" href="#53" title="Permanent link">&para;</a></h3>
+<ul>
+<li>学习了什么是前馈全连接层:
+    * 在Transformer中前馈全连接层就是具有两层线性层的全连接网络.</li>
+</ul>
+<ul>
+<li>学习了前馈全连接层的作用:
+    * 考虑注意力机制可能对复杂过程的拟合程度不够, 通过增加两层网络来增强模型的能力.</li>
+</ul>
+<ul>
+<li>学习并实现了前馈全连接层的类: PositionwiseFeedForward
+    * 它的实例化参数为d_model, d_ff, dropout, 分别代表词嵌入维度, 线性变换维度, 和置零比率.
+    * 它的输入参数x, 表示上层的输出.
+    * 它的输出是经过2层线性网络变换的特征表示.</li>
+</ul>
+<h2 id="6">6 规范化层<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<h3 id="61">6.1 规范化层的作用<a class="headerlink" href="#61" title="Permanent link">&para;</a></h3>
+<ul>
+<li>它是所有深层网络模型都需要的标准网络层，因为随着网络层数的增加，通过多层的计算后参数可能开始出现过大或过小的情况，这样可能会导致学习过程出现异常，模型可能收敛非常的慢. 因此都会在一定层数后接规范化层进行数值的规范化，使其特征数值在合理范围内.</li>
+</ul>
+<h3 id="62">6.2 规范化层的代码实现<a class="headerlink" href="#62" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 规范化层 LayerNorm 实现思路分析</span>
+<span class="c1"># 1 init函数  (self, features, eps=1e-6):</span>
+   <span class="c1"># 定义线性层self.a2 self.b2, nn.Parameter(torch.ones(features))</span>
+<span class="c1"># 2 forward(self, x) 返回标准化后的结果</span>
+    <span class="c1"># 对数据求均值 保持形状不变 x.mean(-1, keepdims=True)</span>
+    <span class="c1"># 对数据求方差 保持形状不变 x.std(-1, keepdims=True)</span>
+    <span class="c1"># 对数据进行标准化变换 反向传播可学习参数a2 b2 </span>
+    <span class="c1"># eg self.a2 * (x-mean)/(std + self.eps) + self.b2</span>
+
+<span class="k">class</span> <span class="nc">LayerNorm</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+        <span class="c1"># 参数features 待规范化的数据</span>
+        <span class="c1"># 参数 eps=1e-6 防止分母为零</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">LayerNorm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># 定义a2 规范化层的系数 y=kx+b中的k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">features</span><span class="p">))</span>
+
+        <span class="c1"># 定义b2 规范化层的系数 y=kx+b中的b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">features</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="c1"># 对数据求均值 保持形状不变</span>
+        <span class="c1"># [2,4,512] -&gt; [2,4,1]</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 对数据求方差 保持形状不变</span>
+        <span class="c1"># [2,4,512] -&gt; [2,4,1]</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 对数据进行标准化变换 反向传播可学习参数a2 b2</span>
+        <span class="c1"># 注意 * 表示对应位置相乘 不是矩阵运算</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">std</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b2</span>
+        <span class="k">return</span>  <span class="n">y</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>函数调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 规范化层测试</span>
+<span class="k">def</span> <span class="nf">dm_test_LayerNorm</span><span class="p">():</span>
+    <span class="n">embedding_dim</span> <span class="o">=</span> <span class="mi">512</span>  <span class="c1"># 词嵌入维度是512维</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># 词表大小是1000</span>
+    <span class="c1"># 输入x 是一个使用Variable封装的长整型张量, 形状是2 x 4</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">421</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="p">[</span><span class="mi">491</span><span class="p">,</span> <span class="mi">998</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">221</span><span class="p">]]))</span>
+
+    <span class="n">emb</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span><span class="n">embedding_dim</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+    <span class="n">embr</span> <span class="o">=</span> <span class="n">emb</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">max_len</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># 句子最大长度</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">embr</span>  <span class="c1"># [2, 4, 512]</span>
+    <span class="n">pe</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">embedding_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+    <span class="n">pe_result</span> <span class="o">=</span> <span class="n">pe</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="n">key</span> <span class="o">=</span> <span class="n">value</span> <span class="o">=</span> <span class="n">pe_result</span>  <span class="c1"># torch.Size([2, 4, 512])</span>
+    <span class="c1"># 调用验证</span>
+
+    <span class="n">d_ff</span> <span class="o">=</span> <span class="mi">64</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="mi">8</span>
+
+    <span class="c1"># 多头注意力机制的输出 作为前馈全连接层的输入</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">mha</span> <span class="o">=</span> <span class="n">MultiHeadedAttention</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+    <span class="n">mha_result</span> <span class="o">=</span> <span class="n">mha</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">mha_result</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">PositionwiseFeedForward</span><span class="p">(</span><span class="n">embedding_dim</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+    <span class="n">ff_result</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">features</span> <span class="o">=</span> <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-6</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">ff_result</span>
+    <span class="n">ln</span> <span class="o">=</span> <span class="n">LayerNorm</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
+    <span class="n">ln_result</span> <span class="o">=</span> <span class="n">ln</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;规范化层:&#39;</span><span class="p">,</span> <span class="n">ln_result</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">ln_result</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">规范化层</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">512</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[[</span> <span class="mf">1.1413</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0875</span><span class="p">,</span>  <span class="mf">1.9878</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">0.4824</span><span class="p">,</span>  <span class="mf">1.2250</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5582</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.3969</span><span class="p">,</span>  <span class="mf">0.0417</span><span class="p">,</span>  <span class="mf">0.6030</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">0.6712</span><span class="p">,</span>  <span class="mf">0.0858</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7419</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.1618</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4729</span><span class="p">,</span>  <span class="mf">1.1678</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4206</span><span class="p">,</span>  <span class="mf">0.2535</span><span class="p">,</span>  <span class="mf">1.0424</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.2952</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1489</span><span class="p">,</span>  <span class="mf">0.7079</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">0.5554</span><span class="p">,</span>  <span class="mf">0.3931</span><span class="p">,</span>  <span class="mf">0.4711</span><span class="p">]],</span>
+
+        <span class="p">[[</span> <span class="mf">0.8428</span><span class="p">,</span>  <span class="mf">0.9732</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2423</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.1651</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.3559</span><span class="p">,</span>  <span class="mf">1.0449</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">1.4975</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2760</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9415</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2475</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.1027</span><span class="p">,</span>  <span class="mf">0.8396</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.5669</span><span class="p">,</span>  <span class="mf">1.0264</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6982</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5022</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7629</span><span class="p">,</span>  <span class="mf">0.7721</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">1.2806</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3767</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0539</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4042</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4116</span><span class="p">,</span>  <span class="mf">0.3944</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">AddBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="63">6.3 规范化层总结<a class="headerlink" href="#63" title="Permanent link">&para;</a></h3>
+<ul>
+<li>学习了规范化层的作用:
+    * 它是所有深层网络模型都需要的标准网络层，因为随着网络层数的增加，通过多层的计算后参数可能开始出现过大或过小的情况，这样可能会导致学习过程出现异常，模型可能收敛非常的慢. 因此都会在一定层数后接规范化层进行数值的规范化，使其特征数值在合理范围内.</li>
+</ul>
+<ul>
+<li>学习并实现了规范化层的类: LayerNorm
+    * 它的实例化参数有两个, features和eps，分别表示词嵌入特征大小，和一个足够小的数.
+    * 它的输入参数x代表来自上一层的输出.
+    * 它的输出就是经过规范化的特征表示.</li>
+</ul>
+<h2 id="7">7 子层连接结构<a class="headerlink" href="#7" title="Permanent link">&para;</a></h2>
+<h3 id="71">7.1 子层连接结构<a class="headerlink" href="#71" title="Permanent link">&para;</a></h3>
+<ul>
+<li>如图所示，输入到每个子层以及规范化层的过程中，还使用了残差链接（跳跃连接），因此我们把这一部分结构整体叫做子层连接（代表子层及其链接结构），在每个编码器层中，都有两个子层，这两个子层加上周围的链接结构就形成了两个子层连接结构.</li>
+</ul>
+<ul>
+<li>子层连接结构图:</li>
+</ul>
+<p><center><img src="./img/15.png" height="auto" width="auto"/></center></p>
+<p><center><img src="./img/16.png" height="auto" width="auto"/></center></p>
+<h3 id="72">7.2 子层连接结构的代码分析<a class="headerlink" href="#72" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 子层连接结构 子层(前馈全连接层 或者 注意力机制层)+ norm层 + 残差连接</span>
+<span class="c1"># SublayerConnection实现思路分析</span>
+<span class="c1"># 1 init函数  (self, size, dropout=0.1):</span>
+   <span class="c1"># 定义self.norm层 self.dropout层, 其中LayerNorm(size)</span>
+<span class="c1"># 2 forward(self, x, sublayer) 返回+以后的结果</span>
+    <span class="c1"># 数据self.norm() -&gt; sublayer()-&gt;self.dropout() + x</span>
+
+<span class="k">class</span> <span class="nc">SublayerConnection</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="c1"># 参数size 词嵌入维度尺寸大小</span>
+        <span class="c1"># 参数dropout 置零比率</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">SublayerConnection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 定义norm层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">LayerNorm</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="c1"># 定义dropout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">sublayer</span><span class="p">):</span>
+        <span class="c1"># 参数x 代表数据</span>
+        <span class="c1"># sublayer 函数入口地址 子层函数(前馈全连接层 或者 注意力机制层函数的入口地址)</span>
+        <span class="c1"># 方式1 # 数据self.norm() -&gt; sublayer()-&gt;self.dropout() + x</span>
+        <span class="n">myres</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">sublayer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        <span class="c1"># 方式2 # 数据sublayer() -&gt; self.norm() -&gt;self.dropout() + x</span>
+        <span class="c1"># myres = x + self.dropout(self.norm(x.subtype(x)))</span>
+        <span class="k">return</span> <span class="n">myres</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>函数调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_SublayerConnection</span><span class="p">():</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># 词表大小是1000</span>
+    <span class="c1"># 输入x 是一个使用Variable封装的长整型张量, 形状是2 x 4</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">421</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="p">[</span><span class="mi">491</span><span class="p">,</span> <span class="mi">998</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">221</span><span class="p">]]))</span>
+
+    <span class="n">emb</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+    <span class="n">embr</span> <span class="o">=</span> <span class="n">emb</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">max_len</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># 句子最大长度</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">embr</span>  <span class="c1"># [2, 4, 512]</span>
+    <span class="n">pe</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+    <span class="n">pe_result</span> <span class="o">=</span> <span class="n">pe</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pe_result</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="c1"># 多头自注意力子层</span>
+    <span class="n">self_attn</span> <span class="o">=</span> <span class="n">MultiHeadedAttention</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+    <span class="n">sublayer</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">self_attn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+    <span class="c1"># 子层链接结构</span>
+    <span class="n">sc</span> <span class="o">=</span> <span class="n">SublayerConnection</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+    <span class="n">sc_result</span> <span class="o">=</span> <span class="n">sc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sublayer</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sc_result.shape---&gt;&#39;</span><span class="p">,</span> <span class="n">sc_result</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sc_result---&gt;&#39;</span><span class="p">,</span> <span class="n">sc_result</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">sc_result</span><span class="o">.</span><span class="n">shape</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">512</span><span class="p">])</span>
+<span class="n">sc_result</span><span class="o">---&gt;</span> <span class="n">tensor</span><span class="p">([[[</span><span class="o">-</span><span class="mf">30.8925</span><span class="p">,</span>  <span class="mf">57.5868</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.7073</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>   <span class="mf">2.2304</span><span class="p">,</span>   <span class="mf">0.0866</span><span class="p">,</span> <span class="o">-</span><span class="mf">25.0320</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">19.7721</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.2945</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.9359</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.1355</span><span class="p">,</span>  <span class="o">-</span><span class="mf">9.1049</span><span class="p">,</span>  <span class="mf">35.7419</span><span class="p">],</span>
+         <span class="p">[</span>  <span class="mf">0.1608</span><span class="p">,</span>   <span class="mf">3.0822</span><span class="p">,</span>   <span class="mf">0.1203</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>   <span class="mf">2.9998</span><span class="p">,</span>  <span class="mf">40.5865</span><span class="p">,</span>  <span class="mf">12.3813</span><span class="p">],</span>
+         <span class="p">[</span>  <span class="mf">0.0765</span><span class="p">,</span>  <span class="mf">14.6370</span><span class="p">,</span> <span class="o">-</span><span class="mf">22.0670</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>   <span class="mf">6.8273</span><span class="p">,</span>   <span class="mf">0.2928</span><span class="p">,</span>  <span class="mf">26.7776</span><span class="p">]],</span>
+
+        <span class="p">[[</span> <span class="o">-</span><span class="mf">0.2359</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.0000</span><span class="p">,</span> <span class="o">-</span><span class="mf">26.8415</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">10.3175</span><span class="p">,</span> <span class="o">-</span><span class="mf">25.3874</span><span class="p">,</span>  <span class="mf">20.8764</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">23.7864</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.2481</span><span class="p">,</span>  <span class="mf">51.0186</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.8931</span><span class="p">,</span>   <span class="mf">9.0427</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.3697</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">21.1101</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.4014</span><span class="p">,</span>  <span class="mf">37.0955</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">26.1717</span><span class="p">,</span>  <span class="mf">35.2731</span><span class="p">,</span> <span class="o">-</span><span class="mf">37.8626</span><span class="p">],</span>
+         <span class="p">[</span>  <span class="mf">7.5792</span><span class="p">,</span>  <span class="mf">21.9032</span><span class="p">,</span> <span class="o">-</span><span class="mf">18.7778</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>   <span class="mf">4.6249</span><span class="p">,</span> <span class="o">-</span><span class="mf">33.6907</span><span class="p">,</span>  <span class="mf">22.5649</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">AddBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="73">7.3 子层连接结构总结<a class="headerlink" href="#73" title="Permanent link">&para;</a></h3>
+<ul>
+<li>什么是子层连接结构:
+    * 如图所示，输入到每个子层以及规范化层的过程中，还使用了残差链接（跳跃连接），因此我们把这一部分结构整体叫做子层连接（代表子层及其链接结构）, 在每个编码器层中，都有两个子层，这两个子层加上周围的链接结构就形成了两个子层连接结构.</li>
+</ul>
+<ul>
+<li>学习并实现了子层连接结构的类: SublayerConnection
+    * 类的初始化函数输入参数是size, dropout, 分别代表词嵌入大小和置零比率.
+    * 它的实例化对象输入参数是x, sublayer, 分别代表上一层输出以及子层的函数表示.
+    * 它的输出就是通过子层连接结构处理的输出.</li>
+</ul>
+<h2 id="8">8 编码器层<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
+<h3 id="81">8.1 编码器层的作用<a class="headerlink" href="#81" title="Permanent link">&para;</a></h3>
+<ul>
+<li>作为编码器的组成单元, 每个编码器层完成一次对输入的特征提取过程, 即编码过程.</li>
+</ul>
+<ul>
+<li>编码器层的构成图:</li>
+</ul>
+<p><center><img src="./img/17.png" height="auto" width="auto"/></center></p>
+<h3 id="82">8.2 编码器层的代码分析<a class="headerlink" href="#82" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 编码器层类 EncoderLayer 实现思路分析</span>
+<span class="c1"># init函数 (self, size, self_attn, feed_forward, dropout):</span>
+    <span class="c1"># 实例化多头注意力层对象self_attn # 前馈全连接层对象feed_forward  size词嵌入维度512</span>
+    <span class="c1"># clones两个子层连接结构 self.sublayer = clones(SublayerConnection(size,dropout),2)</span>
+<span class="c1"># forward函数 (self, x, mask)</span>
+    <span class="c1"># 数据经过子层连接结构1 self.sublayer[0](x, lambda x: self.self_attn(x, x, x, mask))</span>
+    <span class="c1"># 数据经过子层连接结构2 self.sublayer[1](x, self.feed_forward)</span>
+
+<span class="k">class</span> <span class="nc">EncoderLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">self_atten</span><span class="p">,</span> <span class="n">feed_forward</span><span class="p">,</span> <span class="n">dropout</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">EncoderLayer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 实例化多头注意力层对象</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">self_attn</span> <span class="o">=</span> <span class="n">self_atten</span>
+
+        <span class="c1"># 前馈全连接层对象feed_forward</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feed_forward</span> <span class="o">=</span> <span class="n">feed_forward</span>
+
+        <span class="c1"># size词嵌入维度512</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+
+        <span class="c1"># clones两个子层连接结构 self.sublayer = clones(SublayerConnection(size,dropout),2)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sublayer</span> <span class="o">=</span> <span class="n">clones</span><span class="p">(</span><span class="n">SublayerConnection</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span> <span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+
+        <span class="c1"># 数据经过第1个子层连接结构</span>
+        <span class="c1"># 参数x：传入的数据  参数lambda x... : 子函数入口地址</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sublayer</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">x</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">self_attn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">))</span>
+
+        <span class="c1"># 数据经过第2个子层连接结构</span>
+        <span class="c1"># 参数x：传入的数据  self.feed_forward子函数入口地址</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sublayer</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feed_forward</span><span class="p">)</span>
+        <span class="k">return</span>  <span class="n">x</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>函数调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_EncoderLayer</span><span class="p">():</span>
+
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># 词表大小是1000</span>
+    <span class="c1"># 输入x 是一个使用Variable封装的长整型张量, 形状是2 x 4</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">421</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="p">[</span><span class="mi">491</span><span class="p">,</span> <span class="mi">998</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">221</span><span class="p">]]))</span>
+
+    <span class="n">emb</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+    <span class="n">embr</span> <span class="o">=</span> <span class="n">emb</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">max_len</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># 句子最大长度</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">embr</span>  <span class="c1"># [2, 4, 512]</span>
+    <span class="n">pe</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+    <span class="n">pe_result</span> <span class="o">=</span> <span class="n">pe</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pe_result</span>
+
+    <span class="n">size</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">d_ff</span> <span class="o">=</span> <span class="mi">64</span>
+
+    <span class="c1"># 实例化多头注意力机制类对象</span>
+    <span class="n">self_attn</span> <span class="o">=</span> <span class="n">MultiHeadedAttention</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+    <span class="c1"># 实例化前馈全连接层对象</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">PositionwiseFeedForward</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+    <span class="c1"># mask数据</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="c1"># 实例化编码器层对象</span>
+    <span class="n">my_encoderlayer</span> <span class="o">=</span> <span class="n">EncoderLayer</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">self_attn</span><span class="p">,</span> <span class="n">ff</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+
+    <span class="c1"># 数据通过编码层编码</span>
+    <span class="n">el_result</span> <span class="o">=</span> <span class="n">my_encoderlayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;el_result.shape&#39;</span><span class="p">,</span> <span class="n">el_result</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">el_result</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">el_result</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">512</span><span class="p">])</span> 
+<span class="n">tensor</span><span class="p">([[[</span> <span class="mf">27.1315</span><span class="p">,</span>  <span class="mf">64.8418</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.6292</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">23.3170</span><span class="p">,</span> <span class="o">-</span><span class="mf">30.5543</span><span class="p">,</span>  <span class="mf">13.2727</span><span class="p">],</span>
+         <span class="p">[</span> <span class="o">-</span><span class="mf">0.1474</span><span class="p">,</span>  <span class="mf">54.1129</span><span class="p">,</span>   <span class="mf">0.0000</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.1820</span><span class="p">,</span> <span class="o">-</span><span class="mf">35.7688</span><span class="p">,</span> <span class="o">-</span><span class="mf">15.1666</span><span class="p">],</span>
+         <span class="p">[</span> <span class="o">-</span><span class="mf">0.0691</span><span class="p">,</span>   <span class="mf">8.3125</span><span class="p">,</span>   <span class="mf">7.3380</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">40.2273</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.4544</span><span class="p">,</span> <span class="o">-</span><span class="mf">14.1511</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">34.2015</span><span class="p">,</span> <span class="o">-</span><span class="mf">25.0465</span><span class="p">,</span> <span class="o">-</span><span class="mf">31.5629</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">42.4037</span><span class="p">,</span> <span class="o">-</span><span class="mf">35.9813</span><span class="p">,</span>  <span class="mf">44.9897</span><span class="p">]],</span>
+
+        <span class="p">[[</span> <span class="o">-</span><span class="mf">8.8238</span><span class="p">,</span>   <span class="mf">0.0935</span><span class="p">,</span> <span class="o">-</span><span class="mf">13.7027</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.9247</span><span class="p">,</span> <span class="o">-</span><span class="mf">19.9678</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.1526</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">18.8739</span><span class="p">,</span>   <span class="mf">0.3252</span><span class="p">,</span>  <span class="mf">28.1221</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">34.7250</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.7414</span><span class="p">,</span>   <span class="mf">8.1599</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">52.2108</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.6148</span><span class="p">,</span> <span class="o">-</span><span class="mf">16.3005</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>   <span class="mf">3.1570</span><span class="p">,</span> <span class="o">-</span><span class="mf">15.0894</span><span class="p">,</span>   <span class="mf">0.9009</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">22.5749</span><span class="p">,</span> <span class="o">-</span><span class="mf">54.0201</span><span class="p">,</span>   <span class="mf">3.9647</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">12.6702</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.2983</span><span class="p">,</span>  <span class="mf">13.6588</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">AddBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="83">8.3 编码器层总结<a class="headerlink" href="#83" title="Permanent link">&para;</a></h3>
+<ul>
+<li>学习了编码器层的作用:
+    * 作为编码器的组成单元, 每个编码器层完成一次对输入的特征提取过程, 即编码过程.</li>
+</ul>
+<ul>
+<li>学习并实现了编码器层的类: EncoderLayer
+    * 类的初始化函数共有4个, 别是size，其实就是我们词嵌入维度的大小. 第二个self_attn，之后我们将传入多头自注意力子层实例化对象, 并且是自注意力机制. 第三个是feed_froward, 之后我们将传入前馈全连接层实例化对象. 最后一个是置0比率dropout.
+    * 实例化对象的输入参数有2个，x代表来自上一层的输出, mask代表掩码张量.
+    * 它的输出代表经过整个编码层的特征表示.</li>
+</ul>
+<h2 id="9">9 编码器<a class="headerlink" href="#9" title="Permanent link">&para;</a></h2>
+<h3 id="91">9.1 编码器的作用<a class="headerlink" href="#91" title="Permanent link">&para;</a></h3>
+<ul>
+<li>编码器用于对输入进行指定的特征提取过程, 也称为编码, 由N个编码器层堆叠而成.</li>
+</ul>
+<ul>
+<li>编码器的结构图:</li>
+</ul>
+<p><center><img src="./img/7.png" height="auto" width="auto"/></center></p>
+<h3 id="92">9.2 编码器的代码分析<a class="headerlink" href="#92" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 编码器类 Encoder 实现思路分析</span>
+<span class="c1"># init函数 (self, layer, N)</span>
+    <span class="c1"># 实例化多个编码器层对象self.layers   通过方法clones(layer, N)</span>
+    <span class="c1"># 实例化规范化层 self.norm = LayerNorm(layer.size)</span>
+<span class="c1"># forward函数 (self, x, mask)</span>
+    <span class="c1"># 数据经过N个层 x = layer(x, mask)</span>
+    <span class="c1">#  返回规范化后的数据 return self.norm(x)</span>
+
+<span class="k">class</span> <span class="nc">Encoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+        <span class="c1"># 参数layer 1个编码器层</span>
+        <span class="c1"># 参数 编码器层的个数</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Encoder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># 实例化多个编码器层对象</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">clones</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+        <span class="c1"># 实例化规范化层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">LayerNorm</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+        <span class="c1"># 数据经过N个层 x = layer(x, mask)</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+        <span class="c1">#  返回规范化后的数据 return self.norm(x)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>函数调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_Encoder</span><span class="p">():</span>
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># 词表大小是1000</span>
+    <span class="c1"># 输入x 是一个使用Variable封装的长整型张量, 形状是2 x 4</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">421</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="p">[</span><span class="mi">491</span><span class="p">,</span> <span class="mi">998</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">221</span><span class="p">]]))</span>
+    <span class="c1"># writeFile(&quot;dafdsafds&quot;)</span>
+
+    <span class="n">emb</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+    <span class="n">embr</span> <span class="o">=</span> <span class="n">emb</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">max_len</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># 句子最大长度</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">embr</span>  <span class="c1"># [2, 4, 512]</span>
+    <span class="n">pe</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+    <span class="n">pe_result</span> <span class="o">=</span> <span class="n">pe</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pe_result</span>  <span class="c1"># 获取位置编码器层 编码以后的结果</span>
+
+    <span class="n">size</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">d_ff</span> <span class="o">=</span> <span class="mi">64</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span>
+    <span class="n">attn</span> <span class="o">=</span> <span class="n">MultiHeadedAttention</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+    <span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">PositionwiseFeedForward</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+    <span class="n">layer</span> <span class="o">=</span> <span class="n">EncoderLayer</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="n">attn</span><span class="p">),</span> <span class="n">c</span><span class="p">(</span><span class="n">ff</span><span class="p">),</span> <span class="n">dropout</span><span class="p">)</span>
+
+    <span class="c1"># 编码器中编码器层的个数N</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="c1"># 实例化编码器对象</span>
+    <span class="n">en</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">en_result</span> <span class="o">=</span> <span class="n">en</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;en_result.shape---&gt;&#39;</span><span class="p">,</span> <span class="n">en_result</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;en_result---&gt;&#39;</span><span class="p">,</span><span class="n">en_result</span> <span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>en_result.shape---&gt; torch.Size([2, 4, 512])
+en_result---&gt; tensor([[[-0.2184,  0.0614, -0.6718,  ..., -0.3551,  1.0668,  1.4026],
+         [ 0.7157, -0.0899,  0.0247,  ..., -0.0708,  0.4524,  0.2722],
+         [ 0.0519,  1.5825,  1.0757,  ..., -0.8435, -0.0662,  0.6865],
+         [-0.0924,  0.0881, -0.1037,  ...,  1.4178, -0.0214,  0.5966]],
+
+        [[-1.4012,  2.1713,  1.6771,  ..., -0.0964,  0.7202,  0.0828],
+         [ 0.1039,  1.8749,  0.0414,  ...,  0.5602,  2.9122,  0.0356],
+         [-0.1112, -0.5311,  0.4800,  ..., -0.0533, -0.8752,  0.5790],
+         [ 0.6887, -0.9975,  0.0244,  ..., -0.2390, -0.9284,  0.8737]]],
+       grad_fn=&lt;AddBackward0&gt;)
+</code></pre></div>
+<h3 id="93">9.3 编码器总结<a class="headerlink" href="#93" title="Permanent link">&para;</a></h3>
+<ul>
+<li>学习了编码器的作用:  <br />
+    * 编码器用于对输入进行指定的特征提取过程, 也称为编码, 由N个编码器层堆叠而成.</li>
+</ul>
+<ul>
+<li>学习并实现了编码器的类: Encoder
+    * 类的初始化函数参数有两个，分别是layer和N，代表编码器层和编码器层的个数.
+    * forward函数的输入参数也有两个, 和编码器层的forward相同, x代表上一层的输出, mask代码掩码张量.
+    * 编码器类的输出就是Transformer中编码器的特征提取表示, 它将成为解码器的输入的一部分.</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="3%20%E8%BE%93%E5%85%A5%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 3 输入部分实现" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              3 输入部分实现
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="5%20%E8%A7%A3%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 5 解码器部分实现" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              5 解码器部分实现
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

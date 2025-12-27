@@ -1,0 +1,1646 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>4 文本数据分析 - 自然语言处理基础V6.5</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="自然语言处理基础V6.5" class="md-header__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            自然语言处理基础V6.5
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              4 文本数据分析
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="自然语言处理基础V6.5" class="md-nav__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    自然语言处理基础V6.5
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章 自然语言处理入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章 自然语言处理入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章 自然语言处理入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_mkdocs_NLP/1_%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8.html" class="md-nav__link">
+        1 自然语言处理入门
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章 文本预处理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章 文本预处理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章 文本预处理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="1%20%E8%AE%A4%E8%AF%86%E6%96%87%E6%9C%AC%E9%A2%84%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        1 认识文本预处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="2%20%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        2 文本处理的基本方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3%20%E6%96%87%E6%9C%AC%E5%BC%A0%E9%87%8F%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        3 文本张量表示方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          4 文本数据分析
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="4%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90.html" class="md-nav__link md-nav__link--active">
+        4 文本数据分析
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 文件数据分析介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 数据集说明
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 获取标签数量分布
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 获取句子长度分布
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    5 获取正负样本长度散点分布
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    6 获取不同词汇总数统计
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    7 获取训练集高频形容词词云
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    8 获取验证集形容词词云
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    9 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="5%20%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        5 文本特征处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="6%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA.html" class="md-nav__link">
+        6 文本数据增强
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="7%20jieba%E8%AF%8D%E6%80%A7%E5%AF%B9%E7%85%A7%E8%A1%A8.html" class="md-nav__link">
+        7 jieba词性对照表
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章 RNN及其变体
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章 RNN及其变体" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章 RNN及其变体
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/1%20%E8%AE%A4%E8%AF%86RNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        1 认识RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/2%20%E4%BC%A0%E7%BB%9FRNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        2 传统RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/3%20LSTM%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        3 LSTM模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/4%20GRU%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        4 GRU模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/5%20RNN%E6%A1%88%E4%BE%8B-%E4%BA%BA%E5%90%8D%E5%88%86%E7%B1%BB%E5%99%A8.html" class="md-nav__link">
+        5 RNN案例 人名分类器
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/6%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D1.html" class="md-nav__link">
+        6 注意力机制介绍1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/7%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D2.html" class="md-nav__link">
+        7 注意力机制介绍2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/8%20RNN%E6%A1%88%E4%BE%8B-seq2seq%E8%8B%B1%E8%AF%91%E6%B3%95.html" class="md-nav__link">
+        8 RNN案例 seq2seq英译法
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章 Transformer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章 Transformer" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章 Transformer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/1%20Transformer%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 Transformer背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/2%20%E8%AE%A4%E8%AF%86Transformer%E6%9E%B6%E6%9E%84.html" class="md-nav__link">
+        2 认识Transformer架构
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/3%20%E8%BE%93%E5%85%A5%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        3 输入部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        4 编码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/5%20%E8%A7%A3%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        5 解码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/6%20%E8%BE%93%E5%87%BA%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        6 输出部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/7%20%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA.html" class="md-nav__link">
+        7 模型构建
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章 迁移学习
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章 迁移学习" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章 迁移学习
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/1%20fasttext%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 fasttext工具介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/2%20fasttext%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB.html" class="md-nav__link">
+        2 fasttext文本分类
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/3%20%E8%AE%AD%E7%BB%83%E8%AF%8D%E5%90%91%E9%87%8F.html" class="md-nav__link">
+        3 训练词向量
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/4%20%E8%AF%8D%E5%90%91%E9%87%8F%E8%BF%81%E7%A7%BB.html" class="md-nav__link">
+        4 词向量迁移
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/5%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5.html" class="md-nav__link">
+        5 迁移学习概念
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/6%20NLP%E4%B8%AD%E7%9A%84%E5%B8%B8%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        6 NLP中的常用预训练模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/7%20Transformers%E5%BA%93%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        7 Transformers库使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/8%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5.html" class="md-nav__link">
+        8 迁移学习实践
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/9%20NLP%E4%B8%AD%E7%9A%84%E6%A0%87%E5%87%86%E6%95%B0%E6%8D%AE%E9%9B%86%28%E6%8B%93%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        9 NLP中的标准数据集(拓展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章 Bert系列模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章 Bert系列模型" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章 Bert系列模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/1%20BERT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 BERT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/2%20BERT%E6%A8%A1%E5%9E%8B%E7%89%B9%E7%82%B9.html" class="md-nav__link">
+        2 BERT模型特点
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/3%20BERT%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        3 BERT系列模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/4%20ELMo%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        4 ELMo模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/5%20GPT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        5 GPT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/6%20BERT%20GPT%20ELMo%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%B9%E6%AF%94.html" class="md-nav__link">
+        6 BERT GPT ELMo模型的对比
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          第七章 Transformer精选问答(拓展资料)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第七章 Transformer精选问答(拓展资料)" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          第七章 Transformer精选问答(拓展资料)
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/1%20Transformer%20%E5%90%84%E5%AD%90%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8.html" class="md-nav__link">
+        1 Transformer 各子模块作用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/2%20Transformer%20Decoder%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        2 Transformer Decoder模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/3%20Self-attention%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        3 Self attention机制详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/4%20Multi-head%20Attention%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        4 Multi head Attention详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/5%20Transformer%E4%BC%98%E5%8A%BF.html" class="md-nav__link">
+        5 Transformer优势
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 文件数据分析介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 数据集说明
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 获取标签数量分布
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 获取句子长度分布
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    5 获取正负样本长度散点分布
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    6 获取不同词汇总数统计
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    7 获取训练集高频形容词词云
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    8 获取验证集形容词词云
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    9 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>4 文本数据分析</h1>
+
+<h3 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>了解文本数据分析的作用.</li>
+<li>掌握常用的几种文本数据分析方法.</li>
+</ul>
+<h2 id="1">1 文件数据分析介绍<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>文本数据分析的作用:
+    * 文本数据分析能够有效帮助我们理解数据语料, 快速检查出语料可能存在的问题, 并指导之后模型训练过程中一些超参数的选择.</li>
+</ul>
+<ul>
+<li>常用的几种文本数据分析方法: 
+    * 标签数量分布
+    * 句子长度分布
+    * 词频统计与关键词词云</li>
+</ul>
+<h2 id="2">2 数据集说明<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>我们将基于真实的中文酒店评论语料来讲解常用的几种文本数据分析方法. </li>
+</ul>
+<ul>
+<li>中文酒店评论语料:
+    * 属于二分类的中文情感分析语料, 该语料存放在"./cn_data"目录下.
+    * 其中train.tsv代表训练集, dev.tsv代表验证集, 二者数据样式相同.</li>
+</ul>
+<ul>
+<li>train.tsv数据样式:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>sentence    label
+早餐不好,服务不到位,晚餐无西餐,早餐晚餐相同,房间条件不好,餐厅不分吸烟区.房间不分有无烟房.    0
+去的时候 ,酒店大厅和餐厅在装修,感觉大厅有点挤.由于餐厅装修本来该享受的早饭,也没有享受(他们是8点开始每个房间送,但是我时间来不及了)不过前台服务员态度好!    1
+有很长时间没有在西藏大厦住了，以前去北京在这里住的较多。这次住进来发现换了液晶电视，但网络不是很好，他们自己说是收费的原因造成的。其它还好。  1
+非常好的地理位置，住的是豪华海景房，打开窗户就可以看见栈桥和海景。记得很早以前也住过，现在重新装修了。总的来说比较满意，以后还会住   1
+交通很方便，房间小了一点，但是干净整洁，很有香港的特色，性价比较高，推荐一下哦 1
+酒店的装修比较陈旧，房间的隔音，主要是卫生间的隔音非常差，只能算是一般的    0
+酒店有点旧，房间比较小，但酒店的位子不错，就在海边，可以直接去游泳。8楼的海景打开窗户就是海。如果想住在热闹的地带，这里不是一个很好的选择，不过威海城市真的比较小，打车还是相当便宜的。晚上酒店门口出租车比较少。   1
+位置很好，走路到文庙、清凉寺5分钟都用不了，周边公交车很多很方便，就是出租车不太爱去（老城区路窄爱堵车），因为是老宾馆所以设施要陈旧些，    1
+酒店设备一般，套房里卧室的不能上网，要到客厅去。    0
+</code></pre></div>
+<ul>
+<li>train.tsv数据样式说明:
+    * train.tsv中的数据内容共分为2列, 第一列数据代表具有感情色彩的评论文本; 第二列数据, 0或1, 代表每条文本数据是积极或者消极的评论, 0代表消极, 1代表积极.</li>
+</ul>
+<h2 id="3">3 获取标签数量分布<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># 导入必备工具包</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># 思路分析 : 获取标签数量分布</span>
+<span class="c1"># 0 什么标签数量分布：求标签0有多少个 标签1有多少个 标签2有多少个</span>
+<span class="c1"># 1 设置显示风格plt.style.use(&#39;fivethirtyeight&#39;)</span>
+<span class="c1"># 2 pd.read_csv(path, sep=&#39;\t&#39;) 读训练集 验证集数据</span>
+<span class="c1"># 3 sns.countplot() 统计label标签的0、1分组数量</span>
+<span class="c1"># 4 画图展示 plt.title() plt.show()</span>
+<span class="c1"># 注意1：sns.countplot()相当于select * from tab1 group by</span>
+<span class="k">def</span> <span class="nf">dm_label_sns_countplot</span><span class="p">():</span>
+
+    <span class="c1"># 1 设置显示风格plt.style.use(&#39;fivethirtyeight&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;fivethirtyeight&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 2 pd.read_csv 读训练集 验证集数据</span>
+    <span class="n">train_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath_or_buffer</span> <span class="o">=</span> <span class="s1">&#39;./cn_data/train.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">dev_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath_or_buffer</span> <span class="o">=</span> <span class="s1">&#39;./cn_data/dev.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 sns.countplot() 统计label标签的0、1分组数量</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">countplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">train_data</span><span class="p">)</span>
+
+    <span class="c1"># 4 画图展示 plt.title() plt.show()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;train_label&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># 验证集上标签的数量分布</span>
+    <span class="c1"># 3-2 sns.countplot() 统计label标签的0、1分组数量</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">countplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">dev_data</span><span class="p">)</span>
+
+    <span class="c1"># 4-2 画图展示 plt.title() plt.show()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;dev_label&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<ul>
+<li>训练集标签数量分布:</li>
+</ul>
+<p><img alt="avatar" src="img/train_data_label.png" /></p>
+<ul>
+<li>验证集标签数量分布:</li>
+</ul>
+<p><img alt="avatar" src="img/valid_data_label.png" /></p>
+<ul>
+<li>分析:
+    * 在深度学习模型评估中, 我们一般使用ACC作为评估指标, 若想将ACC的基线定义在50%左右, 则需要我们的正负样本比例维持在1:1左右, 否则就要进行必要的数据增强或数据删减. 上图中训练和验证集正负样本都稍有不均衡, 可以进行一些数据增强.</li>
+</ul>
+<h2 id="4">4 获取句子长度分布<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># 思路分析 : 获取句子长度分布 -绘制句子长度分布-柱状图 句子长度分布-密度曲线图</span>
+<span class="c1"># 0 什么是句子长度分布：求长度为50的有多少个 长度51的有多少个 长度为52的有多少个</span>
+<span class="c1"># 1 设置显示风格plt.style.use(&#39;fivethirtyeight&#39;)</span>
+<span class="c1"># 2 pd.read_csv(path, sep=&#39;\t&#39;) 读训练集 验证集数据</span>
+<span class="c1"># 3 新增数据长度列：train_data[&#39;sentence_length&#39;] = list(map(lambda x:len(x) , ...))</span>
+<span class="c1"># 4-1 绘制数据长度分布图-柱状图 sns.countplot(x=&#39;sentence_length&#39;, data=train_data)</span>
+<span class="c1">#  画图展示 plt.xticks([]) plt.show()</span>
+<span class="c1"># 4-2  绘制数据长度分布图-曲线图 sns.displot(x=&#39;sentence_length&#39;, data=train_data)</span>
+<span class="c1"># 画图展示 plt.yticks([]) plt.show()</span>
+
+<span class="k">def</span> <span class="nf">dm_len_sns_countplot_distplot</span><span class="p">():</span>
+    <span class="c1"># 1 设置显示风格plt.style.use(&#39;fivethirtyeight&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;fivethirtyeight&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 2 pd.read_csv 读训练集 验证集数据</span>
+    <span class="n">train_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath_or_buffer</span><span class="o">=</span><span class="s1">&#39;./cn_data/train.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">dev_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath_or_buffer</span><span class="o">=</span><span class="s1">&#39;./cn_data/dev.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 求数据长度列 然后求数据长度的分布</span>
+    <span class="n">train_data</span><span class="p">[</span><span class="s1">&#39;sentence_length&#39;</span><span class="p">]</span> <span class="o">=</span>  <span class="nb">list</span><span class="p">(</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">train_data</span><span class="p">[</span><span class="s1">&#39;sentence&#39;</span><span class="p">]))</span>
+
+    <span class="c1"># 4 绘制数据长度分布图-柱状图</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">countplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;sentence_length&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">train_data</span><span class="p">)</span>
+    <span class="c1"># sns.countplot(x=train_data[&#39;sentence_length&#39;])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span> <span class="c1"># x轴上不要提示信息</span>
+    <span class="c1"># plt.title(&#39;sentence_length countplot&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># 5 绘制数据长度分布图-曲线图</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">displot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;sentence_length&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">train_data</span><span class="p">)</span>
+    <span class="c1"># sns.displot(x=train_data[&#39;sentence_length&#39;])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span> <span class="c1"># y轴上不要提示信息</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># 验证集</span>
+    <span class="c1"># 3 求数据长度列 然后求数据长度的分布</span>
+    <span class="n">dev_data</span><span class="p">[</span><span class="s1">&#39;sentence_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">dev_data</span><span class="p">[</span><span class="s1">&#39;sentence&#39;</span><span class="p">]))</span>
+
+    <span class="c1"># 4 绘制数据长度分布图-柱状图</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">countplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;sentence_length&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dev_data</span><span class="p">)</span>
+    <span class="c1"># sns.countplot(x=dev_data[&#39;sentence_length&#39;])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>  <span class="c1"># x轴上不要提示信息</span>
+    <span class="c1"># plt.title(&#39;sentence_length countplot&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># 5 绘制数据长度分布图-曲线图</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">displot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;sentence_length&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dev_data</span><span class="p">)</span>
+    <span class="c1"># sns.displot(x=dev_data[&#39;sentence_length&#39;])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>  <span class="c1"># y轴上不要提示信息</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<ul>
+<li>训练集句子长度分布:</li>
+</ul>
+<p><img alt="avatar" src="img/train_length.png" /></p>
+<p><img alt="avatar" src="img/train_length2.png" /></p>
+<ul>
+<li>验证集句子长度分布:</li>
+</ul>
+<p><img alt="avatar" src="img/valid_length.png" /></p>
+<p><img alt="avatar" src="img/valid_length2.png" /></p>
+<ul>
+<li>分析:
+    * 通过绘制句子长度分布图, 可以得知我们的语料中大部分句子长度的分布范围, 因为模型的输入要求为固定尺寸的张量，合理的长度范围对之后进行句子截断补齐(规范长度)起到关键的指导作用. 上图中大部分句子长度的范围大致为20-250之间.</li>
+</ul>
+<h2 id="5">5 获取正负样本长度散点分布<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># 获取正负样本长度散点分布，也就是按照x正负样本进行分组 再按照y长度进行散点图</span>
+<span class="c1"># train_data[&#39;sentence_length&#39;] = list(map(lambda x: len(x), train_data[&#39;sentence&#39;]))</span>
+<span class="c1">#  sns.stripplot(y=&#39;sentence_length&#39;, x=&#39;label&#39;, data=train_data)</span>
+<span class="k">def</span> <span class="nf">dm03_sns_stripplot</span><span class="p">():</span>
+    <span class="c1"># 1 设置显示风格plt.style.use(&#39;fivethirtyeight&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;fivethirtyeight&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 2 pd.read_csv 读训练集 验证集数据</span>
+    <span class="n">train_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath_or_buffer</span><span class="o">=</span><span class="s1">&#39;./cn_data/train.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">dev_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath_or_buffer</span><span class="o">=</span><span class="s1">&#39;./cn_data/dev.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 求数据长度列 然后求数据长度的分布</span>
+    <span class="n">train_data</span><span class="p">[</span><span class="s1">&#39;sentence_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">train_data</span><span class="p">[</span><span class="s1">&#39;sentence&#39;</span><span class="p">]))</span>
+
+    <span class="c1"># 4 统计正负样本长度散点图 （对train_data数据，按照label进行分组，统计正样本散点图）</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;sentence_length&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">train_data</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;sentence_length&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dev_data</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<ul>
+<li>训练集上正负样本的长度散点分布:</li>
+</ul>
+<p><img alt="avatar" src="img/train_length3.png" /></p>
+<ul>
+<li>验证集上正负样本的长度散点分布:</li>
+</ul>
+<p><img alt="avatar" src="img/valid_length3.png" /></p>
+<ul>
+<li>分析:
+    * 通过查看正负样本长度散点图, 可以有效定位异常点的出现位置, 帮助我们更准确进行人工语料审查. 上图中在训练集正样本中出现了异常点, 它的句子长度近3500左右, 需要我们人工审查.</li>
+</ul>
+<h2 id="6">6 获取不同词汇总数统计<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># 导入jieba用于分词</span>
+<span class="c1"># 导入chain方法用于扁平化列表</span>
+<span class="kn">import</span> <span class="nn">jieba</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+
+<span class="c1"># 进行训练集的句子进行分词, 并统计出不同词汇的总数</span>
+<span class="n">train_vocab</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">jieba</span><span class="o">.</span><span class="n">lcut</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">train_data</span><span class="p">[</span><span class="s2">&quot;sentence&quot;</span><span class="p">])))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;训练集共包含不同词汇总数为：&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_vocab</span><span class="p">))</span>
+
+<span class="c1"># 进行验证集的句子进行分词, 并统计出不同词汇的总数</span>
+<span class="n">valid_vocab</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">jieba</span><span class="o">.</span><span class="n">lcut</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">valid_data</span><span class="p">[</span><span class="s2">&quot;sentence&quot;</span><span class="p">])))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;训练集共包含不同词汇总数为：&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_vocab</span><span class="p">))</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>训练集共包含不同词汇总数为： 12147
+训练集共包含不同词汇总数为： 6857
+</code></pre></div>
+<h2 id="7">7 获取训练集高频形容词词云<a class="headerlink" href="#7" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># 使用jieba中的词性标注功能</span>
+<span class="kn">import</span> <span class="nn">jieba.posseg</span> <span class="k">as</span> <span class="nn">pseg</span>
+<span class="kn">from</span> <span class="nn">wordcloud</span> <span class="kn">import</span> <span class="n">WordCloud</span>
+
+<span class="c1"># 每句话产生形容词列表</span>
+<span class="k">def</span> <span class="nf">get_a_list</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># 使用jieba的词性标注方法切分文本 找到形容词存入到列表中返回</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">pseg</span><span class="o">.</span><span class="n">lcut</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">flag</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">word</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span>
+
+<span class="c1"># 根据词云列表产生词云</span>
+<span class="k">def</span>  <span class="nf">get_word_cloud</span><span class="p">(</span><span class="n">keywords_list</span><span class="p">):</span>
+    <span class="c1"># 实例化词云生成器对象</span>
+    <span class="n">wordcloud</span> <span class="o">=</span> <span class="n">WordCloud</span><span class="p">(</span><span class="n">font_path</span><span class="o">=</span><span class="s2">&quot;./SimHei.ttf&quot;</span><span class="p">,</span> <span class="n">max_words</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">background_color</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+    <span class="c1"># 准备数据</span>
+    <span class="n">keywords_string</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span><span class="n">keywords_list</span><span class="p">)</span>
+    <span class="c1"># 产生词云</span>
+    <span class="n">wordcloud</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">keywords_string</span><span class="p">)</span>
+
+    <span class="c1"># 画图</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">wordcloud</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="c1"># 思路分析 训练集正样本词云 训练集负样本词云</span>
+<span class="c1"># 1 获得训练集上正样本 p_train_data</span>
+<span class="c1">#   eg: 先使用逻辑==操作检索符合正样本 train_data[train_data[&#39;label&#39;] == 1]</span>
+<span class="c1"># 2 获取正样本的每个句子的形容词 p_a_train_vocab = chain(*map(a,b))</span>
+<span class="c1"># 3 调用绘制词云函数</span>
+<span class="k">def</span> <span class="nf">dm_word_cloud</span><span class="p">():</span>
+    <span class="c1"># 1 获得训练集上正样本p_train_data</span>
+    <span class="c1">#   eg: 先使用逻辑==操作检索符合正样本 train_data[train_data[&#39;label&#39;] == 1]</span>
+    <span class="n">train_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath_or_buffer</span><span class="o">=</span><span class="s1">&#39;./cn_data/train.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">p_train_data</span> <span class="o">=</span> <span class="n">train_data</span><span class="p">[</span><span class="n">train_data</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">][</span><span class="s1">&#39;sentence&#39;</span><span class="p">]</span>
+
+    <span class="c1"># 2 获取正样本的每个句子的形容词 p_a_train_vocab = chain(*map(a,b))</span>
+    <span class="n">p_a_train_vocab</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_a_list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">,</span> <span class="n">p_train_data</span><span class="p">))</span>
+    <span class="c1"># print(p_a_train_vocab)</span>
+    <span class="c1"># print(list(p_a_train_vocab))</span>
+
+    <span class="c1"># 3 调用绘制词云函数</span>
+    <span class="n">get_word_cloud</span><span class="p">(</span><span class="n">p_a_train_vocab</span><span class="p">)</span>
+
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*&#39;</span> <span class="o">*</span> <span class="mi">60</span> <span class="p">)</span>
+    <span class="c1"># 训练集负样本词云</span>
+    <span class="n">n_train_data</span> <span class="o">=</span> <span class="n">train_data</span><span class="p">[</span><span class="n">train_data</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">][</span><span class="s1">&#39;sentence&#39;</span><span class="p">]</span>
+
+    <span class="c1"># 2 获取正样本的每个句子的形容词 p_a_train_vocab = chain(*map(a,b))</span>
+    <span class="n">n_a_train_vocab</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_a_list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">,</span> <span class="n">n_train_data</span><span class="p">)</span>  <span class="p">)</span>
+    <span class="c1"># print(n_a_dev_vocab)</span>
+    <span class="c1"># print(list(n_a_dev_vocab))</span>
+
+    <span class="c1"># 3 调用绘制词云函数</span>
+    <span class="n">get_word_cloud</span><span class="p">(</span><span class="n">n_a_train_vocab</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>训练集正样本形容词词云:</li>
+</ul>
+<p><img alt="avatar" src="img/train_n_wc.png" /></p>
+<ul>
+<li>训练集负样本形容词词云:</li>
+</ul>
+<p><img alt="avatar" src="img/train_p_wc.png" /></p>
+<h2 id="8">8 获取验证集形容词词云<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># 获得验证集上正样本</span>
+<span class="n">p_valid_data</span> <span class="o">=</span> <span class="n">valid_data</span><span class="p">[</span><span class="n">valid_data</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;sentence&quot;</span><span class="p">]</span>
+
+<span class="c1"># 对正样本的每个句子的形容词</span>
+<span class="n">valid_p_a_vocab</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_a_list</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">p_valid_data</span><span class="p">))</span>
+<span class="c1">#print(train_p_n_vocab)</span>
+
+<span class="c1"># 获得验证集上负样本</span>
+<span class="n">n_valid_data</span> <span class="o">=</span> <span class="n">valid_data</span><span class="p">[</span><span class="n">valid_data</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;sentence&quot;</span><span class="p">]</span>
+
+<span class="c1"># 获取负样本的每个句子的形容词</span>
+<span class="n">valid_n_a_vocab</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_a_list</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">n_valid_data</span><span class="p">))</span>
+
+<span class="c1"># 调用绘制词云函数</span>
+<span class="n">get_word_cloud</span><span class="p">(</span><span class="n">valid_p_a_vocab</span><span class="p">)</span>
+<span class="n">get_word_cloud</span><span class="p">(</span><span class="n">valid_n_a_vocab</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>验证集正样本形容词词云:</li>
+</ul>
+<p><img alt="avatar" src="img/valid_n_wc.png" /></p>
+<ul>
+<li>验证集负样本形容词词云:</li>
+</ul>
+<p><img alt="avatar" src="img/valid_p_wc.png" /></p>
+<ul>
+<li>分析:
+    * 根据高频形容词词云显示, 我们可以对当前语料质量进行简单评估, 同时对违反语料标签含义的词汇进行人工审查和修正, 来保证绝大多数语料符合训练标准. 上图中的正样本大多数是褒义词, 而负样本大多数是贬义词, 基本符合要求, 但是负样本词云中也存在"便利"这样的褒义词, 因此可以人工进行审查.</li>
+</ul>
+<h2 id="9">9 小结<a class="headerlink" href="#9" title="Permanent link">&para;</a></h2>
+<ul>
+<li>学习了文本数据分析的作用:
+    * 文本数据分析能够有效帮助我们理解数据语料, 快速检查出语料可能存在的问题, 并指导之后模型训练过程中一些超参数的选择.  </li>
+</ul>
+<ul>
+<li>学习了常用的几种文本数据分析方法:
+    * 标签数量分布
+    * 句子长度分布
+    * 词频统计与关键词词云</li>
+</ul>
+<ul>
+<li>学习了基于真实的中文酒店评论语料进行几种文本数据分析方法.
+    * 获得训练集和验证集的标签数量分布
+    * 获取训练集和验证集的句子长度分布
+    * 获取训练集和验证集的正负样本长度散点分布
+    * 获得训练集与验证集不同词汇总数统计
+    * 获得训练集上正负的样本的高频形容词词云</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="3%20%E6%96%87%E6%9C%AC%E5%BC%A0%E9%87%8F%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 3 文本张量表示方法" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              3 文本张量表示方法
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="5%20%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 5 文本特征处理" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              5 文本特征处理
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

@@ -1,0 +1,1589 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>3 输入部分实现 - 自然语言处理基础V6.5</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="自然语言处理基础V6.5" class="md-header__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            自然语言处理基础V6.5
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              3 输入部分实现
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="自然语言处理基础V6.5" class="md-nav__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    自然语言处理基础V6.5
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章 自然语言处理入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章 自然语言处理入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章 自然语言处理入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_mkdocs_NLP/1_%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8.html" class="md-nav__link">
+        1 自然语言处理入门
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章 文本预处理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章 文本预处理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章 文本预处理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/1%20%E8%AE%A4%E8%AF%86%E6%96%87%E6%9C%AC%E9%A2%84%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        1 认识文本预处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/2%20%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        2 文本处理的基本方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/3%20%E6%96%87%E6%9C%AC%E5%BC%A0%E9%87%8F%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        3 文本张量表示方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/4%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90.html" class="md-nav__link">
+        4 文本数据分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/5%20%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        5 文本特征处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/6%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA.html" class="md-nav__link">
+        6 文本数据增强
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/7%20jieba%E8%AF%8D%E6%80%A7%E5%AF%B9%E7%85%A7%E8%A1%A8.html" class="md-nav__link">
+        7 jieba词性对照表
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章 RNN及其变体
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章 RNN及其变体" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章 RNN及其变体
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/1%20%E8%AE%A4%E8%AF%86RNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        1 认识RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/2%20%E4%BC%A0%E7%BB%9FRNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        2 传统RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/3%20LSTM%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        3 LSTM模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/4%20GRU%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        4 GRU模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/5%20RNN%E6%A1%88%E4%BE%8B-%E4%BA%BA%E5%90%8D%E5%88%86%E7%B1%BB%E5%99%A8.html" class="md-nav__link">
+        5 RNN案例 人名分类器
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/6%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D1.html" class="md-nav__link">
+        6 注意力机制介绍1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/7%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D2.html" class="md-nav__link">
+        7 注意力机制介绍2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/8%20RNN%E6%A1%88%E4%BE%8B-seq2seq%E8%8B%B1%E8%AF%91%E6%B3%95.html" class="md-nav__link">
+        8 RNN案例 seq2seq英译法
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章 Transformer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章 Transformer" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章 Transformer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="1%20Transformer%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 Transformer背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="2%20%E8%AE%A4%E8%AF%86Transformer%E6%9E%B6%E6%9E%84.html" class="md-nav__link">
+        2 认识Transformer架构
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          3 输入部分实现
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="3%20%E8%BE%93%E5%85%A5%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link md-nav__link--active">
+        3 输入部分实现
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 输入部分介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 文本嵌入层的作用
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 位置编码器的作用
+  </a>
+  
+    <nav class="md-nav" aria-label="3 位置编码器的作用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 位置编码器的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 绘制词汇向量中特征的分布曲线
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        4 编码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="5%20%E8%A7%A3%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        5 解码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="6%20%E8%BE%93%E5%87%BA%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        6 输出部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="7%20%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA.html" class="md-nav__link">
+        7 模型构建
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章 迁移学习
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章 迁移学习" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章 迁移学习
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/1%20fasttext%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 fasttext工具介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/2%20fasttext%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB.html" class="md-nav__link">
+        2 fasttext文本分类
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/3%20%E8%AE%AD%E7%BB%83%E8%AF%8D%E5%90%91%E9%87%8F.html" class="md-nav__link">
+        3 训练词向量
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/4%20%E8%AF%8D%E5%90%91%E9%87%8F%E8%BF%81%E7%A7%BB.html" class="md-nav__link">
+        4 词向量迁移
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/5%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5.html" class="md-nav__link">
+        5 迁移学习概念
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/6%20NLP%E4%B8%AD%E7%9A%84%E5%B8%B8%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        6 NLP中的常用预训练模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/7%20Transformers%E5%BA%93%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        7 Transformers库使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/8%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5.html" class="md-nav__link">
+        8 迁移学习实践
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/9%20NLP%E4%B8%AD%E7%9A%84%E6%A0%87%E5%87%86%E6%95%B0%E6%8D%AE%E9%9B%86%28%E6%8B%93%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        9 NLP中的标准数据集(拓展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章 Bert系列模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章 Bert系列模型" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章 Bert系列模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/1%20BERT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 BERT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/2%20BERT%E6%A8%A1%E5%9E%8B%E7%89%B9%E7%82%B9.html" class="md-nav__link">
+        2 BERT模型特点
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/3%20BERT%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        3 BERT系列模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/4%20ELMo%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        4 ELMo模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/5%20GPT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        5 GPT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/6%20BERT%20GPT%20ELMo%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%B9%E6%AF%94.html" class="md-nav__link">
+        6 BERT GPT ELMo模型的对比
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          第七章 Transformer精选问答(拓展资料)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第七章 Transformer精选问答(拓展资料)" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          第七章 Transformer精选问答(拓展资料)
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/1%20Transformer%20%E5%90%84%E5%AD%90%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8.html" class="md-nav__link">
+        1 Transformer 各子模块作用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/2%20Transformer%20Decoder%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        2 Transformer Decoder模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/3%20Self-attention%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        3 Self attention机制详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/4%20Multi-head%20Attention%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        4 Multi head Attention详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/5%20Transformer%E4%BC%98%E5%8A%BF.html" class="md-nav__link">
+        5 Transformer优势
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 输入部分介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 文本嵌入层的作用
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 位置编码器的作用
+  </a>
+  
+    <nav class="md-nav" aria-label="3 位置编码器的作用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 位置编码器的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 绘制词汇向量中特征的分布曲线
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>3 输入部分实现</h1>
+
+<h3 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>了解文本嵌入层和位置编码的作用.</li>
+<li>掌握文本嵌入层和位置编码的实现过程.</li>
+</ul>
+<h2 id="1">1 输入部分介绍<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>输入部分包含:</p>
+<ul>
+<li>源文本嵌入层及其位置编码器</li>
+<li>目标文本嵌入层及其位置编码器</li>
+</ul>
+<p><center><img src="./img/5.png" height="auto" width="auto"/></center></p>
+<h2 id="2">2 文本嵌入层的作用<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>无论是源文本嵌入还是目标文本嵌入，都是为了将文本中词汇的数字表示转变为向量表示, 希望在这样的高维空间捕捉词汇间的关系.</li>
+</ul>
+<ul>
+<li>文本嵌入层的代码分析:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 导入必备的工具包</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="c1"># 预定义的网络层torch.nn, 工具开发者已经帮助我们开发好的一些常用层, </span>
+<span class="c1"># 比如，卷积层, lstm层, embedding层等, 不需要我们再重新造轮子.</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+<span class="c1"># 数学计算工具包</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="c1"># torch中变量封装函数Variable.</span>
+<span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="kn">import</span> <span class="n">Variable</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Embeddings类 实现思路分析</span>
+<span class="c1"># 1 init函数 (self, d_model, vocab)</span>
+    <span class="c1"># 设置类属性 定义词嵌入层 self.lut层</span>
+<span class="c1"># 2 forward(x)函数</span>
+    <span class="c1"># self.lut(x) * math.sqrt(self.d_model)</span>
+<span class="k">class</span> <span class="nc">Embeddings</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">vocab</span><span class="p">):</span>
+        <span class="c1"># 参数d_model 每个词汇的特征尺寸 词嵌入维度</span>
+        <span class="c1"># 参数vocab   词汇表大小</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Embeddings</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_model</span> <span class="o">=</span> <span class="n">d_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="n">vocab</span>
+
+        <span class="c1"># 定义词嵌入层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lut</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_model</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="c1"># 将x传给self.lut并与根号下self.d_model相乘作为结果返回</span>
+        <span class="c1"># x经过词嵌入后 增大x的值, 词嵌入后的embedding_vector+位置编码信息,值量纲差差不多</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lut</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_model</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>nn.Embedding演示:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">9</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">embedding</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+<span class="n">tensor</span><span class="p">([[[</span><span class="o">-</span><span class="mf">0.0251</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.6902</span><span class="p">,</span>  <span class="mf">0.7172</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.6431</span><span class="p">,</span>  <span class="mf">0.0748</span><span class="p">,</span>  <span class="mf">0.6969</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">1.4970</span><span class="p">,</span>  <span class="mf">1.3448</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9685</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.3677</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.7265</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1685</span><span class="p">]],</span>
+
+        <span class="p">[[</span> <span class="mf">1.4970</span><span class="p">,</span>  <span class="mf">1.3448</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9685</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.4362</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4004</span><span class="p">,</span>  <span class="mf">0.9400</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.6431</span><span class="p">,</span>  <span class="mf">0.0748</span><span class="p">,</span>  <span class="mf">0.6969</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.9124</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.3616</span><span class="p">,</span>  <span class="mf">1.1151</span><span class="p">]]])</span>
+
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">padding_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">embedding</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+<span class="n">tensor</span><span class="p">([[[</span> <span class="mf">0.0000</span><span class="p">,</span>  <span class="mf">0.0000</span><span class="p">,</span>  <span class="mf">0.0000</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.1535</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0309</span><span class="p">,</span>  <span class="mf">0.9315</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.0000</span><span class="p">,</span>  <span class="mf">0.0000</span><span class="p">,</span>  <span class="mf">0.0000</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.1655</span><span class="p">,</span>  <span class="mf">0.9897</span><span class="p">,</span>  <span class="mf">0.0635</span><span class="p">]]])</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用 </li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_Embeddings</span><span class="p">():</span>
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>   <span class="c1"># 词嵌入维度是512维</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="mi">1000</span>    <span class="c1"># 词表大小是1000</span>
+    <span class="c1"># 实例化词嵌入层</span>
+    <span class="n">my_embeddings</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">100</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">421</span><span class="p">,</span><span class="mi">508</span><span class="p">],[</span><span class="mi">491</span><span class="p">,</span><span class="mi">998</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">221</span><span class="p">]]))</span>
+    <span class="n">embed</span> <span class="o">=</span> <span class="n">my_embeddings</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;embed.shape&#39;</span><span class="p">,</span> <span class="n">embed</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">embed---&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">embed</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>embed.shape torch.Size([2, 4, 512]) 
+embed---&gt;
+ tensor([[[-19.0429, -44.2167,   2.6662,  ..., -21.1199, -36.5275, -15.6872],
+         [-25.4621,  25.6046, -45.5382,  ...,  43.7159,   0.9437,  -3.1733],
+         [-15.7487,   8.1787, -20.6409,  ...,  -8.7201,  -3.2585, -22.1298],
+         [ 21.5044,   2.0660,  -1.4059,  ...,  -6.3673,   3.4387, -22.4600]],
+
+        [[ 15.7010,   2.6187,  14.1192,  ..., -19.1751,  10.5954,   9.1155],
+         [-21.5745,   9.6403,  17.9778,  ...,   2.3668,  30.1526, -30.3724],
+         [-17.6655,  33.6687,  19.3059,  ..., -10.6276,  -0.8653,  10.0715],
+         [ 12.9400, -23.6355,  -2.4750,  ...,  19.1028,   6.6492, -45.1315]]],
+       grad_fn=&lt;MulBackward0&gt;)
+</code></pre></div>
+<h2 id="3">3 位置编码器的作用<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<p>因为在Transformer的编码器结构中, 并没有针对词汇位置信息的处理，因此需要在Embedding层后加入位置编码器，将词汇位置不同可能会产生不同语义的信息加入到词嵌入张量中, 以弥补位置信息的缺失.</p>
+<h3 id="31">3.1 位置编码器的代码分析<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 位置编码器类PositionalEncoding 实现思路分析</span>
+<span class="c1"># 1 init函数  (self, d_model, dropout, max_len=5000)</span>
+<span class="c1">#   super()函数 定义层self.dropout</span>
+<span class="c1">#   定义位置编码矩阵pe  定义位置列-矩阵position 定义变化矩阵div_term</span>
+<span class="c1">#   套公式div_term = torch.exp(torch.arange(0, d_model, 2) * -(math.log(10000.0)/d_model))</span>
+<span class="c1">#   位置列-矩阵 * 变化矩阵 阿达码积my_matmulres</span>
+<span class="c1">#   给pe矩阵偶数列奇数列赋值 pe[:, 0::2] pe[:, 1::2]</span>
+<span class="c1">#   pe矩阵注册到模型缓冲区 pe.unsqueeze(0)三维 self.register_buffer(&#39;pe&#39;, pe)</span>
+<span class="c1"># 2 forward(self, x) 返回self.dropout(x)</span>
+<span class="c1">#   给x数据添加位置特征信息 x = x + Variable( self.pe[:,:x.size()[1]], requires_grad=False)</span>
+
+<span class="k">class</span> <span class="nc">PositionalEncoding</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">max_len</span><span class="o">=</span><span class="mi">5000</span><span class="p">):</span>
+        <span class="c1"># 参数d_model 词嵌入维度 eg: 512个特征</span>
+        <span class="c1"># 参数max_len 单词token个数 eg: 60个单词</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PositionalEncoding</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># 定义dropout层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+
+        <span class="c1"># 思路：位置编码矩阵 + 特征矩阵 相当于给特征增加了位置信息</span>
+        <span class="c1"># 定义位置编码矩阵PE eg pe[60, 512], 位置编码矩阵和特征矩阵形状是一样的</span>
+        <span class="n">pe</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_len</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+
+        <span class="c1"># 定义位置列-矩阵position  数据形状[max_len,1] eg: [0,1,2,3,4...60]^T</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># print(&#39;position---&gt;&#39;, position.shape, position)</span>
+
+        <span class="c1"># 定义变化矩阵div_term [1,256]</span>
+        <span class="c1"># torch.arange(start=1, end=512, 2)结果并不包含end。在start和end之间做一个等差数组 [0, 2, 4, 6 ... 510]</span>
+        <span class="n">div_term</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">10000.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">d_model</span><span class="p">))</span>
+
+        <span class="c1"># 位置列-矩阵 @ 变化矩阵 做矩阵运算 [60*1]@ [1*256] ==&gt; 60 *256</span>
+        <span class="c1"># 矩阵相乘也就是行列对应位置相乘再相加，其含义，给每一个列属性（列特征）增加位置编码信息</span>
+        <span class="n">my_matmulres</span> <span class="o">=</span> <span class="n">position</span> <span class="o">*</span> <span class="n">div_term</span>
+        <span class="c1"># print(&#39;my_matmulres---&gt;&#39;, my_matmulres.shape, my_matmulres)</span>
+
+        <span class="c1"># 给位置编码矩阵奇数列，赋值sin曲线特征</span>
+        <span class="n">pe</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">my_matmulres</span><span class="p">)</span>
+        <span class="c1"># 给位置编码矩阵偶数列，赋值cos曲线特征</span>
+        <span class="n">pe</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">my_matmulres</span><span class="p">)</span>
+
+        <span class="c1"># 形状变化 [60,512]--&gt;[1,60,512]</span>
+        <span class="n">pe</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># 把pe位置编码矩阵 注册成模型的持久缓冲区buffer; 模型保存再加载时，可以根模型参数一样，一同被加载</span>
+        <span class="c1"># 什么是buffer: 对模型效果有帮助的，但是却不是模型结构中超参数或者参数，不参与模型训练</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;pe&#39;</span><span class="p">,</span> <span class="n">pe</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="c1"># 注意：输入的x形状2*4*512  pe是1*60*512 形状 如何进行相加</span>
+        <span class="c1"># 只需按照x的单词个数 给特征增加位置信息</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">Variable</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">pe</span><span class="p">[:,:</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>nn.Dropout演示</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">m</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">output</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">output</span>
+<span class="n">Variable</span> <span class="n">containing</span><span class="p">:</span>
+ <span class="mf">0.0000</span> <span class="o">-</span><span class="mf">0.5856</span> <span class="o">-</span><span class="mf">1.4094</span>  <span class="mf">0.0000</span> <span class="o">-</span><span class="mf">1.0290</span>
+ <span class="mf">2.0591</span> <span class="o">-</span><span class="mf">1.3400</span> <span class="o">-</span><span class="mf">1.7247</span> <span class="o">-</span><span class="mf">0.9885</span>  <span class="mf">0.1286</span>
+ <span class="mf">0.5099</span>  <span class="mf">1.3715</span>  <span class="mf">0.0000</span>  <span class="mf">2.2079</span> <span class="o">-</span><span class="mf">0.5497</span>
+<span class="o">-</span><span class="mf">0.0000</span> <span class="o">-</span><span class="mf">0.7839</span> <span class="o">-</span><span class="mf">1.2434</span> <span class="o">-</span><span class="mf">0.1222</span>  <span class="mf">1.2815</span>
+<span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span> <span class="n">of</span> <span class="n">size</span> <span class="mi">4</span><span class="n">x5</span><span class="p">]</span>
+</code></pre></div>
+<ul>
+<li>torch.unsqueeze演示</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">tensor</span><span class="p">([[</span> <span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span>  <span class="mi">3</span><span class="p">,</span>  <span class="mi">4</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">tensor</span><span class="p">([[</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mi">3</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mi">4</span><span class="p">]])</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_PositionalEncoding</span><span class="p">():</span>
+
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>  <span class="c1"># 词嵌入维度是512维</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># 词表大小是1000</span>
+
+    <span class="c1"># 1 实例化词嵌入层</span>
+    <span class="n">my_embeddings</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+
+    <span class="c1"># 2 让数据经过词嵌入层 [2,4] ---&gt;[2,4,512]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">421</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="p">[</span><span class="mi">491</span><span class="p">,</span> <span class="mi">998</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">221</span><span class="p">]]))</span>
+    <span class="n">embed</span> <span class="o">=</span> <span class="n">my_embeddings</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="c1"># print(&#39;embed---&gt;&#39;, embed.shape)</span>
+
+    <span class="c1"># 3 创建pe位置矩阵 生成位置特征数据[1,60,512]</span>
+    <span class="n">my_pe</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">d_model</span><span class="o">=</span><span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">max_len</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+
+    <span class="c1"># 4 给词嵌入数据embed 添加位置特征 [2,4,512] ---&gt; [2,4,512]</span>
+    <span class="n">pe_result</span> <span class="o">=</span> <span class="n">my_pe</span><span class="p">(</span><span class="n">embed</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;pe_result.shape---&gt;&#39;</span><span class="p">,</span> <span class="n">pe_result</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;pe_result---&gt;&#39;</span><span class="p">,</span> <span class="n">pe_result</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">pe_result</span><span class="o">.</span><span class="n">shape</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">512</span><span class="p">])</span>
+<span class="n">pe_result</span><span class="o">---&gt;</span> <span class="n">tensor</span><span class="p">([[[</span> <span class="o">-</span><span class="mf">6.3490</span><span class="p">,</span> <span class="o">-</span><span class="mf">19.3785</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.8700</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">23.4560</span><span class="p">,</span> <span class="o">-</span><span class="mf">31.7405</span><span class="p">,</span>   <span class="mf">9.0657</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">27.7453</span><span class="p">,</span>  <span class="mf">19.5398</span><span class="p">,</span>  <span class="mf">62.4924</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.7443</span><span class="p">,</span>  <span class="mf">12.3955</span><span class="p">,</span> <span class="o">-</span><span class="mf">29.1615</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">80.8307</span><span class="p">,</span>   <span class="mf">4.9565</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.7523</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>   <span class="mf">8.2715</span><span class="p">,</span>  <span class="mf">26.7639</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.9124</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">13.3252</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.8653</span><span class="p">,</span>   <span class="mf">0.0000</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.4563</span><span class="p">,</span>  <span class="mf">17.7678</span><span class="p">,</span>   <span class="mf">9.6917</span><span class="p">]],</span>
+
+        <span class="p">[[</span>  <span class="mf">5.2631</span><span class="p">,</span>  <span class="mf">22.0867</span><span class="p">,</span>  <span class="mf">15.3600</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">80.5963</span><span class="p">,</span>   <span class="mf">2.4491</span><span class="p">,</span> <span class="o">-</span><span class="mf">36.0901</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">19.0809</span><span class="p">,</span>  <span class="mf">67.3568</span><span class="p">,</span>  <span class="mf">10.3016</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.6103</span><span class="p">,</span> <span class="o">-</span><span class="mf">14.2998</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.2010</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">31.1153</span><span class="p">,</span>  <span class="mf">44.8199</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.9740</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">39.6247</span><span class="p">,</span>  <span class="mf">33.6903</span><span class="p">,</span>  <span class="mf">18.5471</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">13.7074</span><span class="p">,</span>  <span class="mf">26.4221</span><span class="p">,</span> <span class="o">-</span><span class="mf">27.3353</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">24.1987</span><span class="p">,</span>  <span class="mf">29.1897</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.5858</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">MulBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="32">3.2 绘制词汇向量中特征的分布曲线<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># 绘制PE位置特征sin-cos曲线</span>
+<span class="k">def</span> <span class="nf">dm_draw_PE_feature</span><span class="p">():</span>
+
+    <span class="c1"># 1 创建pe位置矩阵[1,5000,20]，每一列数值信息：奇数列sin曲线 偶数列cos曲线</span>
+    <span class="n">my_pe</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">d_model</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_positionalencoding.shape---&gt;&#39;</span><span class="p">,</span> <span class="n">my_pe</span><span class="o">.</span><span class="n">pe</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="c1"># 2 创建数据x[1,100,20], 给数据x添加位置特征  [1,100,20] ---&gt; [1,100,20]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">my_pe</span><span class="p">(</span><span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">20</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y---&gt;&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="c1"># 3 画图 绘制pe位置矩阵的第4-7列特征曲线</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+    <span class="c1"># 第0个句子的，所有单词的，绘制4到8维度的特征 看看sin-cos曲线变化</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;dim </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">]])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># print(&#39;直接查看pe数据形状---&gt;&#39;, my_pe.pe.shape) # [1,5000,20]</span>
+    <span class="c1"># 直接绘制pe数据也是ok</span>
+    <span class="c1"># plt.figure(figsize=(20, 20))</span>
+    <span class="c1"># # 第0个句子的，所有单词的，绘制4到8维度的特征 看看sin-cos曲线变化</span>
+    <span class="c1"># plt.plot(np.arange(100), my_pe.pe[0,0:100, 4:8])</span>
+    <span class="c1"># plt.legend([&quot;dim %d&quot; %p for p in [4,5,6,7]])</span>
+    <span class="c1"># plt.show()</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<p><center><img src="./img/11.png" height="auto" width="auto"/></center></p>
+<blockquote>
+<ul>
+<li>效果分析</li>
+<li>每条颜色的曲线代表某一个词汇中的特征在不同位置的含义</li>
+<li>保证同一词汇随着所在位置不同它对应位置嵌入向量会发生变化</li>
+<li>正弦波和余弦波的值域范围都是1到-1这又很好的控制了嵌入数值的大小, 有助于梯度的快速计算</li>
+</ul>
+</blockquote>
+<h2 id="4">4 小结<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<ul>
+<li>学习了文本嵌入层的作用:<p>* 无论是源文本嵌入还是目标文本嵌入，都是为了将文本中词汇的数字表示转变为向量表示, 希望在这样的高维空间捕捉词汇间的关系.</p>
+</li>
+</ul>
+<ul>
+<li>学习并实现了文本嵌入层的类: Embeddings<p>* 初始化函数以d_model, 词嵌入维度, 和vocab, 词汇总数为参数, 内部主要使用了nn中的预定层Embedding进行词嵌入.
+  * 在forward函数中, 将输入x传入到Embedding的实例化对象中, 然后乘以一个根号下d_model进行缩放, 控制数值大小.
+  * 它的输出是文本嵌入后的结果.</p>
+</li>
+</ul>
+<ul>
+<li>学习了位置编码器的作用:<p>* 因为在Transformer的编码器结构中, 并没有针对词汇位置信息的处理，因此需要在Embedding层后加入位置编码器，将词汇位置不同可能会产生不同语义的信息加入到词嵌入张量中, 以弥补位置信息的缺失.</p>
+</li>
+</ul>
+<ul>
+<li>学习并实现了位置编码器的类: PositionalEncoding<p>* 初始化函数以d_model, dropout, max_len为参数, 分别代表d_model: 词嵌入维度, dropout: 置0比率, max_len: 每个句子的最大长度.
+  * forward函数中的输入参数为x, 是Embedding层的输出.
+  * 最终输出一个加入了位置编码信息的词嵌入张量.</p>
+</li>
+</ul>
+<ul>
+<li>实现了绘制词汇向量中特征的分布曲线:<p>* 保证同一词汇随着所在位置不同它对应位置嵌入向量会发生变化.
+  * 正弦波和余弦波的值域范围都是1到-1, 这又很好的控制了嵌入数值的大小, 有助于梯度的快速计算.</p>
+</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="2%20%E8%AE%A4%E8%AF%86Transformer%E6%9E%B6%E6%9E%84.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 2 认识Transformer架构" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              2 认识Transformer架构
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 4 编码器部分实现" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              4 编码器部分实现
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

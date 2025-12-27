@@ -1,0 +1,1598 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>5 解码器部分实现 - 自然语言处理基础V6.5</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="自然语言处理基础V6.5" class="md-header__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            自然语言处理基础V6.5
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              5 解码器部分实现
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="自然语言处理基础V6.5" class="md-nav__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    自然语言处理基础V6.5
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章 自然语言处理入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章 自然语言处理入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章 自然语言处理入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_mkdocs_NLP/1_%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8.html" class="md-nav__link">
+        1 自然语言处理入门
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章 文本预处理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章 文本预处理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章 文本预处理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/1%20%E8%AE%A4%E8%AF%86%E6%96%87%E6%9C%AC%E9%A2%84%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        1 认识文本预处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/2%20%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        2 文本处理的基本方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/3%20%E6%96%87%E6%9C%AC%E5%BC%A0%E9%87%8F%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        3 文本张量表示方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/4%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90.html" class="md-nav__link">
+        4 文本数据分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/5%20%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        5 文本特征处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/6%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA.html" class="md-nav__link">
+        6 文本数据增强
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/7%20jieba%E8%AF%8D%E6%80%A7%E5%AF%B9%E7%85%A7%E8%A1%A8.html" class="md-nav__link">
+        7 jieba词性对照表
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章 RNN及其变体
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章 RNN及其变体" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章 RNN及其变体
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/1%20%E8%AE%A4%E8%AF%86RNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        1 认识RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/2%20%E4%BC%A0%E7%BB%9FRNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        2 传统RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/3%20LSTM%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        3 LSTM模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/4%20GRU%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        4 GRU模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/5%20RNN%E6%A1%88%E4%BE%8B-%E4%BA%BA%E5%90%8D%E5%88%86%E7%B1%BB%E5%99%A8.html" class="md-nav__link">
+        5 RNN案例 人名分类器
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/6%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D1.html" class="md-nav__link">
+        6 注意力机制介绍1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/7%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D2.html" class="md-nav__link">
+        7 注意力机制介绍2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/8%20RNN%E6%A1%88%E4%BE%8B-seq2seq%E8%8B%B1%E8%AF%91%E6%B3%95.html" class="md-nav__link">
+        8 RNN案例 seq2seq英译法
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章 Transformer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章 Transformer" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章 Transformer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="1%20Transformer%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 Transformer背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="2%20%E8%AE%A4%E8%AF%86Transformer%E6%9E%B6%E6%9E%84.html" class="md-nav__link">
+        2 认识Transformer架构
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3%20%E8%BE%93%E5%85%A5%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        3 输入部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        4 编码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          5 解码器部分实现
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="5%20%E8%A7%A3%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link md-nav__link--active">
+        5 解码器部分实现
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 解码器介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 解码器层
+  </a>
+  
+    <nav class="md-nav" aria-label="2 解码器层">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    2.1 解码器层的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    2.2 解码器层的代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23" class="md-nav__link">
+    2.3 解码器层总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 解码器
+  </a>
+  
+    <nav class="md-nav" aria-label="3 解码器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 解码器的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 解码器的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 解码器总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="6%20%E8%BE%93%E5%87%BA%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        6 输出部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="7%20%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA.html" class="md-nav__link">
+        7 模型构建
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章 迁移学习
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章 迁移学习" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章 迁移学习
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/1%20fasttext%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 fasttext工具介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/2%20fasttext%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB.html" class="md-nav__link">
+        2 fasttext文本分类
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/3%20%E8%AE%AD%E7%BB%83%E8%AF%8D%E5%90%91%E9%87%8F.html" class="md-nav__link">
+        3 训练词向量
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/4%20%E8%AF%8D%E5%90%91%E9%87%8F%E8%BF%81%E7%A7%BB.html" class="md-nav__link">
+        4 词向量迁移
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/5%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5.html" class="md-nav__link">
+        5 迁移学习概念
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/6%20NLP%E4%B8%AD%E7%9A%84%E5%B8%B8%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        6 NLP中的常用预训练模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/7%20Transformers%E5%BA%93%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        7 Transformers库使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/8%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5.html" class="md-nav__link">
+        8 迁移学习实践
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/9%20NLP%E4%B8%AD%E7%9A%84%E6%A0%87%E5%87%86%E6%95%B0%E6%8D%AE%E9%9B%86%28%E6%8B%93%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        9 NLP中的标准数据集(拓展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章 Bert系列模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章 Bert系列模型" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章 Bert系列模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/1%20BERT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 BERT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/2%20BERT%E6%A8%A1%E5%9E%8B%E7%89%B9%E7%82%B9.html" class="md-nav__link">
+        2 BERT模型特点
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/3%20BERT%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        3 BERT系列模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/4%20ELMo%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        4 ELMo模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/5%20GPT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        5 GPT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/6%20BERT%20GPT%20ELMo%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%B9%E6%AF%94.html" class="md-nav__link">
+        6 BERT GPT ELMo模型的对比
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          第七章 Transformer精选问答(拓展资料)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第七章 Transformer精选问答(拓展资料)" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          第七章 Transformer精选问答(拓展资料)
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/1%20Transformer%20%E5%90%84%E5%AD%90%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8.html" class="md-nav__link">
+        1 Transformer 各子模块作用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/2%20Transformer%20Decoder%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        2 Transformer Decoder模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/3%20Self-attention%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        3 Self attention机制详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/4%20Multi-head%20Attention%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        4 Multi head Attention详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/5%20Transformer%E4%BC%98%E5%8A%BF.html" class="md-nav__link">
+        5 Transformer优势
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 解码器介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 解码器层
+  </a>
+  
+    <nav class="md-nav" aria-label="2 解码器层">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    2.1 解码器层的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    2.2 解码器层的代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23" class="md-nav__link">
+    2.3 解码器层总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 解码器
+  </a>
+  
+    <nav class="md-nav" aria-label="3 解码器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 解码器的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 解码器的代码分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 解码器总结
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>5 解码器部分实现</h1>
+
+<h3 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>了解解码器中各个组成部分的作用.</li>
+<li>掌握解码器中各个组成部分的实现过程.</li>
+</ul>
+<h2 id="1">1 解码器介绍<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>解码器部分:</p>
+<ul>
+<li>由N个解码器层堆叠而成</li>
+<li>每个解码器层由三个子层连接结构组成</li>
+<li>第一个子层连接结构包括一个多头自注意力子层和规范化层以及一个残差连接</li>
+<li>第二个子层连接结构包括一个多头注意力子层和规范化层以及一个残差连接</li>
+<li>第三个子层连接结构包括一个前馈全连接子层和规范化层以及一个残差连接</li>
+</ul>
+<p><center><img src="./img/8.png" height="auto" width="auto"/></center></p>
+<ul>
+<li>说明:<ul>
+<li>解码器层中的各个部分，如，多头注意力机制，规范化层，前馈全连接网络，子层连接结构都与编码器中的实现相同. 因此这里可以直接拿来构建解码器层.</li>
+</ul>
+</li>
+</ul>
+<h2 id="2">2 解码器层<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<h3 id="21">2.1 解码器层的作用<a class="headerlink" href="#21" title="Permanent link">&para;</a></h3>
+<ul>
+<li>作为解码器的组成单元, 每个解码器层根据给定的输入向目标方向进行特征提取操作，即解码过程.</li>
+</ul>
+<h3 id="22">2.2 解码器层的代码实现<a class="headerlink" href="#22" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 解码器层类 DecoderLayer 实现思路分析</span>
+<span class="c1"># init函数 (self, size, self_attn, src_attn, feed_forward, dropout)</span>
+    <span class="c1"># 词嵌入维度尺寸大小size 自注意力机制层对象self_attn 一般注意力机制层对象src_attn 前馈全连接层对象feed_forward</span>
+    <span class="c1"># clones3子层连接结构 self.sublayer = clones(SublayerConnection(size,dropout),3)</span>
+<span class="c1"># forward函数 (self, x, memory, source_mask, target_mask)</span>
+    <span class="c1"># 数据经过子层连接结构1 self.sublayer[0](x, lambda x:self.self_attn(x, x, x, target_mask))</span>
+    <span class="c1"># 数据经过子层连接结构2 self.sublayer[1](x, lambda x:self.src_attn(x, m, m, source_mask))</span>
+    <span class="c1"># 数据经过子层连接结构3 self.sublayer[2](x, self.feed_forward)</span>
+
+<span class="k">class</span> <span class="nc">DecoderLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">self_attn</span><span class="p">,</span> <span class="n">src_attn</span><span class="p">,</span> <span class="n">feed_forward</span><span class="p">,</span> <span class="n">dropout</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DecoderLayer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 词嵌入维度尺寸大小</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="c1"># 自注意力机制层对象 q=k=v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">self_attn</span> <span class="o">=</span> <span class="n">self_attn</span>
+        <span class="c1"># 一遍注意力机制对象 q!=k=v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">src_attn</span> <span class="o">=</span> <span class="n">src_attn</span>
+        <span class="c1"># 前馈全连接层对象</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feed_forward</span> <span class="o">=</span> <span class="n">feed_forward</span>
+        <span class="c1"># clones3子层连接结构</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sublayer</span> <span class="o">=</span> <span class="n">clones</span><span class="p">(</span><span class="n">SublayerConnection</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dropout</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">memory</span><span class="p">,</span> <span class="n">source_mask</span><span class="p">,</span> <span class="n">target_mask</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">memory</span>
+        <span class="c1"># 数据经过子层连接结构1</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sublayer</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">x</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">self_attn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">target_mask</span><span class="p">))</span>
+        <span class="c1"># 数据经过子层连接结构2</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sublayer</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">x</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">src_attn</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">source_mask</span><span class="p">))</span>
+        <span class="c1"># 数据经过子层连接结构3</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sublayer</span><span class="p">[</span><span class="mi">2</span><span class="p">](</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feed_forward</span><span class="p">)</span>
+        <span class="k">return</span>  <span class="n">x</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>函数调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_DecoderLayer</span><span class="p">():</span>
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># 词表大小是1000</span>
+    <span class="c1"># 输入x 是一个使用Variable封装的长整型张量, 形状是2 x 4</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">421</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="p">[</span><span class="mi">491</span><span class="p">,</span> <span class="mi">998</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">221</span><span class="p">]]))</span>
+
+    <span class="n">emb</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+    <span class="n">embr</span> <span class="o">=</span> <span class="n">emb</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">max_len</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># 句子最大长度</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">embr</span>  <span class="c1"># [2, 4, 512]</span>
+    <span class="n">pe</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+    <span class="n">pe_result</span> <span class="o">=</span> <span class="n">pe</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pe_result</span>  <span class="c1"># 获取位置编码器层 编码以后的结果</span>
+
+
+    <span class="c1"># 类的实例化参数与解码器层类似, 相比多出了src_attn, 但是和self_attn是同一个类.</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">d_ff</span> <span class="o">=</span> <span class="mi">64</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">self_attn</span> <span class="o">=</span> <span class="n">src_attn</span> <span class="o">=</span> <span class="n">MultiHeadedAttention</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+
+    <span class="c1"># 前馈全连接层也和之前相同</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">PositionwiseFeedForward</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pe_result</span>
+
+    <span class="c1"># 产生编码器结果 # 注意此函数返回编码以后的结果 要有返回值</span>
+    <span class="n">en_result</span> <span class="o">=</span> <span class="n">dm_test_Encoder</span><span class="p">()</span>
+    <span class="n">memory</span> <span class="o">=</span> <span class="n">en_result</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">source_mask</span> <span class="o">=</span> <span class="n">target_mask</span> <span class="o">=</span> <span class="n">mask</span>
+
+    <span class="c1"># 实例化解码器层 对象</span>
+    <span class="n">dl</span> <span class="o">=</span> <span class="n">DecoderLayer</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">self_attn</span><span class="p">,</span> <span class="n">src_attn</span><span class="p">,</span> <span class="n">ff</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+
+    <span class="c1"># 对象调用</span>
+    <span class="n">dl_result</span> <span class="o">=</span> <span class="n">dl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">memory</span><span class="p">,</span> <span class="n">source_mask</span><span class="p">,</span> <span class="n">target_mask</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">dl_result</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dl_result</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">512</span><span class="p">])</span>
+<span class="n">tensor</span><span class="p">([[[</span><span class="o">-</span><span class="mf">27.4382</span><span class="p">,</span>   <span class="mf">0.6516</span><span class="p">,</span>   <span class="mf">6.6735</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">42.2930</span><span class="p">,</span> <span class="o">-</span><span class="mf">44.9728</span><span class="p">,</span>   <span class="mf">0.1264</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">28.7835</span><span class="p">,</span>  <span class="mf">26.4919</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.5608</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>   <span class="mf">0.5652</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.9634</span><span class="p">,</span>   <span class="mf">9.7438</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">19.6998</span><span class="p">,</span>  <span class="mf">13.5164</span><span class="p">,</span>  <span class="mf">45.8216</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">23.9127</span><span class="p">,</span>  <span class="mf">22.0259</span><span class="p">,</span>  <span class="mf">34.0195</span><span class="p">],</span>
+         <span class="p">[</span> <span class="o">-</span><span class="mf">0.1647</span><span class="p">,</span>   <span class="mf">0.2331</span><span class="p">,</span> <span class="o">-</span><span class="mf">36.4173</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.0557</span><span class="p">,</span>  <span class="mf">29.4576</span><span class="p">,</span>   <span class="mf">2.5048</span><span class="p">]],</span>
+
+        <span class="p">[[</span> <span class="mf">29.1466</span><span class="p">,</span>  <span class="mf">50.7677</span><span class="p">,</span>  <span class="mf">26.4624</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">39.1015</span><span class="p">,</span> <span class="o">-</span><span class="mf">27.9200</span><span class="p">,</span>  <span class="mf">19.6819</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">10.7069</span><span class="p">,</span>  <span class="mf">28.0897</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.4107</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">35.7795</span><span class="p">,</span>   <span class="mf">9.6881</span><span class="p">,</span>   <span class="mf">0.3228</span><span class="p">],</span>
+         <span class="p">[</span> <span class="o">-</span><span class="mf">6.9027</span><span class="p">,</span> <span class="o">-</span><span class="mf">16.0590</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.8897</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>   <span class="mf">4.0253</span><span class="p">,</span>   <span class="mf">2.5961</span><span class="p">,</span>  <span class="mf">37.4659</span><span class="p">],</span>
+         <span class="p">[</span>  <span class="mf">9.8892</span><span class="p">,</span>  <span class="mf">32.7008</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.6772</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.4273</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.4676</span><span class="p">,</span>  <span class="mf">32.5692</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">AddBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="23">2.3 解码器层总结<a class="headerlink" href="#23" title="Permanent link">&para;</a></h3>
+<ul>
+<li>学习了解码器层的作用:
+    * 作为解码器的组成单元, 每个解码器层根据给定的输入向目标方向进行特征提取操作，即解码过程.</li>
+</ul>
+<ul>
+<li>学习并实现了解码器层的类: DecoderLayer
+    * 类的初始化函数的参数有5个, 分别是size，代表词嵌入的维度大小, 同时也代表解码器层的尺寸，第二个是self_attn，多头自注意力对象，也就是说这个注意力机制需要Q=K=V，第三个是src_attn，多头注意力对象，这里Q!=K=V， 第四个是前馈全连接层对象，最后就是droupout置0比率.
+    * forward函数的参数有4个，分别是来自上一层的输入x，来自编码器层的语义存储变量mermory， 以及源数据掩码张量和目标数据掩码张量.
+    * 最终输出了由编码器输入和目标数据一同作用的特征提取结果.</li>
+</ul>
+<h2 id="3">3 解码器<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<h3 id="31">3.1 解码器的作用<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<ul>
+<li>根据编码器的结果以及上一次预测的结果, 对下一次可能出现的'值'进行特征表示.</li>
+</ul>
+<h3 id="32">3.2 解码器的代码分析<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 解码器类 Decoder 实现思路分析</span>
+<span class="c1"># init函数 (self, layer, N):</span>
+    <span class="c1"># self.layers clones N个解码器层clones(layer, N)</span>
+    <span class="c1"># self.norm 定义规范化层 LayerNorm(layer.size)</span>
+<span class="c1"># forward函数 (self, x, memory, source_mask, target_mask)</span>
+    <span class="c1"># 数据以此经过各个子层  x = layer(x, memory, source_mask, target_mask)</span>
+    <span class="c1"># 数据最后经过规范化层  return self.norm(x)</span>
+    <span class="c1"># 返回处理好的数据</span>
+
+<span class="k">class</span> <span class="nc">Decoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+        <span class="c1"># 参数layer 解码器层对象</span>
+        <span class="c1"># 参数N 解码器层对象的个数</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Decoder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># clones N个解码器层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">clones</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+        <span class="c1"># 定义规范化层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">LayerNorm</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">memory</span><span class="p">,</span> <span class="n">source_mask</span><span class="p">,</span> <span class="n">target_mask</span><span class="p">):</span>
+
+        <span class="c1"># 数据以此经过各个子层</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">memory</span><span class="p">,</span> <span class="n">source_mask</span><span class="p">,</span> <span class="n">target_mask</span><span class="p">)</span>
+
+        <span class="c1"># 数据最后经过规范化层</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>函数调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 测试 解码器</span>
+<span class="k">def</span> <span class="nf">dm_test_Decoder</span><span class="p">():</span>
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># 词表大小是1000</span>
+    <span class="c1"># 输入x 是一个使用Variable封装的长整型张量, 形状是2 x 4</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">421</span><span class="p">,</span> <span class="mi">508</span><span class="p">],</span> <span class="p">[</span><span class="mi">491</span><span class="p">,</span> <span class="mi">998</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">221</span><span class="p">]]))</span>
+
+    <span class="n">emb</span> <span class="o">=</span> <span class="n">Embeddings</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+    <span class="n">embr</span> <span class="o">=</span> <span class="n">emb</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">max_len</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># 句子最大长度</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">embr</span>  <span class="c1"># [2, 4, 512]</span>
+    <span class="n">pe</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+    <span class="n">pe_result</span> <span class="o">=</span> <span class="n">pe</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pe_result</span>  <span class="c1"># 获取位置编码器层 编码以后的结果</span>
+
+
+    <span class="c1"># 分别是解码器层layer和解码器层的个数N</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">d_ff</span> <span class="o">=</span> <span class="mi">64</span>
+    <span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span>
+
+    <span class="c1"># 多头注意力对象</span>
+    <span class="n">attn</span> <span class="o">=</span> <span class="n">MultiHeadedAttention</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+
+    <span class="c1"># 前馈全连接层</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">PositionwiseFeedForward</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+
+    <span class="c1"># 解码器层</span>
+    <span class="n">layer</span> <span class="o">=</span> <span class="n">DecoderLayer</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="n">attn</span><span class="p">),</span> <span class="n">c</span><span class="p">(</span><span class="n">attn</span><span class="p">),</span> <span class="n">c</span><span class="p">(</span><span class="n">ff</span><span class="p">),</span> <span class="n">dropout</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="c1"># 输入参数与解码器层的输入参数相同</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pe_result</span>
+
+    <span class="c1"># 产生编码器结果</span>
+    <span class="n">en_result</span> <span class="o">=</span> <span class="n">demo238_test_Encoder</span><span class="p">()</span>
+    <span class="n">memory</span> <span class="o">=</span> <span class="n">en_result</span>
+
+    <span class="c1"># 掩码对象</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="c1"># sorce掩码 target掩码</span>
+    <span class="n">source_mask</span> <span class="o">=</span> <span class="n">target_mask</span> <span class="o">=</span> <span class="n">mask</span>
+
+    <span class="c1"># 创建 解码器 对象</span>
+    <span class="n">de</span> <span class="o">=</span> <span class="n">Decoder</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+    <span class="c1"># 解码器对象 解码</span>
+    <span class="n">de_result</span> <span class="o">=</span> <span class="n">de</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">memory</span><span class="p">,</span> <span class="n">source_mask</span><span class="p">,</span> <span class="n">target_mask</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">de_result</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">de_result</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出结果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">tensor</span><span class="p">([[[</span> <span class="mf">0.1853</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8858</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0393</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.4989</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.4008</span><span class="p">,</span>  <span class="mf">0.8456</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">1.0841</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0777</span><span class="p">,</span>  <span class="mf">0.0836</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5568</span><span class="p">,</span>  <span class="mf">1.4074</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0848</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.4107</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1306</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0069</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2370</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1259</span><span class="p">,</span>  <span class="mf">0.7591</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">1.2895</span><span class="p">,</span>  <span class="mf">0.2655</span><span class="p">,</span>  <span class="mf">1.1799</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2413</span><span class="p">,</span>  <span class="mf">0.9087</span><span class="p">,</span>  <span class="mf">0.4055</span><span class="p">]],</span>
+
+        <span class="p">[[</span> <span class="mf">0.3645</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3991</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2862</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7078</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1457</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0457</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.0146</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0639</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2143</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7865</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1270</span><span class="p">,</span>  <span class="mf">0.5623</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.0685</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1465</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1354</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">0.0738</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9769</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.4295</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.3168</span><span class="p">,</span>  <span class="mf">0.6305</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1549</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">1.0969</span><span class="p">,</span>  <span class="mf">1.8775</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5154</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">AddBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">512</span><span class="p">])</span>
+</code></pre></div>
+<h3 id="33">3.3 解码器总结<a class="headerlink" href="#33" title="Permanent link">&para;</a></h3>
+<ul>
+<li>学习了解码器的作用:
+    * 根据编码器的结果以及上一次预测的结果, 对下一次可能出现的'值'进行特征表示.</li>
+</ul>
+<ul>
+<li>学习并实现了解码器的类: Decoder
+    * 类的初始化函数的参数有两个，第一个就是解码器层layer，第二个是解码器层的个数N.
+    * forward函数中的参数有4个，x代表目标数据的嵌入表示，memory是编码器层的输出，src_mask, tgt_mask代表源数据和目标数据的掩码张量.
+    * 输出解码过程的最终特征表示.</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 4 编码器部分实现" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              4 编码器部分实现
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="6%20%E8%BE%93%E5%87%BA%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 6 输出部分实现" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              6 输出部分实现
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

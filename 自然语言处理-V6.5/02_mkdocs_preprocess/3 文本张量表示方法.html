@@ -1,0 +1,1956 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>3 文本张量表示方法 - 自然语言处理基础V6.5</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="自然语言处理基础V6.5" class="md-header__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            自然语言处理基础V6.5
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              3 文本张量表示方法
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="自然语言处理基础V6.5" class="md-nav__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    自然语言处理基础V6.5
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章 自然语言处理入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章 自然语言处理入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章 自然语言处理入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_mkdocs_NLP/1_%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8.html" class="md-nav__link">
+        1 自然语言处理入门
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章 文本预处理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章 文本预处理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章 文本预处理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="1%20%E8%AE%A4%E8%AF%86%E6%96%87%E6%9C%AC%E9%A2%84%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        1 认识文本预处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="2%20%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        2 文本处理的基本方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          3 文本张量表示方法
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="3%20%E6%96%87%E6%9C%AC%E5%BC%A0%E9%87%8F%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.html" class="md-nav__link md-nav__link--active">
+        3 文本张量表示方法
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 文本张量表示
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-one-hot" class="md-nav__link">
+    2 one-hot词向量表示
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-word2vec" class="md-nav__link">
+    3 word2vec模型
+  </a>
+  
+    <nav class="md-nav" aria-label="3 word2vec模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 模型介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-word2vec" class="md-nav__link">
+    3.2 word2vec的训练和使用
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2 word2vec的训练和使用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    1 获取训练数据
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 词向量的训练保存加载
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 查看单词对应的词向量
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 模型效果检验
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    5 模型超参数设定
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-word-embedding" class="md-nav__link">
+    4 词嵌入word embedding介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5_1" class="md-nav__link">
+    5 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="4%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90.html" class="md-nav__link">
+        4 文本数据分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="5%20%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        5 文本特征处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="6%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA.html" class="md-nav__link">
+        6 文本数据增强
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="7%20jieba%E8%AF%8D%E6%80%A7%E5%AF%B9%E7%85%A7%E8%A1%A8.html" class="md-nav__link">
+        7 jieba词性对照表
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章 RNN及其变体
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章 RNN及其变体" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章 RNN及其变体
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/1%20%E8%AE%A4%E8%AF%86RNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        1 认识RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/2%20%E4%BC%A0%E7%BB%9FRNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        2 传统RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/3%20LSTM%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        3 LSTM模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/4%20GRU%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        4 GRU模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/5%20RNN%E6%A1%88%E4%BE%8B-%E4%BA%BA%E5%90%8D%E5%88%86%E7%B1%BB%E5%99%A8.html" class="md-nav__link">
+        5 RNN案例 人名分类器
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/6%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D1.html" class="md-nav__link">
+        6 注意力机制介绍1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/7%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D2.html" class="md-nav__link">
+        7 注意力机制介绍2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/8%20RNN%E6%A1%88%E4%BE%8B-seq2seq%E8%8B%B1%E8%AF%91%E6%B3%95.html" class="md-nav__link">
+        8 RNN案例 seq2seq英译法
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章 Transformer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章 Transformer" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章 Transformer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/1%20Transformer%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 Transformer背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/2%20%E8%AE%A4%E8%AF%86Transformer%E6%9E%B6%E6%9E%84.html" class="md-nav__link">
+        2 认识Transformer架构
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/3%20%E8%BE%93%E5%85%A5%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        3 输入部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        4 编码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/5%20%E8%A7%A3%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        5 解码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/6%20%E8%BE%93%E5%87%BA%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        6 输出部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/7%20%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA.html" class="md-nav__link">
+        7 模型构建
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章 迁移学习
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章 迁移学习" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章 迁移学习
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/1%20fasttext%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 fasttext工具介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/2%20fasttext%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB.html" class="md-nav__link">
+        2 fasttext文本分类
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/3%20%E8%AE%AD%E7%BB%83%E8%AF%8D%E5%90%91%E9%87%8F.html" class="md-nav__link">
+        3 训练词向量
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/4%20%E8%AF%8D%E5%90%91%E9%87%8F%E8%BF%81%E7%A7%BB.html" class="md-nav__link">
+        4 词向量迁移
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/5%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5.html" class="md-nav__link">
+        5 迁移学习概念
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/6%20NLP%E4%B8%AD%E7%9A%84%E5%B8%B8%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        6 NLP中的常用预训练模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/7%20Transformers%E5%BA%93%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        7 Transformers库使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/8%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5.html" class="md-nav__link">
+        8 迁移学习实践
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/9%20NLP%E4%B8%AD%E7%9A%84%E6%A0%87%E5%87%86%E6%95%B0%E6%8D%AE%E9%9B%86%28%E6%8B%93%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        9 NLP中的标准数据集(拓展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章 Bert系列模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章 Bert系列模型" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章 Bert系列模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/1%20BERT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 BERT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/2%20BERT%E6%A8%A1%E5%9E%8B%E7%89%B9%E7%82%B9.html" class="md-nav__link">
+        2 BERT模型特点
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/3%20BERT%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        3 BERT系列模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/4%20ELMo%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        4 ELMo模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/5%20GPT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        5 GPT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/6%20BERT%20GPT%20ELMo%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%B9%E6%AF%94.html" class="md-nav__link">
+        6 BERT GPT ELMo模型的对比
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          第七章 Transformer精选问答(拓展资料)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第七章 Transformer精选问答(拓展资料)" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          第七章 Transformer精选问答(拓展资料)
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/1%20Transformer%20%E5%90%84%E5%AD%90%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8.html" class="md-nav__link">
+        1 Transformer 各子模块作用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/2%20Transformer%20Decoder%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        2 Transformer Decoder模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/3%20Self-attention%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        3 Self attention机制详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/4%20Multi-head%20Attention%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        4 Multi head Attention详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/5%20Transformer%E4%BC%98%E5%8A%BF.html" class="md-nav__link">
+        5 Transformer优势
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 文本张量表示
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-one-hot" class="md-nav__link">
+    2 one-hot词向量表示
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-word2vec" class="md-nav__link">
+    3 word2vec模型
+  </a>
+  
+    <nav class="md-nav" aria-label="3 word2vec模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 模型介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-word2vec" class="md-nav__link">
+    3.2 word2vec的训练和使用
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2 word2vec的训练和使用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    1 获取训练数据
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 词向量的训练保存加载
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 查看单词对应的词向量
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 模型效果检验
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    5 模型超参数设定
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-word-embedding" class="md-nav__link">
+    4 词嵌入word embedding介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5_1" class="md-nav__link">
+    5 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>3 文本张量表示方法</h1>
+
+<h3 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>了解什么是文本张量表示及其作用.</li>
+<li>掌握文本张量表示的几种方法及其实现.</li>
+</ul>
+<h2 id="1">1 文本张量表示<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>将一段文本使用张量进行表示，其中一般将词汇表示成向量，称作词向量，再由各个词向量按顺序组成矩阵形成文本表示.</li>
+</ul>
+<ul>
+<li>举个例子:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>[&quot;人生&quot;, &quot;该&quot;, &quot;如何&quot;, &quot;起头&quot;]
+
+==&gt;
+
+# 每个词对应矩阵中的一个向量
+[[1.32, 4,32, 0,32, 5.2],
+ [3.1, 5.43, 0.34, 3.2],
+ [3.21, 5.32, 2, 4.32],
+ [2.54, 7.32, 5.12, 9.54]]
+</code></pre></div>
+<ul>
+<li>文本张量表示的作用:
+    * 将文本表示成张量（矩阵）形式，能够使语言文本可以作为计算机处理程序的输入，进行接下来一系列的解析工作.</li>
+</ul>
+<ul>
+<li>文本张量表示的方法:
+    * one-hot编码
+    * Word2vec<br />
+    * Word Embedding</li>
+</ul>
+<h2 id="2-one-hot">2 one-hot词向量表示<a class="headerlink" href="#2-one-hot" title="Permanent link">&para;</a></h2>
+<ul>
+<li>又称独热编码，将每个词表示成具有n个元素的向量，这个词向量中只有一个元素是1，其他元素都是0，不同词汇元素为0的位置不同，其中n的大小是整个语料中不同词汇的总数.</li>
+</ul>
+<ul>
+<li>举个例子:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>[&quot;改变&quot;, &quot;要&quot;, &quot;如何&quot;, &quot;起手&quot;]`
+==&gt;
+
+[[1, 0, 0, 0],
+ [0, 1, 0, 0],
+ [0, 0, 1, 0],
+ [0, 0, 0, 1]]
+</code></pre></div>
+<ul>
+<li>onehot编码实现:</li>
+</ul>
+<blockquote>
+<ul>
+<li>进行onehot编码:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">jieba</span>
+<span class="c1"># 导入keras中的词汇映射器Tokenizer</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.preprocessing.text</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+<span class="c1"># 导入用于对象保存与加载的joblib</span>
+<span class="kn">from</span> <span class="nn">sklearn.externals</span> <span class="kn">import</span> <span class="n">joblib</span>
+
+<span class="c1"># 思路分析 生成onehot</span>
+<span class="c1"># 1 准备语料 vocabs</span>
+<span class="c1"># 2 实例化词汇映射器Tokenizer, 使用映射器拟合现有文本数据 (内部生成 index_word word_index)</span>
+<span class="c1"># 2-1 注意idx序号-1</span>
+<span class="c1"># 3 查询单词idx 赋值 zero_list，生成onehot</span>
+<span class="c1"># 4 使用joblib工具保存映射器 joblib.dump()</span>
+<span class="k">def</span> <span class="nf">dm_onehot_gen</span><span class="p">():</span>
+
+    <span class="c1"># 1 准备语料 vocabs</span>
+    <span class="n">vocabs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;周杰伦&quot;</span><span class="p">,</span> <span class="s2">&quot;陈奕迅&quot;</span><span class="p">,</span> <span class="s2">&quot;王力宏&quot;</span><span class="p">,</span> <span class="s2">&quot;李宗盛&quot;</span><span class="p">,</span> <span class="s2">&quot;吴亦凡&quot;</span><span class="p">,</span> <span class="s2">&quot;鹿晗&quot;</span><span class="p">}</span>
+
+    <span class="c1"># 2 实例化词汇映射器Tokenizer, 使用映射器拟合现有文本数据 (内部生成 index_word word_index)</span>
+    <span class="c1"># 2-1 注意idx序号-1</span>
+    <span class="n">mytokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
+    <span class="n">mytokenizer</span><span class="o">.</span><span class="n">fit_on_texts</span><span class="p">(</span><span class="n">vocabs</span><span class="p">)</span>
+
+    <span class="c1"># 3 查询单词idx 赋值 zero_list，生成onehot</span>
+    <span class="k">for</span> <span class="n">vocab</span> <span class="ow">in</span> <span class="n">vocabs</span><span class="p">:</span>
+        <span class="n">zero_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">vocabs</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">mytokenizer</span><span class="o">.</span><span class="n">word_index</span><span class="p">[</span><span class="n">vocab</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">zero_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="s1">&#39;的onehot编码是&#39;</span><span class="p">,</span> <span class="n">zero_list</span><span class="p">)</span>
+
+    <span class="c1"># 4 使用joblib工具保存映射器 joblib.dump()</span>
+    <span class="n">mypath</span> <span class="o">=</span> <span class="s1">&#39;./mytokenizer&#39;</span>
+    <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">mytokenizer</span><span class="p">,</span> <span class="n">mypath</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;保存mytokenizer End&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 注意5-1 字典没有顺序 onehot编码没有顺序 []-有序 {}-无序 区别</span>
+    <span class="c1"># 注意5-2 字典有的单词才有idx idx从1开始</span>
+    <span class="c1"># 注意5-3 查询没有注册的词会有异常 eg: 狗蛋</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">mytokenizer</span><span class="o">.</span><span class="n">word_index</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">mytokenizer</span><span class="o">.</span><span class="n">index_word</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>陈奕迅 的onehot编码是 [1, 0, 0, 0, 0, 0]
+王力宏 的onehot编码是 [0, 1, 0, 0, 0, 0]
+鹿晗 的onehot编码是 [0, 0, 1, 0, 0, 0]
+周杰伦 的onehot编码是 [0, 0, 0, 1, 0, 0]
+李宗盛 的onehot编码是 [0, 0, 0, 0, 1, 0]
+吴亦凡 的onehot编码是 [0, 0, 0, 0, 0, 1]
+
+保存mytokenizer End
+
+{&#39;陈奕迅&#39;: 1, &#39;王力宏&#39;: 2, &#39;鹿晗&#39;: 3, &#39;周杰伦&#39;: 4, &#39;李宗盛&#39;: 5, &#39;吴亦凡&#39;: 6}
+{1: &#39;陈奕迅&#39;, 2: &#39;王力宏&#39;, 3: &#39;鹿晗&#39;, 4: &#39;周杰伦&#39;, 5: &#39;李宗盛&#39;, 6: &#39;吴亦凡&#39;}
+</code></pre></div>
+<blockquote>
+<ul>
+<li>onehot编码器的使用:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 思路分析</span>
+<span class="c1"># 1 加载已保存的词汇映射器Tokenizer joblib.load(mypath)</span>
+<span class="c1"># 2 查询单词idx 赋值zero_list，生成onehot 以token为&#39;李宗盛&#39;</span>
+<span class="c1"># 3 token = &quot;狗蛋&quot; 会出现异常</span>
+<span class="k">def</span> <span class="nf">dm_onehot_use</span><span class="p">():</span>
+
+    <span class="n">vocabs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;周杰伦&quot;</span><span class="p">,</span> <span class="s2">&quot;陈奕迅&quot;</span><span class="p">,</span> <span class="s2">&quot;王力宏&quot;</span><span class="p">,</span> <span class="s2">&quot;李宗盛&quot;</span><span class="p">,</span> <span class="s2">&quot;吴亦凡&quot;</span><span class="p">,</span> <span class="s2">&quot;鹿晗&quot;</span><span class="p">}</span>
+
+    <span class="c1"># 1 加载已保存的词汇映射器Tokenizer joblib.load(mypath)</span>
+    <span class="n">mypath</span> <span class="o">=</span> <span class="s1">&#39;./mytokenizer&#39;</span>
+    <span class="n">mytokenizer</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">mypath</span><span class="p">)</span>
+
+    <span class="c1"># 2 编码token为&quot;李宗盛&quot;  查询单词idx 赋值 zero_list，生成onehot</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;李宗盛&quot;</span>
+    <span class="n">zero_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">vocabs</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">mytokenizer</span><span class="o">.</span><span class="n">word_index</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">zero_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="s1">&#39;的onehot编码是&#39;</span><span class="p">,</span> <span class="n">zero_list</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>李宗盛 的onehot编码是 [0, 0, 0, 0, 1, 0]
+</code></pre></div>
+<ul>
+<li>one-hot编码的优劣势：<p>* 优势：操作简单，容易理解.
+  * 劣势：完全割裂了词与词之间的联系，而且在大语料集下，每个向量的长度过大，占据大量内存.</p>
+<p>* 正因为one-hot编码明显的劣势，这种编码方式被应用的地方越来越少，取而代之的是接下来我们要学习的稠密向量的表示方法word2vec和word embedding.</p>
+</li>
+</ul>
+<h2 id="3-word2vec">3 word2vec模型<a class="headerlink" href="#3-word2vec" title="Permanent link">&para;</a></h2>
+<h3 id="31">3.1 模型介绍<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<ul>
+<li>word2vec是一种流行的将词汇表示成向量的无监督训练方法, 该过程将构建神经网络模型, 将网络参数作为词汇的向量表示, 它包含CBOW和skipgram两种训练模式.</li>
+</ul>
+<ul>
+<li>CBOW(Continuous bag of words)模式:
+    * 给定一段用于训练的文本语料, 再选定某段长度(窗口)作为研究对象, 使用上下文词汇预测目标词汇.</li>
+</ul>
+<p><img alt="avatar" src="img/CBOW.png" /></p>
+<blockquote>
+<ul>
+<li>分析: </li>
+<li>图中窗口大小为9, 使用前后4个词汇对目标词汇进行预测.</li>
+</ul>
+</blockquote>
+<ul>
+<li>CBOW模式下的word2vec过程说明:</li>
+</ul>
+<blockquote>
+<ul>
+<li>假设我们给定的训练语料只有一句话: Hope can set you free (愿你自由成长)，窗口大小为3，因此模型的第一个训练样本来自Hope can set，因为是CBOW模式，所以将使用Hope和set作为输入，can作为输出，在模型训练时， Hope，can，set等词汇都使用它们的one-hot编码. 如图所示: 每个one-hot编码的单词与各自的变换矩阵(即参数矩阵3x5, 这里的3是指最后得到的词向量维度)相乘之后再相加, 得到上下文表示矩阵(3x1).</li>
+</ul>
+</blockquote>
+<p><img alt="avatar" src="img/CBOW_1.png" /></p>
+<blockquote>
+<ul>
+<li>接着, 将上下文表示矩阵与变换矩阵(参数矩阵5x3, 所有的变换矩阵共享参数)相乘, 得到5x1的结果矩阵, 它将与我们真正的目标矩阵即can的one-hot编码矩阵(5x1)进行损失的计算, 然后更新网络参数完成一次模型迭代. </li>
+</ul>
+</blockquote>
+<p><img alt="avatar" src="img/CBOW_2.png" /></p>
+<blockquote>
+<ul>
+<li>最后窗口按序向后移动，重新更新参数，直到所有语料被遍历完成，得到最终的变换矩阵(3x5)，这个变换矩阵与每个词汇的one-hot编码(5x1)相乘，得到的3x1的矩阵就是该词汇的word2vec张量表示.</li>
+</ul>
+</blockquote>
+<ul>
+<li>skipgram模式:
+    * 给定一段用于训练的文本语料, 再选定某段长度(窗口)作为研究对象, 使用目标词汇预测上下文词汇.</li>
+</ul>
+<p><img alt="avatar" src="img/skip.png" /></p>
+<blockquote>
+<ul>
+<li>分析: </li>
+<li>图中窗口大小为9, 使用目标词汇对前后四个词汇进行预测.</li>
+</ul>
+</blockquote>
+<ul>
+<li>skipgram模式下的word2vec过程说明:</li>
+</ul>
+<blockquote>
+<ul>
+<li>假设我们给定的训练语料只有一句话: Hope can set you free (愿你自由成长)，窗口大小为3，因此模型的第一个训练样本来自Hope can set，因为是skipgram模式，所以将使用can作为输入
+，Hope和set作为输出，在模型训练时， Hope，can，set等词汇都使用它们的one-hot编码. 如图所示: 将can的one-hot编码与变换矩阵(即参数矩阵3x5, 这里的3是指最后得到的词向量维度)相乘, 得到目标词汇表示矩阵(3x1).</li>
+</ul>
+<ul>
+<li>接着, 将目标词汇表示矩阵与多个变换矩阵(参数矩阵5x3)相乘, 得到多个5x1的结果矩阵, 它将与我们Hope和set对应的one-hot编码矩阵(5x1)进行损失的计算, 然后更新网络参数完成一次模
+型迭代.</li>
+</ul>
+</blockquote>
+<p><img alt="avatar" src="img/skip_1.png" /></p>
+<blockquote>
+<ul>
+<li>最后窗口按序向后移动，重新更新参数，直到所有语料被遍历完成，得到最终的变换矩阵即参数矩阵(3x5)，这个变换矩阵与每个词汇的one-hot编码(5x1)相乘，得到的3x1的矩阵就是该词汇的word2vec张量表示.</li>
+</ul>
+</blockquote>
+<ul>
+<li>词向量的检索获取</li>
+</ul>
+<blockquote>
+<ul>
+<li>神经网络训练完毕后，神经网络的参数矩阵w就我们的想要词向量。如何检索某1个单词的向量呢？以CBOW方式举例说明如何检索a单词的词向量。</li>
+<li>如下图所示：a的onehot编码[10000]，用参数矩阵[3,5] * a的onehot编码[10000]，可以把参数矩阵的第1列参数给取出来，这个[3,1]的值就是a的词向量。</li>
+</ul>
+</blockquote>
+<p><img src="img/CBOW_3.png" alt="avatar" style="zoom: 80%;" /></p>
+<h3 id="32-word2vec">3.2 word2vec的训练和使用<a class="headerlink" href="#32-word2vec" title="Permanent link">&para;</a></h3>
+<ul>
+<li>第一步: 获取训练数据</li>
+<li>第二步: 训练词向量</li>
+<li>第三步: 模型超参数设定</li>
+<li>第四步: 模型效果检验</li>
+<li>第五步: 模型的保存与重加载</li>
+</ul>
+<h4 id="1_1">1 获取训练数据<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h4>
+<p>数据来源：<a href="http://mattmahoney.net/dc/enwik9.zip">http://mattmahoney.net/dc/enwik9.zip</a></p>
+<p>在这里, 我们将研究英语维基百科的部分网页信息, 它的大小在300M左右。这些语料已经被准备好, 我们可以通过Matt Mahoney的网站下载。</p>
+<p><strong>注意：原始数据集已经放在/root/data/enwik9.zip，解压后数据为/root/data/enwik9，预处理后的数据为/root/data/fil9</strong></p>
+<blockquote>
+<ul>
+<li>查看原始数据:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>$ head -10 data/enwik9
+
+<span class="c1"># 原始数据将输出很多包含XML/HTML格式的内容, 这些内容并不是我们需要的</span>
+&lt;mediawiki <span class="nv">xmlns</span><span class="o">=</span><span class="s2">&quot;http://www.mediawiki.org/xml/export-0.3/&quot;</span> xmlns:xsi<span class="o">=</span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> xsi:schemaLocation<span class="o">=</span><span class="s2">&quot;http://www.mediawiki.org/xml/export-0.3/ http://www.mediawiki.org/xml/export-0.3.xsd&quot;</span> <span class="nv">version</span><span class="o">=</span><span class="s2">&quot;0.3&quot;</span> xml:lang<span class="o">=</span><span class="s2">&quot;en&quot;</span>&gt;
+  &lt;siteinfo&gt;
+    &lt;sitename&gt;Wikipedia&lt;/sitename&gt;
+    &lt;base&gt;http://en.wikipedia.org/wiki/Main_Page&lt;/base&gt;
+    &lt;generator&gt;MediaWiki <span class="m">1</span>.6alpha&lt;/generator&gt;
+    &lt;<span class="k">case</span>&gt;first-letter&lt;/case&gt;
+      &lt;namespaces&gt;
+      &lt;namespace <span class="nv">key</span><span class="o">=</span><span class="s2">&quot;-2&quot;</span>&gt;Media&lt;/namespace&gt;
+      &lt;namespace <span class="nv">key</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span>&gt;Special&lt;/namespace&gt;
+      &lt;namespace <span class="nv">key</span><span class="o">=</span><span class="s2">&quot;0&quot;</span> /&gt;
+</code></pre></div>
+<blockquote>
+<ul>
+<li>原始数据处理:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 使用wikifil.pl文件处理脚本来清除XML/HTML格式的内容</span>
+<span class="c1"># perl wikifil.pl data/enwik9 &gt; data/fil9 #该命令已经执行</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>查看预处理后的数据:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 查看前80个字符</span>
+head -c <span class="m">80</span> data/fil9
+
+<span class="c1"># 输出结果为由空格分割的单词</span>
+ anarchism originated as a term of abuse first used against early working class
+</code></pre></div>
+<h4 id="2">2 词向量的训练保存加载<a class="headerlink" href="#2" title="Permanent link">&para;</a></h4>
+<p>fasttext 是 facebook 开源的一个词向量与文本分类工具。下面是该工具包的安装方法</p>
+<div class="highlight"><pre><span></span><code># 训练词向量工具库的安装
+# 方法1 简洁版
+pip install fasttext  
+# 方法2：源码安装(推荐)
+# 以linux安装为例： 目录切换到虚拟开发环境目录下，再执行git clone 操作
+git clone https://github.com/facebookresearch/fastText.git
+cd fastText
+# 使用pip安装python中的fasttext工具包
+sudo pip install .
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># 导入fasttext</span>
+<span class="kn">import</span> <span class="nn">fasttext</span>
+
+<span class="k">def</span> <span class="nf">dm_fasttext_train_save_load</span><span class="p">():</span>
+    <span class="c1"># 1 使用train_unsupervised(无监督训练方法) 训练词向量</span>
+    <span class="n">mymodel</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">train_unsupervised</span><span class="p">(</span><span class="s1">&#39;./data/fil9&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;训练词向量 ok&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 2 save_model()保存已经训练好词向量 </span>
+    <span class="c1"># 注意，该行代码执行耗时很长 </span>
+    <span class="n">mymodel</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="s2">&quot;./data/fil9.bin&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;保存词向量 ok&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 模型加载</span>
+    <span class="n">mymodel</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s1">&#39;./data/fil9.bin&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;加载词向量 ok&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># 步骤1运行效果如下：</span>
+<span class="n">有效训练词汇量为124M</span><span class="p">,</span> <span class="n">共218316个单词</span>
+<span class="n">Read</span> <span class="mi">124</span><span class="n">M</span> <span class="n">words</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">words</span><span class="p">:</span>  <span class="mi">218316</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">labels</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">Progress</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span> <span class="n">words</span><span class="o">/</span><span class="n">sec</span><span class="o">/</span><span class="n">thread</span><span class="p">:</span>   <span class="mi">53996</span> <span class="n">lr</span><span class="p">:</span>  <span class="mf">0.000000</span> <span class="n">loss</span><span class="p">:</span>  <span class="mf">0.734999</span> <span class="n">ETA</span><span class="p">:</span>   <span class="mi">0</span><span class="n">h</span> <span class="mi">0</span><span class="n">m</span>
+</code></pre></div>
+<h4 id="3">3 查看单词对应的词向量<a class="headerlink" href="#3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 通过get_word_vector方法来获得指定词汇的词向量, 默认词向量训练出来是1个单词100特征</span>
+<span class="k">def</span> <span class="nf">dm_fasttext_get_word_vector</span><span class="p">():</span>
+    <span class="n">mymodel</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s1">&#39;./data/fil9.bin&#39;</span><span class="p">)</span>
+
+    <span class="n">myvector</span> <span class="o">=</span> <span class="n">mymodel</span><span class="o">.</span><span class="n">get_word_vector</span><span class="p">(</span><span class="s1">&#39;the&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;myvector-&gt;&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">myvector</span><span class="p">),</span> <span class="n">myvector</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">myvector</span><span class="p">)</span>
+
+<span class="c1"># 运行效果如下：</span>
+<span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.03087516</span><span class="p">,</span>  <span class="mf">0.09221972</span><span class="p">,</span>  <span class="mf">0.17660329</span><span class="p">,</span>  <span class="mf">0.17308897</span><span class="p">,</span>  <span class="mf">0.12863874</span><span class="p">,</span>
+        <span class="mf">0.13912526</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.09851588</span><span class="p">,</span>  <span class="mf">0.00739991</span><span class="p">,</span>  <span class="mf">0.37038437</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00845221</span><span class="p">,</span>
+        <span class="o">...</span>
+       <span class="o">-</span><span class="mf">0.21184735</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.05048715</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.34571868</span><span class="p">,</span>  <span class="mf">0.23765688</span><span class="p">,</span>  <span class="mf">0.23726143</span><span class="p">],</span>
+      <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="4">4 模型效果检验<a class="headerlink" href="#4" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 检查单词向量质量的一种简单方法就是查看其邻近单词, 通过我们主观来判断这些邻近单词是否与目标单词相关来粗略评定模型效果好坏.</span>
+
+<span class="c1"># 查找&quot;运动&quot;的邻近单词, 我们可以发现&quot;体育网&quot;, &quot;运动汽车&quot;, &quot;运动服&quot;等. </span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">get_nearest_neighbors</span><span class="p">(</span><span class="s1">&#39;sports&#39;</span><span class="p">)</span>
+
+<span class="p">[(</span><span class="mf">0.8414610624313354</span><span class="p">,</span> <span class="s1">&#39;sportsnet&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8134572505950928</span><span class="p">,</span> <span class="s1">&#39;sport&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8100415468215942</span><span class="p">,</span> <span class="s1">&#39;sportscars&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8021156787872314</span><span class="p">,</span> <span class="s1">&#39;sportsground&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7889881134033203</span><span class="p">,</span> <span class="s1">&#39;sportswomen&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7863013744354248</span><span class="p">,</span> <span class="s1">&#39;sportsplex&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7786710262298584</span><span class="p">,</span> <span class="s1">&#39;sporty&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7696356177330017</span><span class="p">,</span> <span class="s1">&#39;sportscar&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7619683146476746</span><span class="p">,</span> <span class="s1">&#39;sportswear&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7600985765457153</span><span class="p">,</span> <span class="s1">&#39;sportin&#39;</span><span class="p">)]</span>
+
+
+<span class="c1"># 查找&quot;音乐&quot;的邻近单词, 我们可以发现与音乐有关的词汇.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">get_nearest_neighbors</span><span class="p">(</span><span class="s1">&#39;music&#39;</span><span class="p">)</span>
+
+<span class="p">[(</span><span class="mf">0.8908010125160217</span><span class="p">,</span> <span class="s1">&#39;emusic&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8464668393135071</span><span class="p">,</span> <span class="s1">&#39;musicmoz&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8444250822067261</span><span class="p">,</span> <span class="s1">&#39;musics&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8113634586334229</span><span class="p">,</span> <span class="s1">&#39;allmusic&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8106718063354492</span><span class="p">,</span> <span class="s1">&#39;musices&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8049437999725342</span><span class="p">,</span> <span class="s1">&#39;musicam&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8004694581031799</span><span class="p">,</span> <span class="s1">&#39;musicom&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7952923774719238</span><span class="p">,</span> <span class="s1">&#39;muchmusic&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7852965593338013</span><span class="p">,</span> <span class="s1">&#39;musicweb&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7767147421836853</span><span class="p">,</span> <span class="s1">&#39;musico&#39;</span><span class="p">)]</span>
+
+<span class="c1"># 查找&quot;小狗&quot;的邻近单词, 我们可以发现与小狗有关的词汇.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">get_nearest_neighbors</span><span class="p">(</span><span class="s1">&#39;dog&#39;</span><span class="p">)</span>
+
+<span class="p">[(</span><span class="mf">0.8456876873970032</span><span class="p">,</span> <span class="s1">&#39;catdog&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7480780482292175</span><span class="p">,</span> <span class="s1">&#39;dogcow&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7289096117019653</span><span class="p">,</span> <span class="s1">&#39;sleddog&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7269964218139648</span><span class="p">,</span> <span class="s1">&#39;hotdog&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7114801406860352</span><span class="p">,</span> <span class="s1">&#39;sheepdog&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.6947550773620605</span><span class="p">,</span> <span class="s1">&#39;dogo&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.6897546648979187</span><span class="p">,</span> <span class="s1">&#39;bodog&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.6621081829071045</span><span class="p">,</span> <span class="s1">&#39;maddog&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.6605004072189331</span><span class="p">,</span> <span class="s1">&#39;dogs&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.6398137211799622</span><span class="p">,</span> <span class="s1">&#39;dogpile&#39;</span><span class="p">)]</span>
+</code></pre></div>
+<h4 id="5">5 模型超参数设定<a class="headerlink" href="#5" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 在训练词向量过程中, 我们可以设定很多常用超参数来调节我们的模型效果, 如:</span>
+<span class="c1"># 无监督训练模式: &#39;skipgram&#39; 或者 &#39;cbow&#39;, 默认为&#39;skipgram&#39;, 在实践中，skipgram模式在利用子词方面比cbow更好.</span>
+<span class="c1"># 词嵌入维度dim: 默认为100, 但随着语料库的增大, 词嵌入的维度往往也要更大.</span>
+<span class="c1"># 数据循环次数epoch: 默认为5, 但当你的数据集足够大, 可能不需要那么多次.</span>
+<span class="c1"># 学习率lr: 默认为0.05, 根据经验, 建议选择[0.01，1]范围内.</span>
+<span class="c1"># 使用的线程数thread: 默认为12个线程, 一般建议和你的cpu核数相同.</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">fasttext</span><span class="o">.</span><span class="n">train_unsupervised</span><span class="p">(</span><span class="s1">&#39;data/fil9&#39;</span><span class="p">,</span> <span class="s2">&quot;cbow&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">thread</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="n">Read</span> <span class="mi">124</span><span class="n">M</span> <span class="n">words</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">words</span><span class="p">:</span>  <span class="mi">218316</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">labels</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">Progress</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span> <span class="n">words</span><span class="o">/</span><span class="n">sec</span><span class="o">/</span><span class="n">thread</span><span class="p">:</span>   <span class="mi">49523</span> <span class="n">lr</span><span class="p">:</span>  <span class="mf">0.000000</span> <span class="n">avg</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>  <span class="mf">1.777205</span> <span class="n">ETA</span><span class="p">:</span>   <span class="mi">0</span><span class="n">h</span> <span class="mi">0</span><span class="n">m</span> <span class="mi">0</span><span class="n">s</span>
+</code></pre></div>
+<h2 id="4-word-embedding">4 词嵌入word embedding介绍<a class="headerlink" href="#4-word-embedding" title="Permanent link">&para;</a></h2>
+<ul>
+<li>通过一定的方式将词汇映射到指定维度(一般是更高维度)的空间.        </li>
+<li>广义的word embedding包括所有密集词汇向量的表示方法，如之前学习的word2vec, 即可认为是word embedding的一种.</li>
+<li>狭义的word embedding是指在神经网络中加入的embedding层, 对整个网络进行训练的同时产生的embedding矩阵(embedding层的参数), 这个embedding矩阵就是训练过程中所有输入词汇的向量表示组成的矩阵. </li>
+</ul>
+<ul>
+<li>word embedding的可视化分析:</li>
+</ul>
+<blockquote>
+<ul>
+<li>通过使用tensorboard可视化嵌入的词向量.</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.preprocessing.text</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+<span class="kn">from</span> <span class="nn">torch.utils.tensorboard</span> <span class="kn">import</span> <span class="n">SummaryWriter</span>
+<span class="kn">import</span> <span class="nn">jieba</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+<span class="c1"># 实验：nn.Embedding层词向量可视化分析</span>
+<span class="c1"># 1 对句子分词 word_list</span>
+<span class="c1"># 2 对句子word2id求my_token_list，对句子文本数值化sentence2id</span>
+<span class="c1"># 3 创建nn.Embedding层，查看每个token的词向量数据</span>
+<span class="c1"># 4 创建SummaryWriter对象, 可视化词向量</span>
+<span class="c1">#   词向量矩阵embd.weight.data 和 词向量单词列表my_token_list添加到SummaryWriter对象中</span>
+<span class="c1">#   summarywriter.add_embedding(embd.weight.data, my_token_list)</span>
+<span class="c1"># 5 通过tensorboard观察词向量相似性</span>
+<span class="c1"># 6 也可通过程序，从nn.Embedding层中根据idx拿词向量</span>
+
+<span class="k">def</span> <span class="nf">dm02_nnembeding_show</span><span class="p">():</span>
+
+    <span class="c1"># 1 对句子分词 word_list</span>
+    <span class="n">sentence1</span> <span class="o">=</span> <span class="s1">&#39;传智教育是一家上市公司，旗下有黑马程序员品牌。我是在黑马这里学习人工智能&#39;</span>
+    <span class="n">sentence2</span> <span class="o">=</span> <span class="s2">&quot;我爱自然语言处理&quot;</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="p">[</span><span class="n">sentence1</span><span class="p">,</span> <span class="n">sentence2</span><span class="p">]</span>
+
+    <span class="n">word_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">:</span>
+        <span class="n">word_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">jieba</span><span class="o">.</span><span class="n">lcut</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+    <span class="c1"># print(&#39;word_list---&gt;&#39;, word_list)</span>
+
+    <span class="c1"># 2 对句子word2id求my_token_list，对句子文本数值化sentence2id</span>
+    <span class="n">mytokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
+    <span class="n">mytokenizer</span><span class="o">.</span><span class="n">fit_on_texts</span><span class="p">(</span><span class="n">word_list</span><span class="p">)</span>
+    <span class="c1"># print(mytokenizer.index_word, mytokenizer.word_index)</span>
+
+    <span class="c1"># 打印my_token_list</span>
+    <span class="n">my_token_list</span> <span class="o">=</span> <span class="n">mytokenizer</span><span class="o">.</span><span class="n">index_word</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_token_list--&gt;&#39;</span><span class="p">,</span> <span class="n">my_token_list</span><span class="p">)</span>
+
+    <span class="c1"># 打印文本数值化以后的句子</span>
+    <span class="n">sentence2id</span> <span class="o">=</span> <span class="n">mytokenizer</span><span class="o">.</span><span class="n">texts_to_sequences</span><span class="p">(</span><span class="n">word_list</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sentence2id---&gt;&#39;</span><span class="p">,</span> <span class="n">sentence2id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sentence2id</span><span class="p">))</span>
+
+    <span class="c1"># 3 创建nn.Embedding层</span>
+    <span class="n">embd</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">num_embeddings</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">my_token_list</span><span class="p">),</span> <span class="n">embedding_dim</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+    <span class="c1"># print(&quot;embd---&gt;&quot;, embd)</span>
+    <span class="c1"># print(&#39;nn.Embedding层词向量矩阵--&gt;&#39;, embd.weight.data, embd.weight.data.shape, type(embd.weight.data))</span>
+
+    <span class="c1"># 4 创建SummaryWriter对象 词向量矩阵embd.weight.data 和 词向量单词列表my_token_list</span>
+    <span class="n">summarywriter</span> <span class="o">=</span> <span class="n">SummaryWriter</span><span class="p">()</span>
+    <span class="n">summarywriter</span><span class="o">.</span><span class="n">add_embedding</span><span class="p">(</span><span class="n">embd</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">my_token_list</span><span class="p">)</span>
+    <span class="n">summarywriter</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># 5 通过tensorboard观察词向量相似性</span>
+    <span class="c1"># cd 程序的当前目录下执行下面的命令</span>
+    <span class="c1"># 启动tensorboard服务 tensorboard --logdir=runs --host 0.0.0.0</span>
+    <span class="c1"># 通过浏览器，查看词向量可视化效果 http://127.0.0.1:6006</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;从nn.Embedding层中根据idx拿词向量&#39;</span><span class="p">)</span>
+    <span class="c1"># # 6 从nn.Embedding层中根据idx拿词向量</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mytokenizer</span><span class="o">.</span><span class="n">index_word</span><span class="p">)):</span>
+        <span class="n">tmpvec</span> <span class="o">=</span> <span class="n">embd</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%4s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">mytokenizer</span><span class="o">.</span><span class="n">index_word</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">]),</span> <span class="n">tmpvec</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>程序运行效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code> <span class="n">my_token_list</span><span class="o">--&gt;</span> <span class="n">dict_values</span><span class="p">([</span><span class="s1">&#39;是&#39;</span><span class="p">,</span> <span class="s1">&#39;黑马&#39;</span><span class="p">,</span> <span class="s1">&#39;我&#39;</span><span class="p">,</span> <span class="s1">&#39;传智&#39;</span><span class="p">,</span> <span class="s1">&#39;教育&#39;</span><span class="p">,</span> <span class="s1">&#39;一家&#39;</span><span class="p">,</span> <span class="s1">&#39;上市公司&#39;</span><span class="p">,</span> <span class="s1">&#39;，&#39;</span><span class="p">,</span> <span class="s1">&#39;旗下&#39;</span><span class="p">,</span> <span class="s1">&#39;有&#39;</span><span class="p">,</span> <span class="s1">&#39;程序员&#39;</span><span class="p">,</span> <span class="s1">&#39;品牌&#39;</span><span class="p">,</span> <span class="s1">&#39;。&#39;</span><span class="p">,</span> <span class="s1">&#39;在&#39;</span><span class="p">,</span> <span class="s1">&#39;这里&#39;</span><span class="p">,</span> <span class="s1">&#39;学习&#39;</span><span class="p">,</span> <span class="s1">&#39;人工智能&#39;</span><span class="p">,</span> <span class="s1">&#39;爱&#39;</span><span class="p">,</span> <span class="s1">&#39;自然语言&#39;</span><span class="p">,</span> <span class="s1">&#39;处理&#39;</span><span class="p">])</span>
+
+<span class="n">sentence2id</span><span class="o">---&gt;</span> <span class="p">[[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">20</span><span class="p">]]</span> <span class="mi">2</span>
+
+<span class="n">从nn</span><span class="o">.</span><span class="n">Embedding层中根据idx拿词向量</span>
+
+  <span class="n">是</span>      <span class="p">[</span> <span class="mf">0.46067393</span> <span class="o">-</span><span class="mf">0.9049023</span>  <span class="o">-</span><span class="mf">0.03143226</span> <span class="o">-</span><span class="mf">0.32443136</span>  <span class="mf">0.03115687</span> <span class="o">-</span><span class="mf">1.3352231</span>
+ <span class="o">-</span><span class="mf">0.08336695</span> <span class="o">-</span><span class="mf">2.4732168</span> <span class="p">]</span>
+ <span class="n">黑马</span>      <span class="p">[</span> <span class="mf">0.66760564</span>  <span class="mf">0.08703537</span>  <span class="mf">0.23735243</span>  <span class="mf">1.5896837</span>  <span class="o">-</span><span class="mf">1.8869231</span>   <span class="mf">0.22520915</span>
+ <span class="o">-</span><span class="mf">1.0676078</span>  <span class="o">-</span><span class="mf">0.7654686</span> <span class="p">]</span>
+  <span class="n">我</span>      <span class="p">[</span><span class="o">-</span><span class="mf">0.9093167</span>  <span class="o">-</span><span class="mf">0.6114051</span>  <span class="o">-</span><span class="mf">0.6825029</span>   <span class="mf">0.9269122</span>   <span class="mf">0.5208822</span>   <span class="mf">2.294128</span>
+ <span class="o">-</span><span class="mf">0.11160549</span> <span class="o">-</span><span class="mf">0.34862307</span><span class="p">]</span>
+ <span class="n">传智</span>      <span class="p">[</span><span class="o">-</span><span class="mf">1.1552105</span> <span class="o">-</span><span class="mf">0.4274638</span> <span class="o">-</span><span class="mf">0.8121502</span> <span class="o">-</span><span class="mf">1.4969801</span> <span class="o">-</span><span class="mf">1.3328248</span> <span class="o">-</span><span class="mf">1.0934378</span>
+  <span class="mf">0.6707438</span> <span class="o">-</span><span class="mf">1.1796173</span><span class="p">]</span>
+ <span class="n">教育</span>      <span class="p">[</span> <span class="mf">0.01580311</span> <span class="o">-</span><span class="mf">1.1884228</span>   <span class="mf">0.59364647</span>  <span class="mf">1.5387698</span>  <span class="o">-</span><span class="mf">1.0822943</span>   <span class="mf">0.36760855</span>
+ <span class="o">-</span><span class="mf">0.4652998</span>  <span class="o">-</span><span class="mf">0.57378227</span><span class="p">]</span>
+ <span class="n">一家</span>      <span class="p">[</span><span class="o">-</span><span class="mf">1.1898873</span>  <span class="o">-</span><span class="mf">0.42482868</span> <span class="o">-</span><span class="mf">1.9391155</span>  <span class="o">-</span><span class="mf">1.5678993</span>  <span class="o">-</span><span class="mf">1.6960118</span>   <span class="mf">0.22525501</span>
+ <span class="o">-</span><span class="mf">1.0754168</span>   <span class="mf">0.41797593</span><span class="p">]</span>
+<span class="n">上市公司</span>     <span class="p">[</span> <span class="mf">0.590556</span>   <span class="mf">2.4274144</span>  <span class="mf">1.6698223</span> <span class="o">-</span><span class="mf">0.9776848</span> <span class="o">-</span><span class="mf">0.6119061</span>  <span class="mf">0.4434897</span>
+ <span class="o">-</span><span class="mf">2.3726876</span> <span class="o">-</span><span class="mf">0.2607738</span><span class="p">]</span>
+  <span class="err">，</span>      <span class="p">[</span><span class="o">-</span><span class="mf">0.17568143</span>  <span class="mf">1.0074369</span>   <span class="mf">0.2571488</span>   <span class="mf">1.8940887</span>  <span class="o">-</span><span class="mf">0.5383494</span>   <span class="mf">0.65416646</span>
+  <span class="mf">0.63454026</span>  <span class="mf">0.6235991</span> <span class="p">]</span>
+ <span class="n">旗下</span>      <span class="p">[</span> <span class="mf">2.8400452</span>  <span class="o">-</span><span class="mf">1.0096515</span>   <span class="mf">2.247107</span>    <span class="mf">0.30006626</span> <span class="o">-</span><span class="mf">1.2687006</span>   <span class="mf">0.05855403</span>
+  <span class="mf">0.01199368</span> <span class="o">-</span><span class="mf">0.6156502</span> <span class="p">]</span>
+  <span class="n">有</span>      <span class="p">[</span> <span class="mf">0.89320636</span> <span class="o">-</span><span class="mf">0.43819678</span>  <span class="mf">1.0345292</span>   <span class="mf">1.3546743</span>  <span class="o">-</span><span class="mf">1.4238662</span>  <span class="o">-</span><span class="mf">1.6994532</span>
+  <span class="mf">0.30445674</span>  <span class="mf">2.673923</span>  <span class="p">]</span>
+<span class="n">程序员</span>      <span class="p">[</span> <span class="mf">1.2147354</span>   <span class="mf">0.24878891</span>  <span class="mf">0.36161897</span>  <span class="mf">0.37458655</span> <span class="o">-</span><span class="mf">0.48264053</span> <span class="o">-</span><span class="mf">0.0141514</span>
+  <span class="mf">1.2033817</span>   <span class="mf">0.7899459</span> <span class="p">]</span>
+ <span class="n">品牌</span>      <span class="p">[</span> <span class="mf">0.59799325</span> <span class="o">-</span><span class="mf">0.01371854</span>  <span class="mf">0.0628166</span>  <span class="o">-</span><span class="mf">1.4829391</span>   <span class="mf">0.39795023</span> <span class="o">-</span><span class="mf">0.39259398</span>
+ <span class="o">-</span><span class="mf">0.60923046</span>  <span class="mf">0.54170054</span><span class="p">]</span>
+  <span class="err">。</span>      <span class="p">[</span> <span class="mf">0.59599686</span>  <span class="mf">1.6038656</span>  <span class="o">-</span><span class="mf">0.10832139</span>  <span class="mf">0.25223547</span>  <span class="mf">0.37193906</span>  <span class="mf">1.1944667</span>
+ <span class="o">-</span><span class="mf">0.91253406</span>  <span class="mf">0.6869221</span> <span class="p">]</span>
+  <span class="n">在</span>      <span class="p">[</span><span class="o">-</span><span class="mf">1.161504</span>    <span class="mf">2.6963246</span>  <span class="o">-</span><span class="mf">0.6087775</span>   <span class="mf">0.9399654</span>   <span class="mf">0.8480068</span>   <span class="mf">0.684357</span>
+  <span class="mf">0.96156543</span> <span class="o">-</span><span class="mf">0.3541162</span> <span class="p">]</span>
+ <span class="n">这里</span>      <span class="p">[</span> <span class="mf">0.1034054</span>  <span class="o">-</span><span class="mf">0.01949253</span>  <span class="mf">0.8989019</span>   <span class="mf">1.61057</span>    <span class="o">-</span><span class="mf">1.5983531</span>   <span class="mf">0.17945968</span>
+ <span class="o">-</span><span class="mf">0.17572908</span> <span class="o">-</span><span class="mf">0.9724814</span> <span class="p">]</span>
+ <span class="n">学习</span>      <span class="p">[</span><span class="o">-</span><span class="mf">1.3899843</span>  <span class="o">-</span><span class="mf">1.0846052</span>  <span class="o">-</span><span class="mf">1.1301199</span>  <span class="o">-</span><span class="mf">0.4078141</span>   <span class="mf">0.40511298</span>  <span class="mf">0.6562911</span>
+  <span class="mf">0.9231357</span>  <span class="o">-</span><span class="mf">0.34704337</span><span class="p">]</span>
+<span class="n">人工智能</span>     <span class="p">[</span><span class="o">-</span><span class="mf">1.4966388</span>  <span class="o">-</span><span class="mf">1.0905199</span>   <span class="mf">1.001238</span>   <span class="o">-</span><span class="mf">0.75254333</span> <span class="o">-</span><span class="mf">1.4210068</span>  <span class="o">-</span><span class="mf">1.854177</span>
+  <span class="mf">1.0471514</span>  <span class="o">-</span><span class="mf">0.27140012</span><span class="p">]</span>
+  <span class="n">爱</span>      <span class="p">[</span><span class="o">-</span><span class="mf">1.5254552</span>   <span class="mf">0.6189947</span>   <span class="mf">1.2703396</span>  <span class="o">-</span><span class="mf">0.4826037</span>  <span class="o">-</span><span class="mf">1.4928672</span>   <span class="mf">0.8320283</span>
+  <span class="mf">1.7333516</span>   <span class="mf">0.16908517</span><span class="p">]</span>
+<span class="n">自然语言</span>     <span class="p">[</span><span class="o">-</span><span class="mf">0.3856235</span>  <span class="o">-</span><span class="mf">1.2193452</span>   <span class="mf">0.9991112</span>  <span class="o">-</span><span class="mf">1.5821775</span>   <span class="mf">0.45017946</span> <span class="o">-</span><span class="mf">0.66064674</span>
+  <span class="mf">0.08045111</span>  <span class="mf">0.62901515</span><span class="p">]</span>
+ <span class="n">处理</span>      <span class="p">[</span> <span class="mf">1.5062869</span>   <span class="mf">1.3156213</span>  <span class="o">-</span><span class="mf">0.21295634</span>  <span class="mf">0.47610474</span>  <span class="mf">0.08946162</span>  <span class="mf">0.57107806</span>
+ <span class="o">-</span><span class="mf">1.0727187</span>   <span class="mf">0.16396333</span><span class="p">]</span>
+
+ <span class="n">词向量和词显示标签</span> <span class="n">写入磁盘ok</span> <span class="n">在当前目录下查看</span> <span class="o">./</span><span class="n">runs</span> <span class="n">目录</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>在终端启动tensorboard服务:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> ~
+$ tensorboard --logdir<span class="o">=</span>runs --host <span class="m">0</span>.0.0.0
+
+<span class="c1"># 通过http://192.168.88.161:6006访问浏览器可视化页面</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>浏览器展示并可以使用右侧近邻词汇功能检验效果:</li>
+</ul>
+</blockquote>
+<p><img alt="avatar" src="img/tensorboard2.png" /></p>
+<h2 id="5_1">5 小结<a class="headerlink" href="#5_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>学习了什么是文本张量表示:
+    * 将一段文本使用张量进行表示，其中一般将词汇为表示成向量，称作词向量，再由各个词向量按顺序组成矩阵形成文本表示.</li>
+</ul>
+<ul>
+<li>学习了文本张量表示的作用:
+    * 将文本表示成张量（矩阵）形式，能够使语言文本可以作为计算机处理程序的输入，进行接下来一系列的解析工作.</li>
+</ul>
+<ul>
+<li>学习了文本张量表示的方法:
+    * one-hot编码
+    * Word2vec
+    * Word Embedding</li>
+</ul>
+<ul>
+<li>什么是one-hot词向量表示:
+    * 又称独热编码，将每个词表示成具有n个元素的向量，这个词向量中只有一个元素是1，其他元素都是0，不同词汇元素为0的位置不同，其中n的大小是整个语料中不同词汇的总数.</li>
+</ul>
+<ul>
+<li>学习了onehot编码实现.</li>
+</ul>
+<ul>
+<li>学习了one-hot编码的优劣势：
+    * 优势：操作简单，容易理解.
+    * 劣势：完全割裂了词与词之间的联系，而且在大语料集下，每个向量的长度过大，占据大量内存.</li>
+</ul>
+<ul>
+<li>学习了什么是word2vec:
+    * 是一种流行的将词汇表示成向量的无监督训练方法, 该过程将构建神经网络模型, 将网络参数作为词汇的向量表示, 它包含CBOW和skipgram两种训练模式.</li>
+</ul>
+<ul>
+<li>学习了CBOW(Continuous bag of words)模式:
+    * 给定一段用于训练的文本语料, 再选定某段长度(窗口)作为研究对象, 使用上下文词汇预测目标词汇.</li>
+</ul>
+<ul>
+<li>学习了CBOW模式下的word2vec过程说明:
+    * 假设我们给定的训练语料只有一句话: Hope can set you free (愿你自由成长)，窗口大小为3，因此模型的第一个训练样本来自Hope you set，因为是CBOW模式，所以将使用Hope和set作为输入，you作为输出，在模型训练时， Hope，set，you等词汇都使用它们的one-hot编码. 如图所示: 每个one-hot编码的单词与各自的变换矩阵(即参数矩阵3x5, 这里的3是指最后得到的词向量维度)相乘之后再相加, 得到上下文表示矩阵(3x1).<p>* 接着, 将上下文表示矩阵与变换矩阵(参数矩阵5x3, 所有的变换矩阵共享参数)相乘, 得到5x1的结果矩阵, 它将与我们真正的目标矩阵即you的one-hot编码矩阵(5x1)进行损失的计算, 然后更新网络参数完成一次模型迭代.</p>
+<p>* 最后窗口按序向后移动，重新更新参数，直到所有语料被遍历完成，得到最终的变换矩阵(3x5)，这个变换矩阵与每个词汇的one-hot编码(5x1)相乘，得到的3x1的矩阵就是该词汇的word2vec张量表示.</p>
+</li>
+</ul>
+<ul>
+<li>学习了skipgram模式:
+    * 给定一段用于训练的文本语料, 再选定某段长度(窗口)作为研究对象, 使用目标词汇预测上下文词汇. </li>
+</ul>
+<ul>
+<li>学习了skipgram模式下的word2vec过程说明:
+    * 假设我们给定的训练语料只有一句话: Hope can set you free (愿你自由成长)，窗口大小为3，因此模型的第一个训练样本来自Hope you set，因为是skipgram模式，所以将使用you作为输入 ，hope和set作为输出，在模型训练时， Hope，set，you等词汇都使用它们的one-hot编码. 如图所示: 将you的one-hot编码与变换矩阵(即参数矩阵3x5, 这里的3是指最后得到的词向量维度)相乘, 得到目标词汇表示矩阵(3x1).<p>* 接着, 将目标词汇表示矩阵与多个变换矩阵(参数矩阵5x3)相乘, 得到多个5x1的结果矩阵, 它将与我们hope和set对应的one-hot编码矩阵(5x1)进行损失的计算, 然后更新网络参数完成一次模 型迭代.</p>
+<p>* 最后窗口按序向后移动，重新更新参数，直到所有语料被遍历完成，得到最终的变换矩阵即参数矩阵(3x5)，这个变换矩阵与每个词汇的one-hot编码(5x1)相乘，得到的3x1的矩阵就是该词汇的word2vec张量表示.</p>
+</li>
+</ul>
+<ul>
+<li>学习了使用fasttext工具实现word2vec的训练和使用:
+    * 第一步: 获取训练数据
+    * 第二步: 训练词向量
+    * 第三步: 模型超参数设定
+    * 第四步: 模型效果检验
+    * 第五步: 模型的保存与重加载</li>
+</ul>
+<ul>
+<li>学习了什么是word embedding(词嵌入):
+    * 通过一定的方式将词汇映射到指定维度(一般是更高维度)的空间.
+    * 广义的word embedding包括所有密集词汇向量的表示方法，如之前学习的word2vec, 即可认为是word embedding的一种.
+    * 狭义的word embedding是指在神经网络中加入的embedding层, 对整个网络进行训练的同时产生的embedding矩阵(embedding层的参数), 这个embedding矩阵就是训练过程中所有输入词汇的向量表示组成的矩阵.</li>
+</ul>
+<ul>
+<li>学习了word embedding的可视化分析:
+    * 通过使用tensorboard可视化嵌入的词向量.
+    * 在终端启动tensorboard服务.
+    * 浏览器展示并可以使用右侧近邻词汇功能检验效果.</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="2%20%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 2 文本处理的基本方法" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              2 文本处理的基本方法
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="4%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 4 文本数据分析" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              4 文本数据分析
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

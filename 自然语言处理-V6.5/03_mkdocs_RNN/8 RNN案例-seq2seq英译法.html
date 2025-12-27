@@ -1,0 +1,2769 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>8 RNN案例 seq2seq英译法 - 自然语言处理基础V6.5</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="自然语言处理基础V6.5" class="md-header__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            自然语言处理基础V6.5
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              8 RNN案例 seq2seq英译法
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="自然语言处理基础V6.5" class="md-nav__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    自然语言处理基础V6.5
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章 自然语言处理入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章 自然语言处理入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章 自然语言处理入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_mkdocs_NLP/1_%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8.html" class="md-nav__link">
+        1 自然语言处理入门
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章 文本预处理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章 文本预处理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章 文本预处理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/1%20%E8%AE%A4%E8%AF%86%E6%96%87%E6%9C%AC%E9%A2%84%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        1 认识文本预处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/2%20%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        2 文本处理的基本方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/3%20%E6%96%87%E6%9C%AC%E5%BC%A0%E9%87%8F%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        3 文本张量表示方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/4%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90.html" class="md-nav__link">
+        4 文本数据分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/5%20%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        5 文本特征处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/6%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA.html" class="md-nav__link">
+        6 文本数据增强
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/7%20jieba%E8%AF%8D%E6%80%A7%E5%AF%B9%E7%85%A7%E8%A1%A8.html" class="md-nav__link">
+        7 jieba词性对照表
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章 RNN及其变体
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章 RNN及其变体" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章 RNN及其变体
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="1%20%E8%AE%A4%E8%AF%86RNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        1 认识RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="2%20%E4%BC%A0%E7%BB%9FRNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        2 传统RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3%20LSTM%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        3 LSTM模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="4%20GRU%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        4 GRU模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="5%20RNN%E6%A1%88%E4%BE%8B-%E4%BA%BA%E5%90%8D%E5%88%86%E7%B1%BB%E5%99%A8.html" class="md-nav__link">
+        5 RNN案例 人名分类器
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="6%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D1.html" class="md-nav__link">
+        6 注意力机制介绍1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="7%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D2.html" class="md-nav__link">
+        7 注意力机制介绍2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          8 RNN案例 seq2seq英译法
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="8%20RNN%E6%A1%88%E4%BE%8B-seq2seq%E8%8B%B1%E8%AF%91%E6%B3%95.html" class="md-nav__link md-nav__link--active">
+        8 RNN案例 seq2seq英译法
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-seq2seq" class="md-nav__link">
+    1 seq2seq介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="1 seq2seq介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-seq2seq" class="md-nav__link">
+    1.1 seq2seq模型架构
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 数据集介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 案例步骤
+  </a>
+  
+    <nav class="md-nav" aria-label="3 案例步骤">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 导入工具包和工具函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    2 数据预处理
+  </a>
+  
+    <nav class="md-nav" aria-label="2 数据预处理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    1 清洗文本和构建文本字典
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_2" class="md-nav__link">
+    2 构建数据源对象
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    3 构建数据迭代器
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gru" class="md-nav__link">
+    3 构建基于GRU的编码器和解码器
+  </a>
+  
+    <nav class="md-nav" aria-label="3 构建基于GRU的编码器和解码器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-gru" class="md-nav__link">
+    1 构建基于GRU的编码器
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-gru" class="md-nav__link">
+    2 构建基于GRU的解码器
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gruattention" class="md-nav__link">
+    3 构建基于GRU和Attention的解码器
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 构建模型训练函数, 并进行训练
+  </a>
+  
+    <nav class="md-nav" aria-label="4 构建模型训练函数, 并进行训练">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-teacher_forcing" class="md-nav__link">
+    1 teacher_forcing介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-teacher_forcing" class="md-nav__link">
+    2 teacher_forcing的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_2" class="md-nav__link">
+    3 构建内部迭代训练函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    4 构建模型训练函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    5 损失曲线分析
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5_1" class="md-nav__link">
+    5 构建模型评估函数并测试
+  </a>
+  
+    <nav class="md-nav" aria-label="5 构建模型评估函数并测试">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_2" class="md-nav__link">
+    1 构建模型评估函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_3" class="md-nav__link">
+    2  模型评估函数调用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-attention" class="md-nav__link">
+    3 Attention张量制图
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4_2" class="md-nav__link">
+    4 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章 Transformer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章 Transformer" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章 Transformer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/1%20Transformer%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 Transformer背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/2%20%E8%AE%A4%E8%AF%86Transformer%E6%9E%B6%E6%9E%84.html" class="md-nav__link">
+        2 认识Transformer架构
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/3%20%E8%BE%93%E5%85%A5%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        3 输入部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        4 编码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/5%20%E8%A7%A3%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        5 解码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/6%20%E8%BE%93%E5%87%BA%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        6 输出部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/7%20%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA.html" class="md-nav__link">
+        7 模型构建
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章 迁移学习
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章 迁移学习" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章 迁移学习
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/1%20fasttext%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 fasttext工具介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/2%20fasttext%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB.html" class="md-nav__link">
+        2 fasttext文本分类
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/3%20%E8%AE%AD%E7%BB%83%E8%AF%8D%E5%90%91%E9%87%8F.html" class="md-nav__link">
+        3 训练词向量
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/4%20%E8%AF%8D%E5%90%91%E9%87%8F%E8%BF%81%E7%A7%BB.html" class="md-nav__link">
+        4 词向量迁移
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/5%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5.html" class="md-nav__link">
+        5 迁移学习概念
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/6%20NLP%E4%B8%AD%E7%9A%84%E5%B8%B8%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        6 NLP中的常用预训练模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/7%20Transformers%E5%BA%93%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        7 Transformers库使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/8%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5.html" class="md-nav__link">
+        8 迁移学习实践
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/9%20NLP%E4%B8%AD%E7%9A%84%E6%A0%87%E5%87%86%E6%95%B0%E6%8D%AE%E9%9B%86%28%E6%8B%93%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        9 NLP中的标准数据集(拓展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章 Bert系列模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章 Bert系列模型" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章 Bert系列模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/1%20BERT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 BERT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/2%20BERT%E6%A8%A1%E5%9E%8B%E7%89%B9%E7%82%B9.html" class="md-nav__link">
+        2 BERT模型特点
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/3%20BERT%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        3 BERT系列模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/4%20ELMo%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        4 ELMo模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/5%20GPT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        5 GPT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/6%20BERT%20GPT%20ELMo%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%B9%E6%AF%94.html" class="md-nav__link">
+        6 BERT GPT ELMo模型的对比
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          第七章 Transformer精选问答(拓展资料)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第七章 Transformer精选问答(拓展资料)" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          第七章 Transformer精选问答(拓展资料)
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/1%20Transformer%20%E5%90%84%E5%AD%90%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8.html" class="md-nav__link">
+        1 Transformer 各子模块作用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/2%20Transformer%20Decoder%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        2 Transformer Decoder模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/3%20Self-attention%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        3 Self attention机制详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/4%20Multi-head%20Attention%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        4 Multi head Attention详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/5%20Transformer%E4%BC%98%E5%8A%BF.html" class="md-nav__link">
+        5 Transformer优势
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-seq2seq" class="md-nav__link">
+    1 seq2seq介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="1 seq2seq介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-seq2seq" class="md-nav__link">
+    1.1 seq2seq模型架构
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 数据集介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 案例步骤
+  </a>
+  
+    <nav class="md-nav" aria-label="3 案例步骤">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 导入工具包和工具函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    2 数据预处理
+  </a>
+  
+    <nav class="md-nav" aria-label="2 数据预处理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    1 清洗文本和构建文本字典
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_2" class="md-nav__link">
+    2 构建数据源对象
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    3 构建数据迭代器
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gru" class="md-nav__link">
+    3 构建基于GRU的编码器和解码器
+  </a>
+  
+    <nav class="md-nav" aria-label="3 构建基于GRU的编码器和解码器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-gru" class="md-nav__link">
+    1 构建基于GRU的编码器
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-gru" class="md-nav__link">
+    2 构建基于GRU的解码器
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gruattention" class="md-nav__link">
+    3 构建基于GRU和Attention的解码器
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 构建模型训练函数, 并进行训练
+  </a>
+  
+    <nav class="md-nav" aria-label="4 构建模型训练函数, 并进行训练">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-teacher_forcing" class="md-nav__link">
+    1 teacher_forcing介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-teacher_forcing" class="md-nav__link">
+    2 teacher_forcing的作用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_2" class="md-nav__link">
+    3 构建内部迭代训练函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    4 构建模型训练函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    5 损失曲线分析
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5_1" class="md-nav__link">
+    5 构建模型评估函数并测试
+  </a>
+  
+    <nav class="md-nav" aria-label="5 构建模型评估函数并测试">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_2" class="md-nav__link">
+    1 构建模型评估函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_3" class="md-nav__link">
+    2  模型评估函数调用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-attention" class="md-nav__link">
+    3 Attention张量制图
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4_2" class="md-nav__link">
+    4 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>8 RNN案例 seq2seq英译法</h1>
+
+<h3 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>更深一步了解seq2seq模型架构和翻译数据集</li>
+<li>掌握使用基于GRU的seq2seq模型架构实现翻译的过程</li>
+<li>掌握Attention机制在解码器端的实现过程</li>
+</ul>
+<h2 id="1-seq2seq">1 seq2seq介绍<a class="headerlink" href="#1-seq2seq" title="Permanent link">&para;</a></h2>
+<h3 id="11-seq2seq">1.1 seq2seq模型架构<a class="headerlink" href="#11-seq2seq" title="Permanent link">&para;</a></h3>
+<p><img alt="avatar" src="img/s2s.png" /></p>
+<ul>
+<li>
+<p>seq2seq模型架构分析:</p>
+<ul>
+<li>seq2seq模型架构包括三部分，分别是encoder(编码器)、decoder(解码器)、中间语义张量c。其中编码器和解码器的内部实现都使用了GRU模型</li>
+<li>图中表示的是一个中文到英文的翻译：欢迎 来 北京 &rarr; welcome to BeiJing。编码器首先处理中文输入"欢迎 来 北京"，通过GRU模型获得每个时间步的输出张量，最后将它们拼接成一个中间语义张量c；接着解码器将使用这个中间语义张量c以及每一个时间步的隐层张量, 逐个生成对应的翻译语言</li>
+<li>我们的案例通过英译法来讲解seq2seq设计与实现。</li>
+</ul>
+</li>
+</ul>
+<h2 id="2">2 数据集介绍<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p><div class="highlight"><pre><span></span><code><span class="c1"># 数据集在虚拟机/root/data/下</span>
+- data/
+        - eng-fra-v2.txt  
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>i am from brazil .  je viens du bresil .
+i am from france .  je viens de france .
+i am from russia .  je viens de russie .
+i am frying fish .  je fais frire du poisson .
+i am not kidding .  je ne blague pas .
+i am on duty now .  maintenant je suis en service .
+i am on duty now .  je suis actuellement en service .
+i am only joking .  je ne fais que blaguer .
+i am out of time .  je suis a court de temps .
+i am out of work .  je suis au chomage .
+i am out of work .  je suis sans travail .
+i am paid weekly .  je suis payee a la semaine .
+i am pretty sure .  je suis relativement sur .
+i am truly sorry .  je suis vraiment desole .
+i am truly sorry .  je suis vraiment desolee .
+</code></pre></div></p>
+<h2 id="3">3 案例步骤<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<p>基于GRU的seq2seq模型架构实现翻译的过程:</p>
+<ul>
+<li>第一步: 导入工具包和工具函数</li>
+<li>第二步: 对持久化文件中数据进行处理, 以满足模型训练要求</li>
+<li>第三步: 构建基于GRU的编码器和解码器</li>
+<li>第四步: 构建模型训练函数, 并进行训练</li>
+<li>第五步: 构建模型评估函数, 并进行测试以及Attention效果分析</li>
+</ul>
+<h3 id="1">1 导入工具包和工具函数<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 用于正则表达式</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="c1"># 用于构建网络结构和函数的torch工具包</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DataLoader</span>
+<span class="c1"># torch中预定义的优化方法工具包</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="c1"># 用于随机生成数据</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># 设备选择, 我们可以选择在cuda或者cpu上运行你的代码</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="c1"># 起始标志</span>
+<span class="n">SOS_token</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># 结束标志</span>
+<span class="n">EOS_token</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># 最大句子长度不能超过10个 (包含标点)</span>
+<span class="n">MAX_LENGTH</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="c1"># 数据文件路径</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;./data/eng-fra-v2.txt&#39;</span>
+
+<span class="c1"># 文本清洗工具函数</span>
+<span class="k">def</span> <span class="nf">normalizeString</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;字符串规范化函数, 参数s代表传入的字符串&quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="c1"># 在.!?前加一个空格  这里的\1表示第一个分组   正则中的\num</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([.!?])&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot; \1&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="c1"># s = re.sub(r&quot;([.!?])&quot;, r&quot; &quot;, s)</span>
+    <span class="c1"># 使用正则表达式将字符串中 不是 大小写字母和正常标点的都替换成空格</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^a-zA-Z.!?]+&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span>
+</code></pre></div>
+<h3 id="2_1">2 数据预处理<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h3>
+<p>对持久化文件中数据进行处理, 以满足模型训练要求</p>
+<h4 id="1_1">1 清洗文本和构建文本字典<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h4>
+<blockquote>
+<ul>
+<li>清洗文本和构建文本字典思路分析</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code># my_getdata() 清洗文本构建字典思路分析
+# 1 按行读文件 open().read().strip().split(\n) my_lines
+# 2 按行清洗文本 构建语言对 my_pairs[] tmppair[]
+# 2-1格式 [[&#39;英文&#39;, &#39;法文&#39;], [&#39;英文&#39;, &#39;法文&#39;], [&#39;英文&#39;, &#39;法文&#39;], [&#39;英文&#39;, &#39;法文&#39;]....]
+# 2-2调用清洗文本工具函数normalizeString(s)
+# 3 遍历语言对 构建英语单词字典 法语单词字典 my_pairs-&gt;pair-&gt;pair[0].split(&#39; &#39;) pair[1].split(&#39; &#39;)-&gt;word
+# 3-1 english_word2index english_word_n french_word2index french_word_n
+# 其中 english_word2index = {0: &quot;SOS&quot;, 1: &quot;EOS&quot;}  english_word_n=2
+# 3-2 english_index2word french_index2word
+# 4 返回数据的7个结果
+# english_word2index, english_index2word, english_word_n,
+# french_word2index, french_index2word, french_word_n, my_pairs
+</code></pre></div>
+<blockquote>
+<ul>
+<li>代码实现</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>def my_getdata():
+
+    # 1 按行读文件 open().read().strip().split(\n)
+    my_lines = open(data_path, encoding=&#39;utf-8&#39;).read().strip().split(&#39;\n&#39;)
+    print(&#39;my_lines---&gt;&#39;, len(my_lines))
+
+    # 2 按行清洗文本 构建语言对 my_pairs
+    # 格式 [[&#39;英文句子&#39;, &#39;法文句子&#39;], [&#39;英文句子&#39;, &#39;法文句子&#39;], [&#39;英文句子&#39;, &#39;法文句子&#39;], ... ]
+    # tmp_pair, my_pairs = [], []
+    # for l in my_lines:
+    #     for s in l.split(&#39;\t&#39;):
+    #         tmp_pair.append(normalizeString(s))
+    #     my_pairs.append(tmp_pair)
+    #     tmp_pair = []
+    my_pairs = [[normalizeString(s) for s in l.split(&#39;\t&#39;)] for l in my_lines]
+    print(&#39;len(pairs)---&gt;&#39;, len(my_pairs))
+
+    # 打印前4条数据
+    print(my_pairs[:4])
+
+    # 打印第8000条的英文 法文数据
+    print(&#39;my_pairs[8000][0]---&gt;&#39;, my_pairs[8000][0])
+    print(&#39;my_pairs[8000][1]---&gt;&#39;, my_pairs[8000][1])
+
+    # 3 遍历语言对 构建英语单词字典 法语单词字典
+    # 3-1 english_word2index english_word_n french_word2index french_word_n
+    english_word2index = {&quot;SOS&quot;: 0, &quot;EOS&quot;: 1}
+    english_word_n = 2
+
+    french_word2index = {&quot;SOS&quot;: 0, &quot;EOS&quot;: 1}
+    french_word_n = 2
+
+    # 遍历语言对 获取英语单词字典 法语单词字典
+    for pair in my_pairs:
+       for word in pair[0].split(&#39; &#39;):
+           if word not in english_word2index:
+               english_word2index[word] = english_word_n
+               english_word_n += 1
+
+       for word in pair[1].split(&#39; &#39;):
+           if word not in french_word2index:
+               french_word2index[word] = french_word_n
+               french_word_n += 1
+
+    # 3-2 english_index2word french_index2word
+    english_index2word = {v:k for k, v in english_word2index.items()}
+    french_index2word = {v:k for k, v in french_word2index.items()}
+
+    print(&#39;len(english_word2index)--&gt;&#39;, len(english_word2index))
+    print(&#39;len(french_word2index)--&gt;&#39;, len(french_word2index))
+    print(&#39;english_word_n---&gt;&#39;, english_word_n, &#39;french_word_n--&gt;&#39;, french_word_n)
+
+    return english_word2index, english_index2word, english_word_n, french_word2index, french_index2word, french_word_n, my_pairs
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 全局函数 获取英语单词字典 法语单词字典 语言对列表my_pairs</span>
+<span class="n">english_word2index</span><span class="p">,</span> <span class="n">english_index2word</span><span class="p">,</span> <span class="n">english_word_n</span><span class="p">,</span> \
+    <span class="n">french_word2index</span><span class="p">,</span> <span class="n">french_index2word</span><span class="p">,</span> <span class="n">french_word_n</span><span class="p">,</span> \
+    <span class="n">my_pairs</span> <span class="o">=</span> <span class="n">my_getdata</span><span class="p">()</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">my_lines</span><span class="o">---&gt;</span> <span class="mi">10599</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span><span class="o">---&gt;</span> <span class="mi">10599</span>
+<span class="p">[[</span><span class="s1">&#39;i m .&#39;</span><span class="p">,</span> <span class="s1">&#39;j ai ans .&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;i m ok .&#39;</span><span class="p">,</span> <span class="s1">&#39;je vais bien .&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;i m ok .&#39;</span><span class="p">,</span> <span class="s1">&#39;ca va .&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;i m fat .&#39;</span><span class="p">,</span> <span class="s1">&#39;je suis gras .&#39;</span><span class="p">]]</span>
+<span class="n">my_pairs</span><span class="p">[</span><span class="mi">8000</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">---&gt;</span> <span class="n">they</span> <span class="n">re</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">science</span> <span class="n">lab</span> <span class="o">.</span>
+<span class="n">my_pairs</span><span class="p">[</span><span class="mi">8000</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">---&gt;</span> <span class="n">elles</span> <span class="n">sont</span> <span class="n">dans</span> <span class="n">le</span> <span class="n">laboratoire</span> <span class="n">de</span> <span class="n">sciences</span> <span class="o">.</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">english_word2index</span><span class="p">)</span><span class="o">--&gt;</span> <span class="mi">2803</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">french_word2index</span><span class="p">)</span><span class="o">--&gt;</span> <span class="mi">4345</span>
+<span class="n">english_word_n</span><span class="o">---&gt;</span> <span class="mi">2803</span> <span class="n">french_word_n</span><span class="o">--&gt;</span> <span class="mi">4345</span>
+<span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">75</span><span class="p">,</span>  <span class="mi">40</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">103</span><span class="p">,</span> <span class="mi">677</span><span class="p">,</span>  <span class="mi">42</span><span class="p">,</span>  <span class="mi">21</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">1</span><span class="p">]])</span>
+<span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">119</span><span class="p">,</span>   <span class="mi">25</span><span class="p">,</span>  <span class="mi">164</span><span class="p">,</span>  <span class="mi">165</span><span class="p">,</span> <span class="mi">3222</span><span class="p">,</span>    <span class="mi">5</span><span class="p">,</span>    <span class="mi">1</span><span class="p">]])</span>
+<span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">44</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span>  <span class="mi">1</span><span class="p">]])</span>
+<span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">62</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">1</span><span class="p">]])</span>
+<span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span>   <span class="mi">2</span><span class="p">,</span>    <span class="mi">3</span><span class="p">,</span>  <span class="mi">147</span><span class="p">,</span>   <span class="mi">61</span><span class="p">,</span>  <span class="mi">532</span><span class="p">,</span> <span class="mi">1143</span><span class="p">,</span>    <span class="mi">4</span><span class="p">,</span>    <span class="mi">1</span><span class="p">]])</span>
+<span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span>  <span class="mi">6</span><span class="p">,</span> <span class="mi">297</span><span class="p">,</span>   <span class="mi">7</span><span class="p">,</span> <span class="mi">246</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="mi">1</span><span class="p">]])</span>
+</code></pre></div>
+<h4 id="2_2">2 构建数据源对象<a class="headerlink" href="#2_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 原始数据 -&gt; 数据源MyPairsDataset --&gt; 数据迭代器DataLoader</span>
+<span class="c1"># 构造数据源 MyPairsDataset，把语料xy 文本数值化 再转成tensor_x tensor_y</span>
+<span class="c1"># 1 __init__(self, my_pairs)函数 设置self.my_pairs 条目数self.sample_len</span>
+<span class="c1"># 2 __len__(self)函数  获取样本条数</span>
+<span class="c1"># 3 __getitem__(self, index)函数 获取第几条样本数据</span>
+<span class="c1">#       按索引 获取数据样本 x y</span>
+<span class="c1">#       样本x 文本数值化   word2id  x.append(EOS_token)</span>
+<span class="c1">#       样本y 文本数值化   word2id  y.append(EOS_token)</span>
+<span class="c1">#       返回tensor_x, tensor_y</span>
+
+<span class="k">class</span> <span class="nc">MyPairsDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_pairs</span><span class="p">):</span>
+        <span class="c1"># 样本x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">my_pairs</span> <span class="o">=</span> <span class="n">my_pairs</span>
+
+        <span class="c1"># 样本条目数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_pairs</span><span class="p">)</span>
+
+    <span class="c1"># 获取样本条数</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_len</span>
+
+    <span class="c1"># 获取第几条 样本数据</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+
+        <span class="c1"># 对index异常值进行修正 [0, self.sample_len-1]</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_len</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># 按索引获取 数据样本 x y</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_pairs</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_pairs</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># 样本x 文本数值化</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">english_word2index</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)]</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EOS_token</span><span class="p">)</span>
+        <span class="n">tensor_x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># 样本y 文本数值化</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">french_word2index</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">y</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)]</span>
+        <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EOS_token</span><span class="p">)</span>
+        <span class="n">tensor_y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="c1"># 注意 tensor_x tensor_y都是一维数组，通过DataLoader拿出数据是二维数据</span>
+        <span class="c1"># print(&#39;tensor_y.shape===&gt;&#39;, tensor_y.shape, tensor_y)</span>
+
+        <span class="c1"># 返回结果</span>
+        <span class="k">return</span> <span class="n">tensor_x</span><span class="p">,</span> <span class="n">tensor_y</span>
+</code></pre></div>
+<h4 id="3_1">3 构建数据迭代器<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_MyPairsDataset</span><span class="p">():</span>
+
+    <span class="c1"># 1 实例化dataset对象</span>
+    <span class="n">mypairsdataset</span> <span class="o">=</span> <span class="n">MyPairsDataset</span><span class="p">(</span><span class="n">my_pairs</span><span class="p">)</span>
+
+    <span class="c1"># 2 实例化dataloader</span>
+    <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">mypairsdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span>  <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span> <span class="p">(</span><span class="n">mydataloader</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x.shape&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y.shape&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">break</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span>   <span class="mi">2</span><span class="p">,</span>   <span class="mi">16</span><span class="p">,</span>   <span class="mi">33</span><span class="p">,</span>  <span class="mi">518</span><span class="p">,</span>  <span class="mi">589</span><span class="p">,</span> <span class="mi">1460</span><span class="p">,</span>    <span class="mi">4</span><span class="p">,</span>    <span class="mi">1</span><span class="p">]])</span>
+<span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span>   <span class="mi">6</span><span class="p">,</span>   <span class="mi">11</span><span class="p">,</span>   <span class="mi">52</span><span class="p">,</span>  <span class="mi">101</span><span class="p">,</span> <span class="mi">1358</span><span class="p">,</span>  <span class="mi">964</span><span class="p">,</span>    <span class="mi">5</span><span class="p">,</span>    <span class="mi">1</span><span class="p">]])</span>
+<span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">129</span><span class="p">,</span>  <span class="mi">78</span><span class="p">,</span> <span class="mi">677</span><span class="p">,</span> <span class="mi">429</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">1</span><span class="p">]])</span>
+<span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">118</span><span class="p">,</span>  <span class="mi">214</span><span class="p">,</span> <span class="mi">1073</span><span class="p">,</span>  <span class="mi">194</span><span class="p">,</span>  <span class="mi">778</span><span class="p">,</span>    <span class="mi">5</span><span class="p">,</span>    <span class="mi">1</span><span class="p">]])</span>
+</code></pre></div>
+<h3 id="3-gru">3 构建基于GRU的编码器和解码器<a class="headerlink" href="#3-gru" title="Permanent link">&para;</a></h3>
+<h4 id="1-gru">1 构建基于GRU的编码器<a class="headerlink" href="#1-gru" title="Permanent link">&para;</a></h4>
+<ul>
+<li>编码器结构图:</li>
+</ul>
+<p><img alt="avatar" src="img/encoder-network.png" /></p>
+<blockquote>
+<ul>
+<li>实现思路分析</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code># EncoderRNN类 实现思路分析：
+# 1 init函数 定义2个层 self.embedding self.gru (batch_first=True)
+#    def __init__(self, input_size, hidden_size): # 2803 256
+
+# 2 forward(input, hidden)函数，返回output, hidden
+#   数据经过词嵌入层 数据形状 [1,6] --&gt; [1,6,256]
+#   数据经过gru层 形状变化 gru([1,6,256],[1,1,256]) --&gt; [1,6,256] [1,1,256]
+
+# 3 初始化隐藏层输入数据 inithidden()
+#   形状 torch.zeros(1, 1, self.hidden_size, device=device)
+</code></pre></div>
+<blockquote>
+<ul>
+<li>构建基于GRU的编码器</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">EncoderRNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">):</span>
+
+        <span class="c1"># input_size 编码器 词嵌入层单词数 eg：2803</span>
+        <span class="c1"># hidden_size 编码器 词嵌入层每个单词的特征数 eg 256</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EncoderRNN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_size</span> <span class="o">=</span> <span class="n">input_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+
+        <span class="c1"># 实例化nn.Embedding层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+
+        <span class="c1"># 实例化nn.GRU层 注意参数batch_first=True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gru</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">GRU</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">):</span>
+
+        <span class="c1"># 数据经过词嵌入层 数据形状 [1,6] --&gt; [1,6,256]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+        <span class="c1"># 数据经过gru层 数据形状 gru([1,6,256],[1,1,256]) --&gt; [1,6,256] [1,1,256]</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gru</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span>
+
+    <span class="k">def</span> <span class="nf">inithidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 将隐层张量初始化成为1x1xself.hidden_size大小的张量</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_EncoderRNN</span><span class="p">():</span>
+
+    <span class="c1"># 实例化dataset对象</span>
+    <span class="n">mypairsdataset</span> <span class="o">=</span> <span class="n">MyPairsDataset</span><span class="p">(</span><span class="n">my_pairs</span><span class="p">)</span>
+
+    <span class="c1"># 实例化dataloader</span>
+    <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">mypairsdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># 实例化模型</span>
+    <span class="n">input_size</span> <span class="o">=</span> <span class="n">english_word_n</span>
+    <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">256</span> <span class="c1">#</span>
+    <span class="n">my_encoderrnn</span> <span class="o">=</span> <span class="n">EncoderRNN</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_encoderrnn模型结构---&gt;&#39;</span><span class="p">,</span> <span class="n">my_encoderrnn</span><span class="p">)</span>
+
+    <span class="c1"># 给encode模型喂数据</span>
+    <span class="k">for</span>  <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span> <span class="p">(</span><span class="n">mydataloader</span><span class="p">):</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x.shape&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y.shape&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># 一次性的送数据</span>
+        <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">inithidden</span><span class="p">()</span>
+        <span class="n">encode_output_c</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;encode_output_c.shape---&gt;&#39;</span><span class="p">,</span> <span class="n">encode_output_c</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">encode_output_c</span><span class="p">)</span>
+
+        <span class="c1"># 一个字符一个字符给为模型喂数据</span>
+        <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">inithidden</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;观察：最后一个时间步output输出是否相等&#39;</span><span class="p">)</span> <span class="c1"># hidden_size = 8 效果比较好</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;encode_output_c[0][-1]===&gt;&#39;</span><span class="p">,</span> <span class="n">encode_output_c</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output===&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+        <span class="k">break</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 本输出效果为hidden_size = 8</span>
+<span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">129</span><span class="p">,</span> <span class="mi">124</span><span class="p">,</span> <span class="mi">270</span><span class="p">,</span> <span class="mi">558</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">1</span><span class="p">]])</span>
+<span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">118</span><span class="p">,</span>  <span class="mi">214</span><span class="p">,</span>  <span class="mi">101</span><span class="p">,</span> <span class="mi">1253</span><span class="p">,</span> <span class="mi">1028</span><span class="p">,</span>    <span class="mi">5</span><span class="p">,</span>    <span class="mi">1</span><span class="p">]])</span>
+<span class="n">encode_output_c</span><span class="o">.</span><span class="n">shape</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span> 
+<span class="n">tensor</span><span class="p">([[[</span><span class="o">-</span><span class="mf">0.0984</span><span class="p">,</span>  <span class="mf">0.4267</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2120</span><span class="p">,</span>  <span class="mf">0.0923</span><span class="p">,</span>  <span class="mf">0.1525</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0378</span><span class="p">,</span>  <span class="mf">0.2493</span><span class="p">,</span><span class="o">-</span><span class="mf">0.2665</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.1388</span><span class="p">,</span>  <span class="mf">0.5363</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4522</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2819</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2070</span><span class="p">,</span>  <span class="mf">0.0795</span><span class="p">,</span>  <span class="mf">0.6262</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2359</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.4593</span><span class="p">,</span>  <span class="mf">0.2499</span><span class="p">,</span>  <span class="mf">0.1159</span><span class="p">,</span>  <span class="mf">0.3519</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0852</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3621</span><span class="p">,</span>  <span class="mf">0.1980</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1853</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.4407</span><span class="p">,</span>  <span class="mf">0.1974</span><span class="p">,</span>  <span class="mf">0.6873</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0483</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2730</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2190</span><span class="p">,</span>  <span class="mf">0.0587</span><span class="p">,</span> <span class="mf">0.2320</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.6544</span><span class="p">,</span>  <span class="mf">0.1990</span><span class="p">,</span>  <span class="mf">0.7534</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2347</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0686</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5532</span><span class="p">,</span>  <span class="mf">0.0624</span><span class="p">,</span> <span class="mf">0.4083</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">0.2941</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0427</span><span class="p">,</span>  <span class="mf">0.1017</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1057</span><span class="p">,</span>  <span class="mf">0.1983</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1066</span><span class="p">,</span>  <span class="mf">0.0881</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3936</span><span class="p">]]],</span> <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">TransposeBackward1</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">观察</span><span class="err">：</span><span class="n">最后一个时间步output输出是否相等</span>
+<span class="n">encode_output_c</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">===&gt;</span> <span class="n">tensor</span><span class="p">([</span><span class="o">-</span><span class="mf">0.2941</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0427</span><span class="p">,</span>  <span class="mf">0.1017</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1057</span><span class="p">,</span>  <span class="mf">0.1983</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1066</span><span class="p">,</span>  <span class="mf">0.0881</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3936</span><span class="p">],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">SelectBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">output</span><span class="o">===&gt;</span> <span class="n">tensor</span><span class="p">([[[</span><span class="o">-</span><span class="mf">0.2941</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0427</span><span class="p">,</span>  <span class="mf">0.1017</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1057</span><span class="p">,</span>  <span class="mf">0.1983</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1066</span><span class="p">,</span>  <span class="mf">0.0881</span><span class="p">,</span>
+          <span class="o">-</span><span class="mf">0.3936</span><span class="p">]]],</span> <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">TransposeBackward1</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="2-gru">2 构建基于GRU的解码器<a class="headerlink" href="#2-gru" title="Permanent link">&para;</a></h4>
+<ul>
+<li>解码器结构图:</li>
+</ul>
+<p><img alt="avatar" src="img/decoder-network.png" /></p>
+<blockquote>
+<ul>
+<li>构建基于GRU的解码器实现思路分析</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code># DecoderRNN 类 实现思路分析：
+# 解码器的作用：提取事物特征 进行分类（所以比 编码器 多了 线性层 和 softmax层）
+# 1 init函数 定义四个层 self.embedding self.gru self.out self.softmax=nn.LogSoftmax(dim=-1)
+#    def __init__(self, output_size, hidden_size): # 4345 256
+
+# 2 forward(input, hidden)函数，返回output, hidden
+#   数据经过词嵌入层 数据形状 [1,1] --&gt; [1,1,256]
+#   数据经过relu()层 output = F.relu(output)
+#   数据经过gru层 形状变化 gru([1,1,256],[1,1,256]) --&gt; [1,1,256] [1,1,256]
+#   数据结果out层 形状变化 [1,1,256]-&gt;[1,256]--&gt;[1,4345]
+#   返回 解码器分类output[1,4345]，最后隐层张量hidden[1,1,256]
+
+# 3 初始化隐藏层输入数据 inithidden()
+#   形状 torch.zeros(1, 1, self.hidden_size, device=device)
+</code></pre></div>
+<blockquote>
+<ul>
+<li>编码实现</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">DecoderRNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">):</span>
+
+        <span class="c1"># output_size 编码器 词嵌入层单词数 eg：4345</span>
+        <span class="c1"># hidden_size 编码器 词嵌入层每个单词的特征数 eg 256</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DecoderRNN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_size</span> <span class="o">=</span> <span class="n">output_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+
+        <span class="c1"># 实例化词嵌入层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">output_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+
+        <span class="c1"># 实例化gru层，输入尺寸256 输出尺寸256</span>
+        <span class="c1"># 因解码器一个字符一个字符的解码 batch_first=True 意义不大</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gru</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">GRU</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 实例化线性输出层out 输入尺寸256 输出尺寸4345</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">output_size</span><span class="p">)</span>
+
+        <span class="c1"># 实例化softomax层 数值归一化 以便分类</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">):</span>
+
+        <span class="c1"># 数据经过词嵌入层</span>
+        <span class="c1"># 数据形状 [1,1] --&gt; [1,1,256] or [1,6]---&gt;[1,6,256]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+        <span class="c1"># 数据结果relu层使Embedding矩阵更稀疏，以防止过拟合</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="c1"># 数据经过gru层</span>
+        <span class="c1"># 数据形状 gru([1,1,256],[1,1,256]) --&gt; [1,1,256] [1,1,256]</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gru</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+
+        <span class="c1"># 数据经过softmax层 归一化</span>
+        <span class="c1"># 数据形状变化 [1,1,256]-&gt;[1,256] ---&gt; [1,4345]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span>
+
+    <span class="k">def</span> <span class="nf">inithidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># 将隐层张量初始化成为1x1xself.hidden_size大小的张量</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm03_test_DecoderRNN</span><span class="p">():</span>
+
+    <span class="c1"># 实例化dataset对象</span>
+    <span class="n">mypairsdataset</span> <span class="o">=</span> <span class="n">MyPairsDataset</span><span class="p">(</span><span class="n">my_pairs</span><span class="p">)</span>
+
+    <span class="c1"># 实例化dataloader</span>
+    <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">mypairsdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># 实例化模型</span>
+    <span class="n">input_size</span> <span class="o">=</span> <span class="n">english_word_n</span>
+    <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">256</span> <span class="c1"># 观察结果数据 可使用8</span>
+    <span class="n">my_encoderrnn</span> <span class="o">=</span> <span class="n">EncoderRNN</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_encoderrnn模型结构---&gt;&#39;</span><span class="p">,</span> <span class="n">my_encoderrnn</span><span class="p">)</span>
+
+    <span class="c1"># 实例化模型</span>
+    <span class="n">input_size</span> <span class="o">=</span> <span class="n">french_word_n</span>
+    <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">256</span>  <span class="c1"># 观察结果数据 可使用8</span>
+    <span class="n">my_decoderrnn</span> <span class="o">=</span> <span class="n">DecoderRNN</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_decoderrnn模型结构---&gt;&#39;</span><span class="p">,</span> <span class="n">my_decoderrnn</span><span class="p">)</span>
+
+    <span class="c1"># 给模型喂数据 完整演示编码 解码流程</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span> <span class="p">(</span><span class="n">mydataloader</span><span class="p">):</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x.shape&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y.shape&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># 1 编码：一次性的送数据</span>
+        <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">inithidden</span><span class="p">()</span>
+        <span class="n">encode_output_c</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;encode_output_c.shape---&gt;&#39;</span><span class="p">,</span> <span class="n">encode_output_c</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">encode_output_c</span><span class="p">)</span>
+
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;观察：最后一个时间步output输出&#39;</span><span class="p">)</span> <span class="c1"># hidden_size = 8 效果比较好</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;encode_output_c[0][-1]===&gt;&#39;</span><span class="p">,</span> <span class="n">encode_output_c</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># 2 解码: 一个字符一个字符的解码</span>
+        <span class="c1"># 最后1个隐藏层的输出 作为 解码器的第1个时间步隐藏层输入</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_decoderrnn</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;每个时间步解码出来4345种可能 output===&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">break</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">my_encoderrnn模型结构</span><span class="o">---&gt;</span> <span class="n">EncoderRNN</span><span class="p">(</span>
+  <span class="p">(</span><span class="n">embedding</span><span class="p">):</span> <span class="n">Embedding</span><span class="p">(</span><span class="mi">2803</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">gru</span><span class="p">):</span> <span class="n">GRU</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">my_decoderrnn模型结构</span><span class="o">---&gt;</span> <span class="n">DecoderRNN</span><span class="p">(</span>
+  <span class="p">(</span><span class="n">embedding</span><span class="p">):</span> <span class="n">Embedding</span><span class="p">(</span><span class="mi">4345</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">gru</span><span class="p">):</span> <span class="n">GRU</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">out</span><span class="p">):</span> <span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">4345</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">softmax</span><span class="p">):</span> <span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">14</span><span class="p">,</span>  <span class="mi">40</span><span class="p">,</span> <span class="mi">883</span><span class="p">,</span> <span class="mi">677</span><span class="p">,</span> <span class="mi">589</span><span class="p">,</span> <span class="mi">609</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">1</span><span class="p">]])</span>
+<span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">1358</span><span class="p">,</span> <span class="mi">1125</span><span class="p">,</span>  <span class="mi">247</span><span class="p">,</span> <span class="mi">2863</span><span class="p">,</span>    <span class="mi">5</span><span class="p">,</span>    <span class="mi">1</span><span class="p">]])</span>
+<span class="n">每个时间步解码出来4345种可能</span> <span class="n">output</span><span class="o">===&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+<span class="n">每个时间步解码出来4345种可能</span> <span class="n">output</span><span class="o">===&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+<span class="n">每个时间步解码出来4345种可能</span> <span class="n">output</span><span class="o">===&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+<span class="n">每个时间步解码出来4345种可能</span> <span class="n">output</span><span class="o">===&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+<span class="n">每个时间步解码出来4345种可能</span> <span class="n">output</span><span class="o">===&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+<span class="n">每个时间步解码出来4345种可能</span> <span class="n">output</span><span class="o">===&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+</code></pre></div>
+<h4 id="3-gruattention">3 构建基于GRU和Attention的解码器<a class="headerlink" href="#3-gruattention" title="Permanent link">&para;</a></h4>
+<ul>
+<li>解码器结构图:</li>
+</ul>
+<p><img alt="avatar" src="img/attention-decoder-network.png" /></p>
+<blockquote>
+<ul>
+<li>实现思路分析</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code># 构建基于GRU和Attention的解码器
+# AttnDecoderRNN 类 实现思路分析：
+# 1 init函数 定义六个层
+#   self.embedding self.attn  self.attn_combine
+#   self.gru self.out self.softmax=nn.LogSoftmax(dim=-1)
+#   def __init__(self, output_size, hidden_size, dropout_p=0.1, max_length=MAX_LENGTH):: # 4345 256
+
+# 2 forward(input, hidden, encoder_outputs)函数，返回output, hidden
+#   数据经过词嵌入层 数据形状 [1,1] --&gt; [1,1,256]
+#   1 求查询张量q的注意力权重分布, attn_weights[1,10]
+#   2 求查询张量q的注意力结果表示 bmm运算, attn_applied[1,1,256]
+#   3 q 与 attn_applied 融合，经过层attn_combine 按照指定维度输出 output[1,1,256]
+#   数据经过relu()层 output = F.relu(output)
+#   数据经过gru层 形状变化 gru([1,1,256],[1,1,256]) --&gt; [1,1,256] [1,1,256]
+#   返回 # 返回解码器分类output[1,4345]，最后隐层张量hidden[1,1,256] 注意力权重张量attn_weights[1,10]
+
+# 3 初始化隐藏层输入数据 inithidden()
+#   形状 torch.zeros(1, 1, self.hidden_size, device=device)
+
+# 相对传统RNN解码 AttnDecoderRNN类多了注意力机制,需要构建QKV
+# 1 在init函数中 (self, output_size, hidden_size, dropout_p=0.1, max_length=MAX_LENGTH)
+    # 增加层 self.attn  self.attn_combine  self.dropout
+# 2 增加函数 attentionQKV(self, Q, K, V)
+# 3 函数forward(self, input, hidden, encoder_outputs)
+    # encoder_outputs 每个时间步解码准备qkv 调用attentionQKV
+    # 函数返回值 output, hidden, attn_weights
+# 4 调用需要准备中间语义张量C encode_output_c
+</code></pre></div>
+<blockquote>
+<ul>
+<li>编码实现</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AttnDecoderRNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">dropout_p</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">MAX_LENGTH</span><span class="p">):</span>
+
+        <span class="c1"># output_size   编码器 词嵌入层单词数 eg：4345</span>
+        <span class="c1"># hidden_size   编码器 词嵌入层每个单词的特征数 eg 256</span>
+        <span class="c1"># dropout_p     置零比率，默认0.1,</span>
+        <span class="c1"># max_length    最大长度10</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AttnDecoderRNN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_size</span> <span class="o">=</span> <span class="n">output_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout_p</span> <span class="o">=</span> <span class="n">dropout_p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">=</span> <span class="n">max_length</span>
+
+        <span class="c1"># 定义nn.Embedding层 nn.Embedding(4345,256)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">)</span>
+
+        <span class="c1"># 定义线性层1：求q的注意力权重分布</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="p">)</span>
+
+        <span class="c1"># 定义线性层2：q+注意力结果表示融合后，在按照指定维度输出</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attn_combine</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">)</span>
+
+        <span class="c1"># 定义dropout层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dropout_p</span><span class="p">)</span>
+
+        <span class="c1"># 定义gru层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gru</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">GRU</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 定义out层 解码器按照类别进行输出(256,4345)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_size</span><span class="p">)</span>
+
+        <span class="c1"># 实例化softomax层 数值归一化 以便分类</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">encoder_outputs</span><span class="p">):</span>
+        <span class="c1"># input代表q [1,1] 二维数据 hidden代表k [1,1,256] encoder_outputs代表v [10,256]</span>
+
+        <span class="c1"># 数据经过词嵌入层</span>
+        <span class="c1"># 数据形状 [1,1] --&gt; [1,1,256]</span>
+        <span class="n">embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+        <span class="c1"># 使用dropout进行随机丢弃，防止过拟合</span>
+        <span class="n">embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">embedded</span><span class="p">)</span>
+
+        <span class="c1"># 1 求查询张量q的注意力权重分布, attn_weights[1,10]</span>
+        <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attn</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">embedded</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hidden</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># 2 求查询张量q的注意力结果表示 bmm运算, attn_applied[1,1,256]</span>
+        <span class="c1"># [1,1,10],[1,10,256] ---&gt; [1,1,256]</span>
+        <span class="n">attn_applied</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bmm</span><span class="p">(</span><span class="n">attn_weights</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">encoder_outputs</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+        <span class="c1"># 3 q 与 attn_applied 融合，再按照指定维度输出 output[1,1,256]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">embedded</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">attn_applied</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn_combine</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># 查询张量q的注意力结果表示 使用relu激活</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="c1"># 查询张量经过gru、softmax进行分类结果输出</span>
+        <span class="c1"># 数据形状[1,1,256],[1,1,256] --&gt; [1,1,256], [1,1,256]</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gru</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="c1"># 数据形状[1,1,256]-&gt;[1,256]-&gt;[1,4345]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="c1"># 返回解码器分类output[1,4345]，最后隐层张量hidden[1,1,256] 注意力权重张量attn_weights[1,10]</span>
+        <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">attn_weights</span>
+
+    <span class="k">def</span> <span class="nf">inithidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 将隐层张量初始化成为1x1xself.hidden_size大小的张量</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_AttnDecoderRNN</span><span class="p">():</span>
+    <span class="c1"># 1 实例化 数据集对象</span>
+    <span class="n">mypairsdataset</span> <span class="o">=</span> <span class="n">MyPairsDataset</span><span class="p">(</span><span class="n">my_pairs</span><span class="p">)</span>
+
+    <span class="c1"># 2 实例化 数据加载器对象</span>
+    <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">mypairsdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1">#  实例化 编码器my_encoderrnn</span>
+    <span class="n">my_encoderrnn</span> <span class="o">=</span> <span class="n">EncoderRNN</span><span class="p">(</span><span class="n">english_word_n</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+
+    <span class="c1"># 实例化 解码器DecoderRNN</span>
+    <span class="n">my_attndecoderrnn</span> <span class="o">=</span> <span class="n">AttnDecoderRNN</span><span class="p">(</span><span class="n">french_word_n</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+
+    <span class="c1"># 3 遍历数据迭代器</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mydataloader</span><span class="p">):</span>
+
+        <span class="c1"># 编码-方法1 一次性给模型送数据</span>
+        <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">inithidden</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x---&gt;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y---&gt;&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># [1, 6, 256], [1, 1, 256]) --&gt; [1, 6, 256][1, 1, 256]</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="c1"># print(&#39;output--&gt;&#39;, output.shape, output)</span>
+        <span class="c1"># print(&#39;最后一个时间步取出output[0,-1]--&gt;&#39;, output[0, -1].shape, output[0, -1])</span>
+
+        <span class="c1"># 中间语义张量C</span>
+        <span class="n">encode_output_c</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">MAX_LENGTH</span><span class="p">,</span> <span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">encode_output_c</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span>
+
+        <span class="c1"># # 编码-方法2 一个字符一个字符给模型送数据</span>
+        <span class="c1"># hidden = my_encoderrnn.inithidden()</span>
+        <span class="c1"># for i in range(x.shape[1]):</span>
+        <span class="c1">#     tmp = x[0][i].view(1, -1)</span>
+        <span class="c1">#     # [1, 1, 256], [1, 1, 256]) --&gt; [1, 1, 256][1, 1, 256]</span>
+        <span class="c1">#     output, hidden = my_encoderrnn(tmp, hidden)</span>
+        <span class="c1"># print(&#39;一个字符一个字符output&#39;, output.shape, output)</span>
+
+        <span class="c1"># 解码-必须一个字符一个字符的解码 </span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">my_attndecoderrnn</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">encode_output_c</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;解码output.shape&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;解码hidden.shape&#39;</span><span class="p">,</span> <span class="n">hidden</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;解码attn_weights.shape&#39;</span><span class="p">,</span> <span class="n">attn_weights</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">break</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">x</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">129</span><span class="p">,</span>   <span class="mi">78</span><span class="p">,</span> <span class="mi">1873</span><span class="p">,</span>  <span class="mi">294</span><span class="p">,</span> <span class="mi">1215</span><span class="p">,</span>    <span class="mi">4</span><span class="p">,</span>    <span class="mi">1</span><span class="p">]])</span>
+<span class="n">y</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">210</span><span class="p">,</span> <span class="mi">3097</span><span class="p">,</span>  <span class="mi">248</span><span class="p">,</span> <span class="mi">3095</span><span class="p">,</span>    <span class="mi">5</span><span class="p">,</span>    <span class="mi">1</span><span class="p">]])</span>
+<span class="n">解码output</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+<span class="n">解码hidden</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+<span class="n">解码attn_weights</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">解码output</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+<span class="n">解码hidden</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+<span class="n">解码attn_weights</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">解码output</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+<span class="n">解码hidden</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+<span class="n">解码attn_weights</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">解码output</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+<span class="n">解码hidden</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+<span class="n">解码attn_weights</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">解码output</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+<span class="n">解码hidden</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+<span class="n">解码attn_weights</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">解码output</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4345</span><span class="p">])</span>
+<span class="n">解码hidden</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+<span class="n">解码attn_weights</span><span class="o">.</span><span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+</code></pre></div>
+<h3 id="4">4 构建模型训练函数, 并进行训练<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<h4 id="1-teacher_forcing">1 teacher_forcing介绍<a class="headerlink" href="#1-teacher_forcing" title="Permanent link">&para;</a></h4>
+<p>它是一种用于序列生成任务的训练技巧, 在seq2seq架构中, 根据循环神经网络理论，解码器每次应该使用上一步的结果作为输入的一部分, 但是训练过程中，一旦上一步的结果是错误的，就会导致这种错误被累积，无法达到训练效果, 因此，我们需要一种机制改变上一步出错的情况，因为训练时我们是已知正确的输出应该是什么，因此可以强制将上一步结果设置成正确的输出, 这种方式就叫做teacher_forcing.</p>
+<h4 id="2-teacher_forcing">2 teacher_forcing的作用<a class="headerlink" href="#2-teacher_forcing" title="Permanent link">&para;</a></h4>
+<ul>
+<li>能够在训练的时候矫正模型的预测，避免在序列生成的过程中误差进一步放大.</li>
+</ul>
+<ul>
+<li>teacher_forcing能够极大的加快模型的收敛速度，令模型训练过程更快更平稳.</li>
+</ul>
+<h4 id="3_2">3 构建内部迭代训练函数<a class="headerlink" href="#3_2" title="Permanent link">&para;</a></h4>
+<blockquote>
+<ul>
+<li>模型训练参数</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 模型训练参数</span>
+<span class="n">mylr</span> <span class="o">=</span> <span class="mf">1e-4</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="c1"># 设置teacher_forcing比率为0.5</span>
+<span class="n">teacher_forcing_ratio</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">print_interval_num</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">plot_interval_num</span> <span class="o">=</span> <span class="mi">100</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>实现思路分析</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 内部迭代训练函数Train_Iters</span>
+<span class="c1"># 1 编码 encode_output, encode_hidden = my_encoderrnn(x, encode_hidden)</span>
+<span class="c1"># 数据形状 eg [1,6],[1,1,256] --&gt; [1,6,256],[1,1,256]</span>
+
+<span class="c1"># 2 解码参数准备和解码</span>
+<span class="c1"># 解码参数1 固定长度C encoder_outputs_c = torch.zeros(MAX_LENGTH, my_encoderrnn.hidden_size, device=device)</span>
+<span class="c1"># 解码参数2 decode_hidden # 解码参数3 input_y = torch.tensor([[SOS_token]], device=device)</span>
+<span class="c1"># 数据形状数据形状 [1,1],[1,1,256],[10,256] ---&gt; [1,4345],[1,1,256],[1,10]</span>
+<span class="c1"># output_y, decode_hidden, attn_weight = my_attndecoderrnn(input_y, decode_hidden, encode_output_c)</span>
+<span class="c1"># 计算损失 target_y = y[0][idx].view(1)</span>
+<span class="c1"># 每个时间步处理 for idx in range(y_len): 处理三者之间关系input_y output_y target_y</span>
+
+<span class="c1"># 3 训练策略 use_teacher_forcing = True if random.random() &lt; teacher_forcing_ratio else False</span>
+<span class="c1"># teacher_forcing  把样本真实值y作为下一次输入 input_y = y[0][idx].view(1, -1)</span>
+<span class="c1"># not teacher_forcing 把预测值y作为下一次输入</span>
+<span class="c1"># topv,topi = output_y.topk(1) # if topi.squeeze().item() == EOS_token: break input_y = topi.detach()</span>
+
+<span class="c1"># 4 其他 # 计算损失  # 梯度清零 # 反向传播  # 梯度更新 # 返回 损失列表myloss.item()/y_len</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>编码实现 </li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">Train_Iters</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">my_encoderrnn</span><span class="p">,</span> <span class="n">my_attndecoderrnn</span><span class="p">,</span> <span class="n">myadam_encode</span><span class="p">,</span> <span class="n">myadam_decode</span><span class="p">,</span> <span class="n">mycrossentropyloss</span><span class="p">):</span>
+
+    <span class="c1"># 1 编码 encode_output, encode_hidden = my_encoderrnn(x, encode_hidden)</span>
+    <span class="n">encode_hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">inithidden</span><span class="p">()</span>
+    <span class="n">encode_output</span><span class="p">,</span> <span class="n">encode_hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">encode_hidden</span><span class="p">)</span> <span class="c1"># 一次性送数据</span>
+    <span class="c1"># [1,6],[1,1,256] --&gt; [1,6,256],[1,1,256]</span>
+
+    <span class="c1"># 2 解码参数准备和解码</span>
+    <span class="c1"># 解码参数1 encode_output_c [10,256]</span>
+    <span class="n">encode_output_c</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">MAX_LENGTH</span><span class="p">,</span> <span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">encode_output_c</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">encode_output</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># 解码参数2</span>
+    <span class="n">decode_hidden</span> <span class="o">=</span> <span class="n">encode_hidden</span>
+
+    <span class="c1"># 解码参数3</span>
+    <span class="n">input_y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="n">SOS_token</span><span class="p">]],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="n">myloss</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">y_len</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">use_teacher_forcing</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">teacher_forcing_ratio</span> <span class="k">else</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">use_teacher_forcing</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_len</span><span class="p">):</span>
+            <span class="c1"># 数据形状数据形状 [1,1],[1,1,256],[10,256] ---&gt; [1,4345],[1,1,256],[1,10]</span>
+            <span class="n">output_y</span><span class="p">,</span> <span class="n">decode_hidden</span><span class="p">,</span> <span class="n">attn_weight</span> <span class="o">=</span> <span class="n">my_attndecoderrnn</span><span class="p">(</span><span class="n">input_y</span><span class="p">,</span> <span class="n">decode_hidden</span><span class="p">,</span> <span class="n">encode_output_c</span><span class="p">)</span>
+            <span class="n">target_y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">myloss</span> <span class="o">=</span> <span class="n">myloss</span> <span class="o">+</span> <span class="n">mycrossentropyloss</span><span class="p">(</span><span class="n">output_y</span><span class="p">,</span> <span class="n">target_y</span><span class="p">)</span>
+            <span class="n">input_y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_len</span><span class="p">):</span>
+            <span class="c1"># 数据形状数据形状 [1,1],[1,1,256],[10,256] ---&gt; [1,4345],[1,1,256],[1,10]</span>
+            <span class="n">output_y</span><span class="p">,</span> <span class="n">decode_hidden</span><span class="p">,</span> <span class="n">attn_weight</span> <span class="o">=</span> <span class="n">my_attndecoderrnn</span><span class="p">(</span><span class="n">input_y</span><span class="p">,</span> <span class="n">decode_hidden</span><span class="p">,</span> <span class="n">encode_output_c</span><span class="p">)</span>
+            <span class="n">target_y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">myloss</span> <span class="o">=</span> <span class="n">myloss</span> <span class="o">+</span> <span class="n">mycrossentropyloss</span><span class="p">(</span><span class="n">output_y</span><span class="p">,</span> <span class="n">target_y</span><span class="p">)</span>
+
+            <span class="n">topv</span><span class="p">,</span> <span class="n">topi</span> <span class="o">=</span> <span class="n">output_y</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">topi</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">EOS_token</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">input_y</span> <span class="o">=</span> <span class="n">topi</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+    <span class="c1"># 梯度清零</span>
+    <span class="n">myadam_encode</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">myadam_decode</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+    <span class="c1"># 反向传播</span>
+    <span class="n">myloss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+    <span class="c1"># 梯度更新</span>
+    <span class="n">myadam_encode</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="n">myadam_decode</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="c1"># 返回 损失列表myloss.item()/y_len</span>
+    <span class="k">return</span> <span class="n">myloss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">/</span> <span class="n">y_len</span>
+</code></pre></div>
+<h4 id="4_1">4 构建模型训练函数<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h4>
+<blockquote>
+<ul>
+<li>实现思路分析</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code># Train_seq2seq() 思路分析
+# 实例化 mypairsdataset对象  实例化 mydataloader
+# 实例化编码器 my_encoderrnn 实例化解码器 my_attndecoderrnn
+# 实例化编码器优化器 myadam_encode 实例化解码器优化器 myadam_decode
+# 实例化损失函数 mycrossentropyloss = nn.NLLLoss()
+# 定义模型训练的参数
+# epoches mylr=1e4 teacher_forcing_ratio print_interval_num  plot_interval_num (全局)
+# plot_loss_list = [] (返回) print_loss_total plot_loss_total starttime (每轮内部)
+
+# 外层for循环 控制轮数 for epoch_idx in range(1, 1+epochs):
+# 内层for循环 控制迭代次数 # for item, (x, y) in enumerate(mydataloader, start=1):
+#   调用内部训练函数 Train_Iters(x, y, my_encoderrnn, my_attndecoderrnn, myadam_encode, myadam_decode, mycrossentropyloss)
+# 计算辅助信息
+#   计算打印屏幕间隔损失-每隔1000次 # 计算画图间隔损失-每隔100次
+#   每个轮次保存模型 torch.save(my_encoderrnn.state_dict(), PATH1)
+#   所有轮次训练完毕 画损失图 plt.figure() .plot(plot_loss_list) .save(&#39;x.png&#39;) .show()
+</code></pre></div>
+<blockquote>
+<ul>
+<li>编码实现</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">Train_seq2seq</span><span class="p">():</span>
+
+    <span class="c1"># 实例化 mypairsdataset对象  实例化 mydataloader</span>
+    <span class="n">mypairsdataset</span> <span class="o">=</span> <span class="n">MyPairsDataset</span><span class="p">(</span><span class="n">my_pairs</span><span class="p">)</span>
+    <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">mypairsdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># 实例化编码器 my_encoderrnn 实例化解码器 my_attndecoderrnn</span>
+    <span class="n">my_encoderrnn</span> <span class="o">=</span> <span class="n">EncoderRNN</span><span class="p">(</span><span class="mi">2803</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+    <span class="n">my_attndecoderrnn</span> <span class="o">=</span> <span class="n">AttnDecoderRNN</span><span class="p">(</span><span class="n">output_size</span><span class="o">=</span><span class="mi">4345</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">dropout_p</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="c1"># 实例化编码器优化器 myadam_encode 实例化解码器优化器 myadam_decode</span>
+    <span class="n">myadam_encode</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">mylr</span><span class="p">)</span>
+    <span class="n">myadam_decode</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">my_attndecoderrnn</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">mylr</span><span class="p">)</span>
+
+    <span class="c1"># 实例化损失函数 mycrossentropyloss = nn.NLLLoss()</span>
+    <span class="n">mycrossentropyloss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">NLLLoss</span><span class="p">()</span>
+
+    <span class="c1"># 定义模型训练的参数</span>
+    <span class="n">plot_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># 外层for循环 控制轮数 for epoch_idx in range(1, 1+epochs):</span>
+    <span class="k">for</span> <span class="n">epoch_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="n">epochs</span><span class="p">):</span>
+
+        <span class="n">print_loss_total</span><span class="p">,</span> <span class="n">plot_loss_total</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="n">starttime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># 内层for循环 控制迭代次数</span>
+        <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mydataloader</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># 调用内部训练函数</span>
+            <span class="n">myloss</span> <span class="o">=</span> <span class="n">Train_Iters</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">my_encoderrnn</span><span class="p">,</span> <span class="n">my_attndecoderrnn</span><span class="p">,</span> <span class="n">myadam_encode</span><span class="p">,</span> <span class="n">myadam_decode</span><span class="p">,</span> <span class="n">mycrossentropyloss</span><span class="p">)</span>
+            <span class="n">print_loss_total</span> <span class="o">+=</span> <span class="n">myloss</span>
+            <span class="n">plot_loss_total</span> <span class="o">+=</span> <span class="n">myloss</span>
+
+            <span class="c1"># 计算打印屏幕间隔损失-每隔1000次</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="o">%</span> <span class="n">print_interval_num</span> <span class="o">==</span><span class="mi">0</span> <span class="p">:</span>
+                <span class="n">print_loss_avg</span> <span class="o">=</span> <span class="n">print_loss_total</span> <span class="o">/</span> <span class="n">print_interval_num</span>
+                <span class="c1"># 将总损失归0</span>
+                <span class="n">print_loss_total</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># 打印日志，日志内容分别是：训练耗时，当前迭代步，当前进度百分比，当前平均损失</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;轮次</span><span class="si">%d</span><span class="s1">  损失</span><span class="si">%.6f</span><span class="s1"> 时间:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">epoch_idx</span><span class="p">,</span> <span class="n">print_loss_avg</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">))</span>
+
+            <span class="c1"># 计算画图间隔损失-每隔100次</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="o">%</span> <span class="n">plot_interval_num</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># 通过总损失除以间隔得到平均损失</span>
+                <span class="n">plot_loss_avg</span> <span class="o">=</span> <span class="n">plot_loss_total</span> <span class="o">/</span> <span class="n">plot_interval_num</span>
+                <span class="c1"># 将平均损失添加plot_loss_list列表中</span>
+                <span class="n">plot_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plot_loss_avg</span><span class="p">)</span>
+                <span class="c1"># 总损失归0</span>
+                <span class="n">plot_loss_total</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># 每个轮次保存模型</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s1">&#39;./my_encoderrnn_</span><span class="si">%d</span><span class="s1">.pth&#39;</span> <span class="o">%</span> <span class="n">epoch_idx</span><span class="p">)</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">my_attndecoderrnn</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s1">&#39;./my_attndecoderrnn_</span><span class="si">%d</span><span class="s1">.pth&#39;</span> <span class="o">%</span> <span class="n">epoch_idx</span><span class="p">)</span>
+
+    <span class="c1"># 所有轮次训练完毕 画损失图</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plot_loss_list</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;./s2sq_loss.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">plot_loss_list</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>轮次1  损失8.123402 时间:4
+轮次1  损失6.658305 时间:8
+轮次1  损失5.252497 时间:12
+轮次1  损失4.906939 时间:16
+轮次1  损失4.813769 时间:19
+轮次1  损失4.780460 时间:23
+轮次1  损失4.621599 时间:27
+轮次1  损失4.487508 时间:31
+轮次1  损失4.478538 时间:35
+轮次1  损失4.245148 时间:39
+轮次1  损失4.602579 时间:44
+轮次1  损失4.256789 时间:48
+轮次1  损失4.218111 时间:52
+轮次1  损失4.393134 时间:56
+轮次1  损失4.134959 时间:60
+轮次1  损失4.164878 时间:63
+</code></pre></div>
+<h4 id="5">5 损失曲线分析<a class="headerlink" href="#5" title="Permanent link">&para;</a></h4>
+<p>损失下降曲线</p>
+<p><img alt="avatar" src="img/s2s_loss.png" /></p>
+<blockquote>
+<p>一直下降的损失曲线, 说明模型正在收敛, 能够从数据中找到一些规律应用于数据.</p>
+</blockquote>
+<h3 id="5_1">5 构建模型评估函数并测试<a class="headerlink" href="#5_1" title="Permanent link">&para;</a></h3>
+<h4 id="1_2">1 构建模型评估函数<a class="headerlink" href="#1_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 模型评估代码与模型预测代码类似，需要注意使用with torch.no_grad()</span>
+<span class="c1"># 模型预测时，第一个时间步使用SOS_token作为输入 后续时间步采用预测值作为输入，也就是自回归机制</span>
+<span class="k">def</span> <span class="nf">Seq2Seq_Evaluate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">my_encoderrnn</span><span class="p">,</span> <span class="n">my_attndecoderrnn</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="c1"># 1 编码：一次性的送数据</span>
+        <span class="n">encode_hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">inithidden</span><span class="p">()</span>
+        <span class="n">encode_output</span><span class="p">,</span> <span class="n">encode_hidden</span> <span class="o">=</span> <span class="n">my_encoderrnn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">encode_hidden</span><span class="p">)</span>
+
+        <span class="c1"># 2 解码参数准备</span>
+        <span class="c1"># 解码参数1 固定长度中间语义张量c</span>
+        <span class="n">encoder_outputs_c</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">MAX_LENGTH</span><span class="p">,</span> <span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">x_len</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_len</span><span class="p">):</span>
+            <span class="n">encoder_outputs_c</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">encode_output</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span>
+
+        <span class="c1"># 解码参数2 最后1个隐藏层的输出 作为 解码器的第1个时间步隐藏层输入</span>
+        <span class="n">decode_hidden</span> <span class="o">=</span> <span class="n">encode_hidden</span>
+
+        <span class="c1"># 解码参数3 解码器第一个时间步起始符</span>
+        <span class="n">input_y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="n">SOS_token</span><span class="p">]],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># 3 自回归方式解码</span>
+        <span class="c1"># 初始化预测的词汇列表</span>
+        <span class="n">decoded_words</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># 初始化attention张量</span>
+        <span class="n">decoder_attentions</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">MAX_LENGTH</span><span class="p">,</span> <span class="n">MAX_LENGTH</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_LENGTH</span><span class="p">):</span> <span class="c1"># note:MAX_LENGTH=10</span>
+            <span class="n">output_y</span><span class="p">,</span> <span class="n">decode_hidden</span><span class="p">,</span> <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">my_attndecoderrnn</span><span class="p">(</span><span class="n">input_y</span><span class="p">,</span> <span class="n">decode_hidden</span><span class="p">,</span> <span class="n">encoder_outputs_c</span><span class="p">)</span>
+            <span class="c1"># 预测值作为为下一次时间步的输入值</span>
+            <span class="n">topv</span><span class="p">,</span> <span class="n">topi</span> <span class="o">=</span> <span class="n">output_y</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">decoder_attentions</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">attn_weights</span>
+
+            <span class="c1"># 如果输出值是终止符，则循环停止</span>
+            <span class="k">if</span> <span class="n">topi</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">EOS_token</span><span class="p">:</span>
+                <span class="n">decoded_words</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;EOS&gt;&#39;</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">decoded_words</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">french_index2word</span><span class="p">[</span><span class="n">topi</span><span class="o">.</span><span class="n">item</span><span class="p">()])</span>
+
+            <span class="c1"># 将本次预测的索引赋值给 input_y，进行下一个时间步预测</span>
+            <span class="n">input_y</span> <span class="o">=</span> <span class="n">topi</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+        <span class="c1"># 返回结果decoded_words， 注意力张量权重分布表(把没有用到的部分切掉)</span>
+        <span class="k">return</span> <span class="n">decoded_words</span><span class="p">,</span> <span class="n">decoder_attentions</span><span class="p">[:</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+</code></pre></div>
+<h4 id="2_3">2  模型评估函数调用<a class="headerlink" href="#2_3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 加载模型</span>
+<span class="n">PATH1</span> <span class="o">=</span> <span class="s1">&#39;./gpumodel/my_encoderrnn.pth&#39;</span>
+<span class="n">PATH2</span> <span class="o">=</span> <span class="s1">&#39;./gpumodel/my_attndecoderrnn.pth&#39;</span>
+<span class="k">def</span> <span class="nf">dm_test_Seq2Seq_Evaluate</span><span class="p">():</span>
+    <span class="c1"># 实例化dataset对象</span>
+    <span class="n">mypairsdataset</span> <span class="o">=</span> <span class="n">MyPairsDataset</span><span class="p">(</span><span class="n">my_pairs</span><span class="p">)</span>
+    <span class="c1"># 实例化dataloader</span>
+    <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">mypairsdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># 实例化模型</span>
+    <span class="n">input_size</span> <span class="o">=</span> <span class="n">english_word_n</span>
+    <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">256</span>  <span class="c1"># 观察结果数据 可使用8</span>
+    <span class="n">my_encoderrnn</span> <span class="o">=</span> <span class="n">EncoderRNN</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+    <span class="c1"># my_encoderrnn.load_state_dict(torch.load(PATH1))</span>
+    <span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">PATH1</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="k">lambda</span> <span class="n">storage</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="n">storage</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_encoderrnn模型结构---&gt;&#39;</span><span class="p">,</span> <span class="n">my_encoderrnn</span><span class="p">)</span>
+
+    <span class="c1"># 实例化模型</span>
+    <span class="n">input_size</span> <span class="o">=</span> <span class="n">french_word_n</span>
+    <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">256</span>  <span class="c1"># 观察结果数据 可使用8</span>
+    <span class="n">my_attndecoderrnn</span> <span class="o">=</span> <span class="n">AttnDecoderRNN</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+    <span class="c1"># my_attndecoderrnn.load_state_dict(torch.load(PATH2))</span>
+    <span class="n">my_attndecoderrnn</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">PATH2</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="k">lambda</span> <span class="n">storage</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="n">storage</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_decoderrnn模型结构---&gt;&#39;</span><span class="p">,</span> <span class="n">my_attndecoderrnn</span><span class="p">)</span>
+
+    <span class="n">my_samplepairs</span> <span class="o">=</span> 
+    <span class="p">[</span>
+      <span class="p">[</span><span class="s1">&#39;i m impressed with your french .&#39;</span><span class="p">,</span> <span class="s1">&#39;je suis impressionne par votre francais .&#39;</span><span class="p">],</span>
+      <span class="p">[</span><span class="s1">&#39;i m more than a friend .&#39;</span><span class="p">,</span> <span class="s1">&#39;je suis plus qu une amie .&#39;</span><span class="p">],</span>
+      <span class="p">[</span><span class="s1">&#39;she is beautiful like her mother .&#39;</span><span class="p">,</span> <span class="s1">&#39;elle est belle comme sa mere .&#39;</span><span class="p">]</span>
+    <span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_samplepairs---&gt;&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_samplepairs</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">pair</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">my_samplepairs</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># 样本x 文本数值化</span>
+        <span class="n">tmpx</span> <span class="o">=</span> <span class="p">[</span><span class="n">english_word2index</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)]</span>
+        <span class="n">tmpx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EOS_token</span><span class="p">)</span>
+        <span class="n">tensor_x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">tmpx</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># 模型预测</span>
+        <span class="n">decoded_words</span><span class="p">,</span> <span class="n">attentions</span> <span class="o">=</span> <span class="n">Seq2Seq_Evaluate</span><span class="p">(</span><span class="n">tensor_x</span><span class="p">,</span> <span class="n">my_encoderrnn</span><span class="p">,</span> <span class="n">my_attndecoderrnn</span><span class="p">)</span>
+        <span class="c1"># print(&#39;decoded_words-&gt;&#39;, decoded_words)</span>
+        <span class="n">output_sentence</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">decoded_words</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="n">output_sentence</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;</span> <span class="n">i</span> <span class="n">m</span> <span class="n">impressed</span> <span class="k">with</span> <span class="n">your</span> <span class="n">french</span> <span class="o">.</span>
+<span class="o">=</span> <span class="n">je</span> <span class="n">suis</span> <span class="n">impressionne</span> <span class="n">par</span> <span class="n">votre</span> <span class="n">francais</span> <span class="o">.</span>
+<span class="o">&lt;</span> <span class="n">je</span> <span class="n">suis</span> <span class="n">impressionnee</span> <span class="n">par</span> <span class="n">votre</span> <span class="n">francais</span> <span class="o">.</span> <span class="o">&lt;</span><span class="n">EOS</span><span class="o">&gt;</span>
+
+<span class="o">&gt;</span> <span class="n">i</span> <span class="n">m</span> <span class="n">more</span> <span class="n">than</span> <span class="n">a</span> <span class="n">friend</span> <span class="o">.</span>
+<span class="o">=</span> <span class="n">je</span> <span class="n">suis</span> <span class="n">plus</span> <span class="n">qu</span> <span class="n">une</span> <span class="n">amie</span> <span class="o">.</span>
+<span class="o">&lt;</span> <span class="n">je</span> <span class="n">suis</span> <span class="n">plus</span> <span class="n">qu</span> <span class="n">une</span> <span class="n">amie</span> <span class="o">.</span> <span class="o">&lt;</span><span class="n">EOS</span><span class="o">&gt;</span>
+
+<span class="o">&gt;</span> <span class="n">she</span> <span class="ow">is</span> <span class="n">beautiful</span> <span class="n">like</span> <span class="n">her</span> <span class="n">mother</span> <span class="o">.</span>
+<span class="o">=</span> <span class="n">elle</span> <span class="n">est</span> <span class="n">belle</span> <span class="n">comme</span> <span class="n">sa</span> <span class="n">mere</span> <span class="o">.</span>
+<span class="o">&lt;</span> <span class="n">elle</span> <span class="n">est</span> <span class="n">sa</span> <span class="n">sa</span> <span class="n">mere</span> <span class="o">.</span> <span class="o">&lt;</span><span class="n">EOS</span><span class="o">&gt;</span>
+
+<span class="o">&gt;</span> <span class="n">you</span> <span class="n">re</span> <span class="n">winning</span> <span class="n">aren</span> <span class="n">t</span> <span class="n">you</span> <span class="err">?</span>
+<span class="o">=</span> <span class="n">vous</span> <span class="n">gagnez</span> <span class="n">n</span> <span class="n">est</span> <span class="n">ce</span> <span class="n">pas</span> <span class="err">?</span>
+<span class="o">&lt;</span> <span class="n">tu</span> <span class="n">restez</span> <span class="n">n</span> <span class="n">est</span> <span class="n">ce</span> <span class="n">pas</span> <span class="err">?</span> <span class="o">&lt;</span><span class="n">EOS</span><span class="o">&gt;</span>
+
+<span class="o">&gt;</span> <span class="n">he</span> <span class="ow">is</span> <span class="n">angry</span> <span class="k">with</span> <span class="n">you</span> <span class="o">.</span>
+<span class="o">=</span> <span class="n">il</span> <span class="n">est</span> <span class="n">en</span> <span class="n">colere</span> <span class="n">apres</span> <span class="n">toi</span> <span class="o">.</span>
+<span class="o">&lt;</span> <span class="n">il</span> <span class="n">est</span> <span class="n">en</span> <span class="n">colere</span> <span class="n">apres</span> <span class="n">toi</span> <span class="o">.</span> <span class="o">&lt;</span><span class="n">EOS</span><span class="o">&gt;</span>
+
+<span class="o">&gt;</span> <span class="n">you</span> <span class="n">re</span> <span class="n">very</span> <span class="n">timid</span> <span class="o">.</span>
+<span class="o">=</span> <span class="n">vous</span> <span class="n">etes</span> <span class="n">tres</span> <span class="n">craintifs</span> <span class="o">.</span>
+<span class="o">&lt;</span> <span class="n">tu</span> <span class="n">es</span> <span class="n">tres</span> <span class="n">craintive</span> <span class="o">.</span> <span class="o">&lt;</span><span class="n">EOS</span><span class="o">&gt;</span>
+</code></pre></div>
+<h4 id="3-attention">3 Attention张量制图<a class="headerlink" href="#3-attention" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_Attention</span><span class="p">():</span>
+
+    <span class="c1"># 实例化dataset对象</span>
+    <span class="n">mypairsdataset</span> <span class="o">=</span> <span class="n">MyPairsDataset</span><span class="p">(</span><span class="n">my_pairs</span><span class="p">)</span>
+    <span class="c1"># 实例化dataloader</span>
+    <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">mypairsdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># 实例化模型</span>
+    <span class="n">input_size</span> <span class="o">=</span> <span class="n">english_word_n</span>
+    <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">256</span>  <span class="c1"># 观察结果数据 可使用8</span>
+    <span class="n">my_encoderrnn</span> <span class="o">=</span> <span class="n">EncoderRNN</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+    <span class="c1"># my_encoderrnn.load_state_dict(torch.load(PATH1))</span>
+    <span class="n">my_encoderrnn</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">PATH1</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="k">lambda</span> <span class="n">storage</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="n">storage</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># 实例化模型</span>
+    <span class="n">input_size</span> <span class="o">=</span> <span class="n">french_word_n</span>
+    <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">256</span>  <span class="c1"># 观察结果数据 可使用8</span>
+    <span class="n">my_attndecoderrnn</span> <span class="o">=</span> <span class="n">AttnDecoderRNN</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+    <span class="c1"># my_attndecoderrnn.load_state_dict(torch.load(PATH2))</span>
+    <span class="n">my_attndecoderrnn</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">PATH2</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="k">lambda</span> <span class="n">storage</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="n">storage</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">sentence</span> <span class="o">=</span> <span class="s2">&quot;we re both teachers .&quot;</span>
+    <span class="c1"># 样本x 文本数值化</span>
+    <span class="n">tmpx</span> <span class="o">=</span> <span class="p">[</span><span class="n">english_word2index</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">sentence</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)]</span>
+    <span class="n">tmpx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EOS_token</span><span class="p">)</span>
+    <span class="n">tensor_x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">tmpx</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># 模型预测</span>
+    <span class="n">decoded_words</span><span class="p">,</span> <span class="n">attentions</span> <span class="o">=</span> <span class="n">Seq2Seq_Evaluate</span><span class="p">(</span><span class="n">tensor_x</span><span class="p">,</span> <span class="n">my_encoderrnn</span><span class="p">,</span> <span class="n">my_attndecoderrnn</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;decoded_words-&gt;&#39;</span><span class="p">,</span> <span class="n">decoded_words</span><span class="p">)</span>
+
+    <span class="c1"># print(&#39;\n&#39;)</span>
+    <span class="c1"># print(&#39;英文&#39;, sentence)</span>
+    <span class="c1"># print(&#39;法文&#39;, output_sentence)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">attentions</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span> <span class="c1"># 以矩阵列表的形式 显示</span>
+    <span class="c1"># 保存图像</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;./s2s_attn.png&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;attentions.numpy()---&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">attentions</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;attentions.size---&gt;&#39;</span><span class="p">,</span> <span class="n">attentions</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>decoded_words-&gt; [&#39;nous&#39;, &#39;sommes&#39;, &#39;toutes&#39;, &#39;deux&#39;, &#39;enseignantes&#39;, &#39;.&#39;, &#39;&lt;EOS&gt;&#39;]
+</code></pre></div>
+<blockquote>
+<ul>
+<li>Attention可视化:</li>
+</ul>
+</blockquote>
+<p><img alt="avatar" src="img/s2s_attn.png" /></p>
+<ul>
+<li>Attention图像的纵坐标代表输入的源语言各个词汇对应的索引, 0-6分别对应["we", "re", "both", "teachers", ".", "<EOS>"], 纵坐标代表生成的目标语言各个词汇对应的索引, 0-7代表['nous', 'sommes', 'toutes', 'deux', 'enseignantes', '.', '<EOS>'], 图中浅色小方块(颜色越浅说明影响越大)代表词汇之间的影响关系, 比如源语言的第1个词汇对生成目标语言的第1个词汇影响最大, 源语言的第4，5个词对生成目标语言的第5个词会影响最大, 通过这样的可视化图像, 我们可以知道Attention的效果好坏, 与我们人为去判定到底还有多大的差距. 进而衡量我们训练模型的可用性.</li>
+</ul>
+<h2 id="4_2">4 小结<a class="headerlink" href="#4_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>seq2seq模型架构分析
+    * seq2seq模型架构包括三部分，分别是encoder(编码器)、decoder(解码器)、中间语义张量c。其中编码器和解码器的内部实现都使用了GRU模型</li>
+<li>基于GRU的seq2seq模型架构实现翻译的过程
+    * 第一步: 导入必备的工具包和工具函数
+    * 第二步: 对持久化文件中数据进行处理, 以满足模型训练要求
+    * 第三步: 构建基于GRU的编码器和解码器
+    * 第四步: 构建模型训练函数, 并进行训练
+    * 第五步: 构建模型评估函数, 并进行测试以及Attention效果分析</li>
+<li>第一步: 导入必备的工具包
+    * python版本使用3.6.x, pytorch版本使用1.3.1</li>
+<li>第二步: 对持久化文件中数据进行处理, 以满足模型训练要求
+    * 清洗文本和构建文本字典、构建数据源、构建数据迭代器。文本处理的本质就是根据任务构建标签x、标签y</li>
+<li>第三步: 构建基于GRU的编码器和解码器
+    * 构建基于GRU的编码器
+    * 构建基于GRU的解码器
+    * 构建基于GRU和Attention的解码器</li>
+<li>第四步: 构建模型训练函数, 并进行训练
+    * 什么是teacher_forcing: 它是一种用于序列生成任务的训练技巧, 在seq2seq架构中, 根据循环神经网络理论，解码器每次应该使用上一步的结果作为输入的一部分, 但是训练过程中，一旦上一步的结果是错误的，就会导致这种错误被累积，无法达到训练效果, 因此，我们需要一种机制改变上一步出错的情况，因为训练时我们是已知正确的输出应该是什么，因此可以强制将上一步结果设置成正确的输出, 这种方式就叫做teacher_forcing
+    * teacher_forcing的作用: 能够在训练的时候矫正模型的预测，避免在序列生成的过程中误差进一步放大. 另外, teacher_forcing能够极大的加快模型的收敛速度，令模型训练过程更快更平稳
+    * 构建训练函数train
+    * 调用训练函数并打印日志和制图
+    * 损失曲线分析: 一直下降的损失曲线, 说明模型正在收敛, 能够从数据中找到一些规律应用于数据</li>
+<li>第五步: 构建模型评估函数, 并进行测试以及Attention效果分析
+    * 构建模型评估函数evaluate
+    * 随机选择指定数量的数据进行评估
+    * 进行了Attention可视化分析</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="7%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D2.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 7 注意力机制介绍2" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              7 注意力机制介绍2
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../04_mkdocs_transformer/1%20Transformer%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 1 Transformer背景介绍" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              1 Transformer背景介绍
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

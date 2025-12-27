@@ -1,0 +1,2056 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>9 迁移学习实践 old - 自然语言处理基础V6.5</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="自然语言处理基础V6.5" class="md-header__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            自然语言处理基础V6.5
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              9 迁移学习实践 old
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="自然语言处理基础V6.5" class="md-nav__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    自然语言处理基础V6.5
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章 自然语言处理入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章 自然语言处理入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章 自然语言处理入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_mkdocs_NLP/1_%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8.html" class="md-nav__link">
+        1 自然语言处理入门
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章 文本预处理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章 文本预处理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章 文本预处理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/1%20%E8%AE%A4%E8%AF%86%E6%96%87%E6%9C%AC%E9%A2%84%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        1 认识文本预处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/2%20%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        2 文本处理的基本方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/3%20%E6%96%87%E6%9C%AC%E5%BC%A0%E9%87%8F%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        3 文本张量表示方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/4%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90.html" class="md-nav__link">
+        4 文本数据分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/5%20%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        5 文本特征处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/6%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA.html" class="md-nav__link">
+        6 文本数据增强
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/7%20jieba%E8%AF%8D%E6%80%A7%E5%AF%B9%E7%85%A7%E8%A1%A8.html" class="md-nav__link">
+        7 jieba词性对照表
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章 RNN及其变体
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章 RNN及其变体" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章 RNN及其变体
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/1%20%E8%AE%A4%E8%AF%86RNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        1 认识RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/2%20%E4%BC%A0%E7%BB%9FRNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        2 传统RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/3%20LSTM%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        3 LSTM模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/4%20GRU%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        4 GRU模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/5%20RNN%E6%A1%88%E4%BE%8B-%E4%BA%BA%E5%90%8D%E5%88%86%E7%B1%BB%E5%99%A8.html" class="md-nav__link">
+        5 RNN案例 人名分类器
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/6%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D1.html" class="md-nav__link">
+        6 注意力机制介绍1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/7%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D2.html" class="md-nav__link">
+        7 注意力机制介绍2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/8%20RNN%E6%A1%88%E4%BE%8B-seq2seq%E8%8B%B1%E8%AF%91%E6%B3%95.html" class="md-nav__link">
+        8 RNN案例 seq2seq英译法
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章 Transformer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章 Transformer" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章 Transformer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/1%20Transformer%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 Transformer背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/2%20%E8%AE%A4%E8%AF%86Transformer%E6%9E%B6%E6%9E%84.html" class="md-nav__link">
+        2 认识Transformer架构
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/3%20%E8%BE%93%E5%85%A5%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        3 输入部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        4 编码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/5%20%E8%A7%A3%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        5 解码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/6%20%E8%BE%93%E5%87%BA%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        6 输出部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/7%20%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA.html" class="md-nav__link">
+        7 模型构建
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章 迁移学习
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章 迁移学习" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章 迁移学习
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="1%20fasttext%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 fasttext工具介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="2%20fasttext%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB.html" class="md-nav__link">
+        2 fasttext文本分类
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3%20%E8%AE%AD%E7%BB%83%E8%AF%8D%E5%90%91%E9%87%8F.html" class="md-nav__link">
+        3 训练词向量
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="4%20%E8%AF%8D%E5%90%91%E9%87%8F%E8%BF%81%E7%A7%BB.html" class="md-nav__link">
+        4 词向量迁移
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="5%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5.html" class="md-nav__link">
+        5 迁移学习概念
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="6%20NLP%E4%B8%AD%E7%9A%84%E5%B8%B8%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        6 NLP中的常用预训练模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="7%20Transformers%E5%BA%93%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        7 Transformers库使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="8%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5.html" class="md-nav__link">
+        8 迁移学习实践
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="9%20NLP%E4%B8%AD%E7%9A%84%E6%A0%87%E5%87%86%E6%95%B0%E6%8D%AE%E9%9B%86%28%E6%8B%93%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        9 NLP中的标准数据集(拓展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章 Bert系列模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章 Bert系列模型" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章 Bert系列模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/1%20BERT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 BERT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/2%20BERT%E6%A8%A1%E5%9E%8B%E7%89%B9%E7%82%B9.html" class="md-nav__link">
+        2 BERT模型特点
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/3%20BERT%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        3 BERT系列模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/4%20ELMo%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        4 ELMo模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/5%20GPT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        5 GPT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/6%20BERT%20GPT%20ELMo%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%B9%E6%AF%94.html" class="md-nav__link">
+        6 BERT GPT ELMo模型的对比
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          第七章 Transformer精选问答(拓展资料)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第七章 Transformer精选问答(拓展资料)" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          第七章 Transformer精选问答(拓展资料)
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/1%20Transformer%20%E5%90%84%E5%AD%90%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8.html" class="md-nav__link">
+        1 Transformer 各子模块作用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/2%20Transformer%20Decoder%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        2 Transformer Decoder模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/3%20Self-attention%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        3 Self attention机制详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/4%20Multi-head%20Attention%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        4 Multi head Attention详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/5%20Transformer%E4%BC%98%E5%8A%BF.html" class="md-nav__link">
+        5 Transformer优势
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 微调脚本介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 指定任务类型的微调脚本使用步骤
+  </a>
+  
+    <nav class="md-nav" aria-label="2 指定任务类型的微调脚本使用步骤">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    2.1 下载微调脚本文件
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    2.2 配置微调脚本参数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23" class="md-nav__link">
+    2.3 检验效果
+  </a>
+  
+    <nav class="md-nav" aria-label="2.3 检验效果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    1 输出效果
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    2 查看文件内容
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 文件说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24" class="md-nav__link">
+    2.4 使用本地微调模型
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    3 通过微调方式进行迁移学习的两种类型
+  </a>
+  
+    <nav class="md-nav" aria-label="3 通过微调方式进行迁移学习的两种类型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 类型一实战演示
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1 类型一实战演示">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_2" class="md-nav__link">
+    1 介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_2" class="md-nav__link">
+    2 运行代码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_2" class="md-nav__link">
+    3 查看文件内容:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 使用本地微调模型
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 类型二实战演示
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2 类型二实战演示">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_3" class="md-nav__link">
+    1 介绍
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_3" class="md-nav__link">
+    2 加载预训练模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_3" class="md-nav__link">
+    3 自定义单层的全连接网络
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    4 构建训练与验证数据批次生成器
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    5 编写训练和验证函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    6 调用并保存模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    7 加载模型进行使用
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4_2" class="md-nav__link">
+    4 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>9 迁移学习实践 old</h1>
+
+<h3 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>了解并掌握指定任务类型的微调脚本使用方法.</li>
+<li>了解并掌握通过微调脚本微调后模型的使用方法.</li>
+<li>掌握通过微调方式进行迁移学习的两种类型实现过程.</li>
+</ul>
+<h2 id="1">1 微调脚本介绍<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>指定任务类型的微调脚本:
+* huggingface研究机构向我们提供了针对GLUE数据集合任务类型的微调脚本, 这些微调脚本的核心都是微调模型的最后一个全连接层.
+* 通过简单的参数配置来指定GLUE中存在任务类型(如: CoLA对应文本二分类, MRPC对应句子对文本二分类, STS-B对应句子对文本多分类), 以及指定需要微调的预训练模型.</p>
+<h2 id="2">2 指定任务类型的微调脚本使用步骤<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>第一步: 下载微调脚本文件</li>
+<li>第二步: 配置微调脚本参数</li>
+<li>第三步: 运行并检验效果 </li>
+</ul>
+<h3 id="21">2.1 下载微调脚本文件<a class="headerlink" href="#21" title="Permanent link">&para;</a></h3>
+<p><strong>注意：虚拟机中已经安装transformers，以下安装步骤不需再次执行</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 克隆huggingface的transfomers文件</span>
+git clone https://github.com/huggingface/transformers.git
+
+<span class="c1"># 进行transformers文件夹</span>
+<span class="nb">cd</span> transformers
+
+<span class="c1"># 切换transformers到指定版本</span>
+git checkout v4.17.0
+
+<span class="c1"># 安装transformers包</span>
+pip install .
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># 进入微调脚本所在路径并查看</span>
+<span class="n">cd</span> <span class="n">examples</span><span class="o">/</span><span class="n">pytorch</span><span class="o">/</span><span class="n">text</span><span class="o">-</span><span class="n">classification</span>
+
+<span class="n">ls</span>
+
+<span class="c1"># 其中run_glue.py就是针对GLUE数据集合任务类型的微调脚本</span>
+</code></pre></div>
+<h3 id="22">2.2 配置微调脚本参数<a class="headerlink" href="#22" title="Permanent link">&para;</a></h3>
+<ul>
+<li>在run_glue.py同级目录执行以下命令</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 定义DATA_DIR: 微调数据所在路径, 这里我们使用glue_data中的数据作为微调数据</span>
+<span class="nb">export</span> <span class="nv">DATA_DIR</span><span class="o">=</span><span class="s2">&quot;/root/data/glue_data&quot;</span>
+<span class="c1"># 定义SAVE_DIR: 模型的保存路径, 我们将模型保存在当前目录的bert_finetuning_test文件中</span>
+<span class="nb">export</span> <span class="nv">SAVE_DIR</span><span class="o">=</span><span class="s2">&quot;./bert_finetuning_test/&quot;</span>
+
+<span class="c1"># 使用python运行微调脚本</span>
+<span class="c1"># --model_name_or_path: 选择具体的模型或者变体, 这里是在英文语料上微调, 因此选择bert-base-uncased</span>
+<span class="c1"># --task_name: 它将代表对应的任务类型, 如MRPC代表句子对二分类任务</span>
+<span class="c1"># --do_train: 使用微调脚本进行训练</span>
+<span class="c1"># --do_eval: 使用微调脚本进行验证</span>
+<span class="c1"># --max_seq_length: 输入句子的最大长度, 超过则截断, 不足则补齐</span>
+<span class="c1"># --learning_rate: 学习率</span>
+<span class="c1"># --num_train_epochs: 训练轮数</span>
+<span class="c1"># --output_dir $SAVE_DIR: 训练后的模型保存路径</span>
+<span class="c1"># --overwrite_output_dir: 再次训练时将清空之前的保存路径内容重新写入</span>
+
+<span class="c1"># 因为空间的有限，所以虚拟机中缓存了三个模型bert-base-uncased bert-base-chinese bert-base-cased</span>
+<span class="c1"># 因为网络原因，如果需要其他模型，需要科学上网才能下载</span>
+
+<span class="c1"># 虚拟机中执行以下命令耗时较长，建议在有GPU的主机上执行</span>
+
+<span class="c1"># 模型1，该命令已在虚拟机执行，再次执行会覆盖缓存的模型</span>
+python run_glue.py <span class="se">\</span>
+  --model_name_or_path bert-base-uncased <span class="se">\</span>
+  --task_name mrpc <span class="se">\</span>
+  --do_train <span class="se">\</span>
+  --do_eval <span class="se">\</span>
+  --max_seq_length <span class="m">128</span> <span class="se">\</span>
+  --learning_rate 2e-5 <span class="se">\</span>
+  --num_train_epochs <span class="m">1</span>.0 <span class="se">\</span>
+  --output_dir bert-base-uncased-finetuning <span class="se">\</span>
+  --overwrite_output_dir
+
+
+<span class="c1"># 模型2，该命令已在虚拟机执行，再次执行会覆盖缓存的模型</span>
+python run_glue.py <span class="se">\</span>
+  --model_name_or_path bert-base-chinese <span class="se">\</span>
+  --task_name mrpc <span class="se">\</span>
+  --do_train <span class="se">\</span>
+  --do_eval <span class="se">\</span>
+  --max_seq_length <span class="m">128</span> <span class="se">\</span>
+  --learning_rate 2e-5 <span class="se">\</span>
+  --num_train_epochs <span class="m">1</span>.0 <span class="se">\</span>
+  --output_dir bert-base-chinese-finetuning <span class="se">\</span>
+  --overwrite_output_dir
+
+<span class="c1"># 模型3，该命令已在虚拟机执行，再次执行会覆盖缓存的模型</span>
+python run_glue.py <span class="se">\</span>
+  --model_name_or_path bert-base-cased <span class="se">\</span>
+  --task_name mrpc <span class="se">\</span>
+  --do_train <span class="se">\</span>
+  --do_eval <span class="se">\</span>
+  --max_seq_length <span class="m">128</span> <span class="se">\</span>
+  --learning_rate 2e-5 <span class="se">\</span>
+  --num_train_epochs <span class="m">1</span>.0 <span class="se">\</span>
+  --output_dir bert-base-cased-finetuning <span class="se">\</span>
+  --overwrite_output_dir
+</code></pre></div>
+<h3 id="23">2.3 检验效果<a class="headerlink" href="#23" title="Permanent link">&para;</a></h3>
+<h4 id="1_1">1 输出效果<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code># 最终打印模型的验证结果:
+01/05/2020 23:59:53 - INFO - __main__ -   Saving features into cached file ../../glue_data/MRPC/cached_dev_bert-base-uncased_128_mrpc
+01/05/2020 23:59:53 - INFO - __main__ -   ***** Running evaluation  *****
+01/05/2020 23:59:53 - INFO - __main__ -     Num examples = 408
+01/05/2020 23:59:53 - INFO - __main__ -     Batch size = 8
+Evaluating: 100%|█| 51/51 [00:23&lt;00:00,  2.20it/s]
+01/06/2020 00:00:16 - INFO - __main__ -   ***** Eval results  *****
+01/06/2020 00:00:16 - INFO - __main__ -     acc = 0.7671568627450981
+01/06/2020 00:00:16 - INFO - __main__ -     acc_and_f1 = 0.8073344506341863
+01/06/2020 00:00:16 - INFO - __main__ -     f1 = 0.8475120385232745
+</code></pre></div>
+<h4 id="2_1">2 查看文件内容<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>added_tokens.json  
+checkpoint-450  
+checkpoint-400  
+checkpoint-350  
+checkpoint-200  
+checkpoint-300  
+checkpoint-250  
+checkpoint-200  
+checkpoint-150  
+checkpoint-100  
+checkpoint-50     
+pytorch_model.bin        
+training_args.bin
+config.json       
+special_tokens_map.json  
+vocab.txt
+eval_results.txt  
+tokenizer_config.json
+</code></pre></div>
+<h4 id="3">3 文件说明<a class="headerlink" href="#3" title="Permanent link">&para;</a></h4>
+<ul>
+<li>pytorch_model.bin代表模型参数，可以使用torch.load加载查看；</li>
+<li>traning_args.bin代表模型训练时的超参，如batch_size，epoch等，仍可使用torch.load查看；</li>
+<li>config.json是模型配置文件，如多头注意力的头数，编码器的层数等，代表典型的模型结构，如bert，xlnet，一般不更改；</li>
+<li>added_token.json记录在训练时通过代码添加的自定义token对应的数值，即在代码中使用add_token方法添加的自定义词汇；</li>
+<li>special_token_map.json当添加的token具有特殊含义时，如分隔符，该文件存储特殊字符的及其对应的含义，使文本中出现的特殊字符先映射成其含义，之后特殊字符的含义仍然使用add_token方法映射。 </li>
+<li>checkpoint: 若干步骤保存的模型参数文件(也叫检测点文件)。</li>
+</ul>
+<h3 id="24">2.4 使用本地微调模型<a class="headerlink" href="#24" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModel</span><span class="p">,</span> <span class="n">AutoTokenizer</span>
+
+<span class="c1"># 1 通过git clone下模型包, 然后再使用</span>
+<span class="c1"># 2 直接本地加载模型</span>
+<span class="n">mypathname</span> <span class="o">=</span> <span class="s1">&#39;/root/transformers/examples/pytorch/text-classification/bert-base-uncased-finetuning&#39;</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">mypathname</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">AutoModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">mypathname</span><span class="p">)</span>
+
+<span class="n">index</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;Talk is cheap&quot;</span><span class="p">,</span> <span class="s2">&quot;Please show me your code!&quot;</span><span class="p">)</span>
+<span class="c1"># 102是bert模型中的间隔(结束)符号的数值映射</span>
+<span class="n">mark</span> <span class="o">=</span> <span class="mi">102</span>
+
+<span class="c1"># 找到第一个102的索引, 即句子对的间隔符号</span>
+<span class="n">k</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">mark</span><span class="p">)</span>
+
+<span class="c1"># 句子对分割id列表, 由0，1组成, 0的位置代表第一个句子, 1的位置代表第二个句子</span>
+<span class="n">segments_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">-</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="c1"># 转化为tensor</span>
+<span class="n">tokens_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">index</span><span class="p">])</span>
+<span class="n">segments_tensors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">segments_ids</span><span class="p">])</span>
+
+<span class="c1"># 使用评估模式</span>
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="c1"># 使用模型预测获得结果</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">tokens_tensor</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="o">=</span><span class="n">segments_tensors</span><span class="p">)</span>
+    <span class="c1"># 打印预测结果以及张量尺寸</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>(tensor([[[-0.1591,  0.0816,  0.4366,  ...,  0.0307, -0.0419,  0.3326],
+         [-0.3387, -0.0445,  0.9261,  ..., -0.0232, -0.0023,  0.2407],
+         [-0.0427, -0.1688,  0.5533,  ..., -0.1092,  0.1071,  0.4287],
+         ...,
+         [-0.1800, -0.3889, -0.1001,  ..., -0.1369,  0.0469,  0.9429],
+         [-0.2970, -0.0023,  0.1976,  ...,  0.3776, -0.0069,  0.2029],
+         [ 0.7061,  0.0102, -0.4738,  ...,  0.2246, -0.7604, -0.2503]]]), tensor([[-3.5925e-01,  2.0294e-02, -2.3487e-01,  4.5763e-01, -6.1821e-02,
+          2.4697e-02,  3.8172e-01, -1.8212e-01,  3.4533e-01, -9.7177e-01,
+          1.1063e-01,  7.8944e-02,  8.2582e-01,  1.9020e-01,  6.5513e-01,
+         -1.8114e-01,  3.9617e-02, -5.6230e-02,  1.5207e-01, -3.2552e-01,
+          ...
+          1.4417e-01,  3.0337e-01, -6.6146e-01, -9.6959e-02,  8.9790e-02,
+          1.2345e-01, -5.9831e-02,  2.2399e-01,  8.2549e-02,  6.7749e-01,
+          1.4473e-01,  5.4490e-01,  5.9272e-01,  3.4453e-01, -8.9982e-02,
+         -1.2631e-01, -1.9465e-01,  6.5992e-01]]))
+torch.Size([1, 12, 768])
+</code></pre></div>
+<h2 id="3_1">3 通过微调方式进行迁移学习的两种类型<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>类型一: 使用指定任务类型的微调脚本微调预训练模型, 后接带有输出头的预定义网络输出结果.</li>
+<li>类型二: 直接加载预训练模型进行输入文本的特征表示, 后接自定义网络进行微调输出结果. </li>
+</ul>
+<ul>
+<li>说明: 所有类型的实战演示, 都将针对中文文本进行. </li>
+</ul>
+<h3 id="31">3.1 类型一实战演示<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<h4 id="1_2">1 介绍<a class="headerlink" href="#1_2" title="Permanent link">&para;</a></h4>
+<ul>
+<li>使用文本二分类的任务类型SST-2的微调脚本微调中文预训练模型, 后接带有分类输出头的预定义网络输出结果. 目标是判断句子的情感倾向.</li>
+<li>准备中文酒店评论的情感分析语料, 语料样式与SST-2数据集相同, 标签0代表差评, 标签1好评.</li>
+<li>语料存放在与glue_data/同级目录cn_data/下, 其中的SST-2目录包含train.tsv和dev.tsv</li>
+</ul>
+<ul>
+<li>train.tsv</li>
+</ul>
+<div class="highlight"><pre><span></span><code>sentence    label
+早餐不好,服务不到位,晚餐无西餐,早餐晚餐相同,房间条件不好,餐厅不分吸烟区.房间不分有无烟房.    0
+去的时候 ,酒店大厅和餐厅在装修,感觉大厅有点挤.由于餐厅装修本来该享受的早饭,也没有享受(他们是8点开始每个房间送,但是我时间来不及了)不过前台服务员态度好!    1
+有很长时间没有在西藏大厦住了，以前去北京在这里住的较多。这次住进来发现换了液晶电视，但网络不是很好，他们自己说是收费的原因造成的。其它还好。  1
+非常好的地理位置，住的是豪华海景房，打开窗户就可以看见栈桥和海景。记得很早以前也住过，现在重新装修了。总的来说比较满意，以后还会住   1
+交通很方便，房间小了一点，但是干净整洁，很有香港的特色，性价比较高，推荐一下哦 1
+酒店的装修比较陈旧，房间的隔音，主要是卫生间的隔音非常差，只能算是一般的    0
+酒店有点旧，房间比较小，但酒店的位子不错，就在海边，可以直接去游泳。8楼的海景打开窗户就是海。如果想住在热闹的地带，这里不是一个很好的选择，不过威海城市真的比较小，打车还是相当便宜的。晚上酒店门口出租车比较少。   1
+位置很好，走路到文庙、清凉寺5分钟都用不了，周边公交车很多很方便，就是出租车不太爱去（老城区路窄爱堵车），因为是老宾馆所以设施要陈旧些，    1
+酒店设备一般，套房里卧室的不能上网，要到客厅去。    0
+</code></pre></div>
+<ul>
+<li>dev.tsv</li>
+</ul>
+<div class="highlight"><pre><span></span><code>sentence    label
+房间里有电脑，虽然房间的条件略显简陋，但环境、服务还有饭菜都还是很不错的。如果下次去无锡，我还是会选择这里的。 1
+我们是5月1日通过携程网入住的，条件是太差了，根本达不到四星级的标准，所有的东西都很陈旧，卫生间水龙头用完竟关不上，浴缸的漆面都掉了，估计是十年前的四星级吧，总之下次是不会入住了。  0
+离火车站很近很方便。住在东楼标间，相比较在九江住的另一家酒店，房间比较大。卫生间设施略旧。服务还好。10元中式早餐也不错，很丰富，居然还有青菜肉片汤。 1
+坐落在香港的老城区，可以体验香港居民生活，门口交通很方便，如果时间不紧，坐叮当车很好呀！周围有很多小餐馆，早餐就在中远后面的南北嚼吃的，东西很不错。我们定的大床房，挺安静的，总体来说不错。前台结账没有银联！ 1
+酒店前台服务差，对待客人不热情。号称携程没有预定。感觉是客人在求他们，我们一定得住。这样的宾馆下次不会入住！  0
+价格确实比较高，而且还没有早餐提供。  1
+是一家很实惠的酒店，交通方便，房间也宽敞，晚上没有电话骚扰，住了两次，有一次住５０１房间，洗澡间排水不畅通，也许是个别问题．服务质量很好，刚入住时没有调好宽带，服务员很快就帮忙解决了．    1
+位置非常好，就在西街的街口，但是却闹中取静，环境很清新优雅。  1
+房间应该超出30平米,是HK同级酒店中少有的大;重装之后,设备也不错. 1
+</code></pre></div>
+<h4 id="2_2">2 运行代码<a class="headerlink" href="#2_2" title="Permanent link">&para;</a></h4>
+<p>在run_glue.py同级目录执行以下命令</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 使用python运行微调脚本</span>
+<span class="c1"># --model_name_or_path: 选择bert-base-chinese</span>
+<span class="c1"># --task_name: 句子二分类任务sst2</span>
+<span class="c1"># --do_train: 使用微调脚本进行训练</span>
+<span class="c1"># --do_eval: 使用微调脚本进行验证</span>
+<span class="c1"># --max_seq_length: 128，输入句子的最大长度</span>
+
+<span class="c1"># 该命令已在虚拟机执行，再次执行会覆盖缓存的模型</span>
+
+python run_glue.py <span class="se">\</span>
+  --model_name_or_path bert-base-chinese <span class="se">\</span>
+  --task_name sst2 <span class="se">\</span>
+  --do_train <span class="se">\</span>
+  --do_eval <span class="se">\</span>
+  --max_seq_length <span class="m">128</span> <span class="se">\</span>
+  --learning_rate 2e-5 <span class="se">\</span>
+  --num_train_epochs <span class="m">1</span>.0 <span class="se">\</span>
+  --output_dir bert-base-chinese-sst2-finetuning
+</code></pre></div>
+<blockquote>
+<ul>
+<li>检验效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code># 最终打印模型的验证结果, 准确率高达0.88.
+01/06/2020 14:22:36 - INFO - __main__ -   Saving features into cached file ../../cn_data/SST-2/cached_dev_bert-base-chinese_128_sst-2
+01/06/2020 14:22:36 - INFO - __main__ -   ***** Running evaluation  *****
+01/06/2020 14:22:36 - INFO - __main__ -     Num examples = 1000
+01/06/2020 14:22:36 - INFO - __main__ -     Batch size = 8
+Evaluating: 100%|████████████| 125/125 [00:56&lt;00:00,  2.20it/s]
+01/06/2020 14:23:33 - INFO - __main__ -   ***** Eval results  *****
+01/06/2020 14:23:33 - INFO - __main__ -     acc = 0.88
+</code></pre></div>
+<h4 id="3_2">3 查看文件内容:<a class="headerlink" href="#3_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>added_tokens.json
+checkpoint-350
+checkpoint-200
+checkpoint-300
+checkpoint-250
+checkpoint-200
+checkpoint-150
+checkpoint-100
+checkpoint-50
+pytorch_model.bin
+training_args.bin
+config.json
+special_tokens_map.json
+vocab.txt
+eval_results.txt
+tokenizer_config.json
+</code></pre></div>
+<h4 id="4">4 使用本地微调模型<a class="headerlink" href="#4" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="c1"># 0 找到自己预训练模型的路径</span>
+<span class="n">mymodelname</span> <span class="o">=</span> <span class="s1">&#39;/root/transformers/examples/pytorch/text-classification/bert-base-chinese-sst2-finetuning&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mymodelname</span><span class="p">)</span>
+
+<span class="c1"># 1 本地加载预训练模型的tokenizer</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">mymodelname</span><span class="p">)</span>
+
+<span class="c1"># 2 本地加载 预训练模型 带分类模型头</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForSequenceClassification</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">mymodelname</span><span class="p">)</span>
+<span class="c1"># model = AutoModelForSequenceClassification.from_pretrained(model_checkpoint, num_labels=2)</span>
+
+<span class="c1"># 3 默认情况下 加载预训练模型，不带头</span>
+<span class="c1"># model = AutoModel.from_pretrained(&#39;./transformers/examples/pytorch/text-classification/bert_finetuning_test_hug&#39;)</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;早餐不好,服务不到位,晚餐无西餐,早餐晚餐相同,房间条件不好&quot;</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="n">tokens_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">index</span><span class="p">])</span>
+
+<span class="c1"># 使用评估模式</span>
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="c1"># 使用模型预测获得结果</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">tokens_tensor</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">predicted_label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;预测标签为&gt;&#39;</span><span class="p">,</span> <span class="n">predicted_label</span><span class="p">)</span>
+
+<span class="n">text1</span> <span class="o">=</span> <span class="s2">&quot;房间应该超出30平米,是HK同级酒店中少有的大;重装之后,设备也不错.&quot;</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text1</span><span class="p">)</span>
+<span class="n">tokens_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">index</span><span class="p">])</span>
+
+<span class="c1"># 使用评估模式</span>
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="c1"># 使用模型预测获得结果</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">tokens_tensor</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">predicted_label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;预测标签为&gt;&#39;</span><span class="p">,</span> <span class="n">predicted_label</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>输入文本为: 早餐不好,服务不到位,晚餐无西餐,早餐晚餐相同,房间条件不好
+预测标签为: 0
+
+输入文本为: 房间应该超出30平米,是HK同级酒店中少有的大;重装之后,设备也不错.
+预测标签为: 1
+</code></pre></div>
+<h3 id="32">3.2 类型二实战演示<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<h4 id="1_3">1 介绍<a class="headerlink" href="#1_3" title="Permanent link">&para;</a></h4>
+<ul>
+<li>直接加载预训练模型进行输入文本的特征表示, 后接自定义网络进行微调输出结果. </li>
+<li>使用语料和完成的目标与类型一实战相同.</li>
+</ul>
+<h4 id="2_3">2 加载预训练模型<a class="headerlink" href="#2_3" title="Permanent link">&para;</a></h4>
+<p>直接加载预训练模型进行输入文本的特征表示:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="c1"># 进行句子的截断补齐(规范长度)</span>
+<span class="kn">from</span> <span class="nn">keras.preprocessing</span> <span class="kn">import</span> <span class="n">sequence</span>
+
+<span class="c1"># 因为空间原因，虚拟机中之缓存了huggingface/pytorch-transformers模型</span>
+
+<span class="c1"># 从本地加载</span>
+<span class="n">source</span> <span class="o">=</span> <span class="s1">&#39;/root/.cache/torch/hub/huggingface_pytorch-transformers_master&#39;</span>
+<span class="c1"># 从github加载</span>
+<span class="c1"># source = &#39;huggingface/pytorch-transformers&#39;</span>
+
+<span class="c1"># 直接使用预训练的bert中文模型</span>
+<span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;bert-base-chinese&#39;</span>
+
+<span class="c1"># 通过torch.hub获得已经训练好的bert-base-chinese模型</span>
+<span class="n">model</span> <span class="o">=</span>  <span class="n">torch</span><span class="o">.</span><span class="n">hub</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;local&#39;</span><span class="p">)</span>
+<span class="c1"># 从github加载</span>
+<span class="c1"># model =  torch.hub.load(source, &#39;model&#39;, model_name, source=&#39;github&#39;)</span>
+
+<span class="c1"># 获得对应的字符映射器, 它将把中文的每个字映射成一个数字</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">hub</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s1">&#39;tokenizer&#39;</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;local&#39;</span><span class="p">)</span>
+<span class="c1"># 从github加载</span>
+<span class="c1"># tokenizer = torch.hub.load(source, &#39;tokenizer&#39;, model_name, source=&#39;github&#39;)</span>
+
+<span class="c1"># 句子规范长度</span>
+<span class="n">cutlen</span> <span class="o">=</span> <span class="mi">32</span>
+
+<span class="k">def</span> <span class="nf">get_bert_encode</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    description: 使用bert-chinese编码中文文本</span>
+<span class="sd">    :param text: 要进行编码的文本</span>
+<span class="sd">    :return: 使用bert编码后的文本张量表示</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 首先使用字符映射器对每个汉字进行映射</span>
+    <span class="c1"># 这里需要注意, bert的tokenizer映射后会为结果前后添加开始和结束标记即101和102 </span>
+    <span class="c1"># 这对于多段文本的编码是有意义的, 但在我们这里没有意义, 因此使用[1:-1]对头和尾进行切片</span>
+    <span class="n">indexed_tokens</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">[:</span><span class="n">cutlen</span><span class="p">])[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># 对映射后的句子进行截断补齐</span>
+    <span class="n">indexed_tokens</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">pad_sequences</span><span class="p">([</span><span class="n">indexed_tokens</span><span class="p">],</span> <span class="n">cutlen</span><span class="p">)</span> 
+    <span class="c1"># 之后将列表结构转化为tensor</span>
+    <span class="n">tokens_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">indexed_tokens</span><span class="p">)</span>
+    <span class="c1"># 使模型不自动计算梯度</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="c1"># 调用模型获得隐层输出</span>
+        <span class="n">encoded_layers</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">tokens_tensor</span><span class="p">)</span>
+    <span class="c1"># 输出的隐层是一个三维张量, 最外层一维是1, 我们使用[0]降去它.</span>
+    <span class="n">encoded_layers</span> <span class="o">=</span> <span class="n">encoded_layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">encoded_layers</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;早餐不好,服务不到位,晚餐无西餐,早餐晚餐相同,房间条件不好&quot;</span>
+    <span class="n">encoded_layers</span> <span class="o">=</span> <span class="n">get_bert_encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">encoded_layers</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">encoded_layers</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>tensor([[[-0.4078,  0.8188, -0.6263,  ..., -0.0878, -0.3879,  0.1973],
+         [-0.1980,  0.4741,  0.1832,  ...,  0.1118, -0.2924,  0.0820],
+         [ 0.6442,  0.7331, -1.0680,  ...,  0.2806, -0.1484,  0.7688],
+         ...,
+         [ 1.2418, -0.0812, -0.3268,  ...,  1.0782,  0.1485, -1.1028],
+         [ 0.2462, -0.5323,  0.0962,  ..., -0.8405,  0.8222, -0.1156],
+         [ 0.6589, -0.0304, -0.7150,  ..., -0.4237,  0.3504, -0.7093]]])
+torch.Size([1, 32, 768])
+</code></pre></div>
+<h4 id="3_3">3 自定义单层的全连接网络<a class="headerlink" href="#3_3" title="Permanent link">&para;</a></h4>
+<p>自定义单层的全连接网络作为微调网络。根据实际经验, 自定义的微调网络参数总数应大于0.5倍的训练数据量, 小于10倍的训练数据量, 这样有助于模型在合理的时间范围内收敛.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+
+
+<span class="k">class</span> <span class="nc">Net</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;定义微调网络的类&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">embedding_size</span><span class="o">=</span><span class="mi">768</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param char_size: 输入句子中的字符数量, 即输入句子规范后的长度128.</span>
+<span class="sd">        :param embedding_size: 字嵌入的维度, 因为使用的bert中文模型嵌入维度是768, 因此embedding_size为768</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Net</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 将char_size和embedding_size传入其中</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char_size</span> <span class="o">=</span> <span class="n">char_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_size</span> <span class="o">=</span> <span class="n">embedding_size</span>
+        <span class="c1"># 实例化一个全连接层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">char_size</span><span class="o">*</span><span class="n">embedding_size</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="c1"># 对输入的张量形状进行变换, 以满足接下来层的输入要求</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char_size</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_size</span><span class="p">)</span>
+        <span class="c1"># 使用一个全连接层</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># 随机初始化一个输入参数</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">768</span><span class="p">)</span>
+    <span class="c1"># 实例化网络结构, 所有参数使用默认值</span>
+    <span class="n">net</span> <span class="o">=</span> <span class="n">Net</span><span class="p">()</span>
+    <span class="n">nr</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">nr</span><span class="p">)</span>    
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>tensor([[0.3279, 0.2519]], grad_fn=&lt;ReluBackward0&gt;)
+</code></pre></div>
+<h4 id="4_1">4 构建训练与验证数据批次生成器<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">shuffle</span>
+
+<span class="k">def</span> <span class="nf">data_loader</span><span class="p">(</span><span class="n">train_data_path</span><span class="p">,</span> <span class="n">valid_data_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    description: 从持久化文件中加载数据</span>
+<span class="sd">    :param train_data_path: 训练数据路径</span>
+<span class="sd">    :param valid_data_path: 验证数据路径</span>
+<span class="sd">    :param batch_size: 训练和验证数据集的批次大小</span>
+<span class="sd">    :return: 训练数据生成器, 验证数据生成器, 训练数据数量, 验证数据数量</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 使用pd进行csv数据的读取, 并去除第一行的列名</span>
+    <span class="n">train_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">train_data_path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">valid_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">valid_data_path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># 打印训练集和验证集上的正负样本数量</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;训练数据集的正负样本数量:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">train_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;验证数据集的正负样本数量:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">valid_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span>
+
+    <span class="c1"># 验证数据集中的数据总数至少能够满足一个批次</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">batch_size</span><span class="p">:</span>
+        <span class="k">raise</span><span class="p">(</span><span class="s2">&quot;Batch size or split not match!&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_loader_generator</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description: 获得训练集/验证集的每个批次数据的生成器</span>
+<span class="sd">        :param data: 训练数据或验证数据</span>
+<span class="sd">        :return: 一个批次的训练数据或验证数据的生成器</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 以每个批次的间隔遍历数据集</span>
+        <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">):</span>
+            <span class="c1"># 定义batch数据的张量列表</span>
+            <span class="n">batch_encoded</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">batch_labels</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># 将一个bitch_size大小的数据转换成列表形式, 并进行逐条遍历</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">shuffle</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">())[</span><span class="n">batch</span><span class="p">:</span> <span class="n">batch</span><span class="o">+</span><span class="n">batch_size</span><span class="p">]:</span>
+                <span class="c1"># 使用bert中文模型进行编码</span>
+                <span class="n">encoded</span> <span class="o">=</span> <span class="n">get_bert_encode</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="c1"># 将编码后的每条数据装进预先定义好的列表中</span>
+                <span class="n">batch_encoded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+                <span class="c1"># 同样将对应的该batch的标签装进labels列表中</span>
+                <span class="n">batch_labels</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
+            <span class="c1"># 使用reduce高阶函数将列表中的数据转换成模型需要的张量形式</span>
+            <span class="c1"># encoded的形状是(batch_size*max_len, embedding_size)</span>
+            <span class="n">encoded</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">batch_encoded</span><span class="p">)</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">,</span> <span class="n">batch_labels</span><span class="p">))</span>
+            <span class="c1"># 以生成器的方式返回数据和标签</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">encoded</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+    <span class="c1"># 对训练集和验证集分别使用_loader_generator函数, 返回对应的生成器</span>
+    <span class="c1"># 最后还要返回训练集和验证集的样本数量</span>
+    <span class="k">return</span> <span class="n">_loader_generator</span><span class="p">(</span><span class="n">train_data</span><span class="p">),</span> <span class="n">_loader_generator</span><span class="p">(</span><span class="n">valid_data</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_data</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_data</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">train_data_path</span> <span class="o">=</span> <span class="s2">&quot;/root/data/glue_data/SST-2/train.tsv&quot;</span>
+    <span class="n">valid_data_path</span> <span class="o">=</span> <span class="s2">&quot;/root/data/glue_data/SST-2/dev.tsv&quot;</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">train_data_labels</span><span class="p">,</span> <span class="n">valid_data_labels</span><span class="p">,</span> \
+    <span class="n">train_data_len</span><span class="p">,</span> <span class="n">valid_data_len</span> <span class="o">=</span> <span class="n">data_loader</span><span class="p">(</span><span class="n">train_data_path</span><span class="p">,</span> <span class="n">valid_data_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">train_data_labels</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">valid_data_labels</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;train_data_len:&quot;</span><span class="p">,</span> <span class="n">train_data_len</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;valid_data_len:&quot;</span><span class="p">,</span> <span class="n">valid_data_len</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>训练数据集的正负样本数量:
+{&#39;0&#39;: 29780, &#39;1&#39;: 37569}
+验证数据集的正负样本数量:
+{&#39;1&#39;: 444, &#39;0&#39;: 428}
+(tensor([[[-0.6303,  1.1318, -0.3418,  ...,  1.6460, -0.1171,  0.7541],
+         [-0.5715,  0.9577, -0.4190,  ...,  1.5169, -0.0387,  0.6166],
+         [-0.5301,  0.7905, -0.2580,  ...,  1.5954, -0.0559,  0.6453],
+         ...,
+         [-0.3087,  0.6281,  0.1010,  ...,  1.5620, -0.1870,  0.5816],
+         [-0.2482,  0.6478,  0.0386,  ...,  1.4672, -0.2018,  0.6288],
+         [ 0.0115,  0.8074,  0.3172,  ...,  1.8373, -0.0368,  0.5223]],
+        ...,
+
+        [[-0.7761,  1.2271, -0.1928,  ...,  1.3955, -0.4057,  0.7237],
+         [-0.6987,  1.2270, -0.2225,  ...,  1.4247, -0.3673,  0.6321],
+         [-0.6177,  1.0689, -0.0544,  ...,  1.5243, -0.4109,  0.6564],
+         ...,
+         [-0.2122,  0.7630, -0.1084,  ...,  1.5221, -0.0703,  0.4527],
+         [-0.5035,  0.7712, -0.2957,  ...,  1.4507, -0.1208,  0.5033],
+         [-0.3215,  0.7201, -0.0899,  ...,  1.4875, -0.1781,  0.6034]]]), tensor([1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0]))
+train_data_len: 67349
+valid_data_len: 872
+</code></pre></div>
+<h4 id="5">5 编写训练和验证函数<a class="headerlink" href="#5" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+
+<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">train_data_labels</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    description: 训练函数, 在这个过程中将更新模型参数, 并收集准确率和损失</span>
+<span class="sd">    :param train_data_labels: 训练数据和标签的生成器对象</span>
+<span class="sd">    :return: 整个训练过程的平均损失之和以及正确标签的累加数</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 定义训练过程的初始损失和准确率累加数</span>
+    <span class="n">train_running_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">train_running_acc</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="c1"># 循环遍历训练数据和标签生成器, 每个批次更新一次模型参数</span>
+    <span class="k">for</span> <span class="n">train_tensor</span><span class="p">,</span> <span class="n">train_labels</span> <span class="ow">in</span> <span class="n">train_data_labels</span><span class="p">:</span>
+        <span class="c1"># 初始化该批次的优化器</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="c1"># 使用微调网络获得输出</span>
+        <span class="n">train_outputs</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">train_tensor</span><span class="p">)</span>
+        <span class="c1"># 得到该批次下的平均损失</span>
+        <span class="n">train_loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">train_outputs</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+        <span class="c1"># 将该批次的平均损失加到train_running_loss中</span>
+        <span class="n">train_running_loss</span> <span class="o">+=</span> <span class="n">train_loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="c1"># 损失反向传播</span>
+        <span class="n">train_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="c1"># 优化器更新模型参数</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="c1"># 将该批次中正确的标签数量进行累加, 以便之后计算准确率</span>
+        <span class="n">train_running_acc</span> <span class="o">+=</span> <span class="p">(</span><span class="n">train_outputs</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">train_labels</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">train_running_loss</span><span class="p">,</span> <span class="n">train_running_acc</span>
+
+
+<span class="k">def</span> <span class="nf">valid</span><span class="p">(</span><span class="n">valid_data_labels</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    description: 验证函数, 在这个过程中将验证模型的在新数据集上的标签, 收集损失和准确率</span>
+<span class="sd">    :param valid_data_labels: 验证数据和标签的生成器对象</span>
+<span class="sd">    :return: 整个验证过程的平均损失之和以及正确标签的累加数</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 定义训练过程的初始损失和准确率累加数</span>
+    <span class="n">valid_running_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">valid_running_acc</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="c1"># 循环遍历验证数据和标签生成器</span>
+    <span class="k">for</span> <span class="n">valid_tensor</span><span class="p">,</span> <span class="n">valid_labels</span> <span class="ow">in</span> <span class="n">valid_data_labels</span><span class="p">:</span>
+        <span class="c1"># 不自动更新梯度</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="c1"># 使用微调网络获得输出</span>
+            <span class="n">valid_outputs</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">valid_tensor</span><span class="p">)</span>
+            <span class="c1"># 得到该批次下的平均损失</span>
+            <span class="n">valid_loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">valid_outputs</span><span class="p">,</span> <span class="n">valid_labels</span><span class="p">)</span>
+            <span class="c1"># 将该批次的平均损失加到valid_running_loss中</span>
+            <span class="n">valid_running_loss</span> <span class="o">+=</span> <span class="n">valid_loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="c1"># 将该批次中正确的标签数量进行累加, 以便之后计算准确率</span>
+            <span class="n">valid_running_acc</span> <span class="o">+=</span> <span class="p">(</span><span class="n">valid_outputs</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">valid_labels</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">valid_running_loss</span><span class="p">,</span>  <span class="n">valid_running_acc</span>
+</code></pre></div>
+<h4 id="6">6 调用并保存模型<a class="headerlink" href="#6" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># 设定数据路径</span>
+    <span class="n">train_data_path</span> <span class="o">=</span> <span class="s2">&quot;/root/data/glue_data/SST-2/train.tsv&quot;</span>
+    <span class="n">valid_data_path</span> <span class="o">=</span> <span class="s2">&quot;/root/data/glue_data/SST-2/dev.tsv&quot;</span>
+    <span class="c1"># 定义交叉熵损失函数</span>
+    <span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+    <span class="c1"># 定义SGD优化方法</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+    <span class="c1"># 定义训练轮数</span>
+    <span class="n">epochs</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="c1"># 定义批次样本数量</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="c1"># 进行指定轮次的训练</span>
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+        <span class="c1"># 打印轮次</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Epoch:&quot;</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># 通过数据加载器获得训练数据和验证数据生成器, 以及对应的样本数量</span>
+        <span class="n">train_data_labels</span><span class="p">,</span> <span class="n">valid_data_labels</span><span class="p">,</span> <span class="n">train_data_len</span><span class="p">,</span> \
+        <span class="n">valid_data_len</span> <span class="o">=</span> <span class="n">data_loader</span><span class="p">(</span><span class="n">train_data_path</span><span class="p">,</span> <span class="n">valid_data_path</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+        <span class="c1"># 调用训练函数进行训练</span>
+        <span class="n">train_running_loss</span><span class="p">,</span> <span class="n">train_running_acc</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">train_data_labels</span><span class="p">)</span>
+        <span class="c1"># 调用验证函数进行验证</span>
+        <span class="n">valid_running_loss</span><span class="p">,</span> <span class="n">valid_running_acc</span> <span class="o">=</span> <span class="n">valid</span><span class="p">(</span><span class="n">valid_data_labels</span><span class="p">)</span>
+        <span class="c1"># 计算每一轮的平均损失, train_running_loss和valid_running_loss是每个批次的平均损失之和</span>
+        <span class="c1"># 因此将它们乘以batch_size就得到了该轮的总损失, 除以样本数即该轮次的平均损失</span>
+        <span class="n">train_average_loss</span> <span class="o">=</span> <span class="n">train_running_loss</span> <span class="o">*</span> <span class="n">batch_size</span> <span class="o">/</span> <span class="n">train_data_len</span>
+        <span class="n">valid_average_loss</span> <span class="o">=</span> <span class="n">valid_running_loss</span> <span class="o">*</span> <span class="n">batch_size</span> <span class="o">/</span> <span class="n">valid_data_len</span>
+
+        <span class="c1"># train_running_acc和valid_running_acc是每个批次的正确标签累加和,</span>
+        <span class="c1"># 因此只需除以对应样本总数即是该轮次的准确率</span>
+        <span class="n">train_average_acc</span> <span class="o">=</span> <span class="n">train_running_acc</span> <span class="o">/</span>  <span class="n">train_data_len</span>
+        <span class="n">valid_average_acc</span> <span class="o">=</span> <span class="n">valid_running_acc</span> <span class="o">/</span> <span class="n">valid_data_len</span>
+        <span class="c1"># 打印该轮次下的训练损失和准确率以及验证损失和准确率</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Train Loss:&quot;</span><span class="p">,</span> <span class="n">train_average_loss</span><span class="p">,</span> <span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;Train Acc:&quot;</span><span class="p">,</span> <span class="n">train_average_acc</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valid Loss:&quot;</span><span class="p">,</span> <span class="n">valid_average_loss</span><span class="p">,</span> <span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;Valid Acc:&quot;</span><span class="p">,</span> <span class="n">valid_average_acc</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Finished Training&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 保存路径</span>
+    <span class="n">MODEL_PATH</span> <span class="o">=</span> <span class="s1">&#39;./BERT_net.pth&#39;</span>
+    <span class="c1"># 保存模型参数</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">MODEL_PATH</span><span class="p">)</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Finished Saving&#39;</span><span class="p">)</span>    
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>Epoch: 1
+Train Loss: 2.144986984236597 | Train Acc: 0.7347972972972973
+Valid Loss: 2.1898122818128902 | Valid Acc: 0.704
+Epoch: 2
+Train Loss: 1.3592962406135032 | Train Acc: 0.8435810810810811
+Valid Loss: 1.8816152956699324 | Valid Acc: 0.784
+Epoch: 3
+Train Loss: 1.5507876996199943 | Train Acc: 0.8439189189189189
+Valid Loss: 1.8626576719331536 | Valid Acc: 0.795
+Epoch: 4
+Train Loss: 0.7825378059198299 | Train Acc: 0.9081081081081082
+Valid Loss: 2.121698483480899 | Valid Acc: 0.803
+Finished Training
+Finished Saving
+</code></pre></div>
+<h4 id="7">7 加载模型进行使用<a class="headerlink" href="#7" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">MODEL_PATH</span> <span class="o">=</span> <span class="s1">&#39;./BERT_net.pth&#39;</span>
+    <span class="c1"># 加载模型参数</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">MODEL_PATH</span><span class="p">))</span>
+
+    <span class="c1"># text = &quot;酒店设备一般，套房里卧室的不能上网，要到客厅去。&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;房间应该超出30平米,是HK同级酒店中少有的大;重装之后,设备也不错.&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;输入文本为:&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">get_bert_encode</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+        <span class="c1"># 从output中取出最大值对应的索引</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;预测标签为:&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>输入文本为: 房间应该超出30平米,是HK同级酒店中少有的大;重装之后,设备也不错.
+预测标签为: 1
+输入文本为: 酒店设备一般，套房里卧室的不能上网，要到客厅去。
+预测标签为: 0
+</code></pre></div>
+<h2 id="4_2">4 小结<a class="headerlink" href="#4_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>学习了指定任务类型的微调脚本:
+    * huggingface研究机构向我们提供了针对GLUE数据集合任务类型的微调脚本, 这些微调脚本的核心都是微调模型的最后一个全连接层.
+    * 通过简单的参数配置来指定GLUE中存在任务类型(如: CoLA对应文本二分类, MRPC对应句子对文本二分类, STS-B对应句子对文本多分类), 以及指定需要微调的预训练模型.</li>
+</ul>
+<ul>
+<li>学习了指定任务类型的微调脚本使用步骤:
+    * 第一步: 下载微调脚本文件
+    * 第二步: 配置微调脚本参数
+    * 第三步: 运行并检验效果</li>
+</ul>
+<ul>
+<li>学习了通过微调方式进行迁移学习的两种类型:<ul>
+<li>类型一: 使用指定任务类型的微调脚本微调预训练模型, 后接带有输出头的预定义网络输出结果.</li>
+<li>类型二: 直接加载预训练模型进行输入文本的特征表示, 后接自定义网络进行微调输出结果.</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>学习了类型一实战演示:<ul>
+<li>使用文本二分类的任务类型SST-2的微调脚本微调中文预训练模型, 后接带有分类输出头的预定义网络输出结果. 目标是判断句子的情感倾向.</li>
+<li>准备中文酒店评论的情感分析语料, 语料样式与SST-2数据集相同, 标签0代表差评, 标签1好评.</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>学习了类型二实战演示:
+    * 直接加载预训练模型进行输入文本的特征表示, 后接自定义网络进行微调输出结果.</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

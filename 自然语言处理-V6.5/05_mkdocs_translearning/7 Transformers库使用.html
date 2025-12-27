@@ -1,0 +1,2112 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>7 Transformers库使用 - 自然语言处理基础V6.5</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="自然语言处理基础V6.5" class="md-header__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            自然语言处理基础V6.5
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              7 Transformers库使用
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="自然语言处理基础V6.5" class="md-nav__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    自然语言处理基础V6.5
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章 自然语言处理入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章 自然语言处理入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章 自然语言处理入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_mkdocs_NLP/1_%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8.html" class="md-nav__link">
+        1 自然语言处理入门
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章 文本预处理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章 文本预处理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章 文本预处理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/1%20%E8%AE%A4%E8%AF%86%E6%96%87%E6%9C%AC%E9%A2%84%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        1 认识文本预处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/2%20%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        2 文本处理的基本方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/3%20%E6%96%87%E6%9C%AC%E5%BC%A0%E9%87%8F%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        3 文本张量表示方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/4%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90.html" class="md-nav__link">
+        4 文本数据分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/5%20%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        5 文本特征处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/6%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA.html" class="md-nav__link">
+        6 文本数据增强
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/7%20jieba%E8%AF%8D%E6%80%A7%E5%AF%B9%E7%85%A7%E8%A1%A8.html" class="md-nav__link">
+        7 jieba词性对照表
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章 RNN及其变体
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章 RNN及其变体" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章 RNN及其变体
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/1%20%E8%AE%A4%E8%AF%86RNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        1 认识RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/2%20%E4%BC%A0%E7%BB%9FRNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        2 传统RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/3%20LSTM%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        3 LSTM模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/4%20GRU%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        4 GRU模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/5%20RNN%E6%A1%88%E4%BE%8B-%E4%BA%BA%E5%90%8D%E5%88%86%E7%B1%BB%E5%99%A8.html" class="md-nav__link">
+        5 RNN案例 人名分类器
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/6%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D1.html" class="md-nav__link">
+        6 注意力机制介绍1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/7%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D2.html" class="md-nav__link">
+        7 注意力机制介绍2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_mkdocs_RNN/8%20RNN%E6%A1%88%E4%BE%8B-seq2seq%E8%8B%B1%E8%AF%91%E6%B3%95.html" class="md-nav__link">
+        8 RNN案例 seq2seq英译法
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章 Transformer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章 Transformer" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章 Transformer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/1%20Transformer%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 Transformer背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/2%20%E8%AE%A4%E8%AF%86Transformer%E6%9E%B6%E6%9E%84.html" class="md-nav__link">
+        2 认识Transformer架构
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/3%20%E8%BE%93%E5%85%A5%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        3 输入部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        4 编码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/5%20%E8%A7%A3%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        5 解码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/6%20%E8%BE%93%E5%87%BA%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        6 输出部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/7%20%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA.html" class="md-nav__link">
+        7 模型构建
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章 迁移学习
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章 迁移学习" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章 迁移学习
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="1%20fasttext%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 fasttext工具介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="2%20fasttext%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB.html" class="md-nav__link">
+        2 fasttext文本分类
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3%20%E8%AE%AD%E7%BB%83%E8%AF%8D%E5%90%91%E9%87%8F.html" class="md-nav__link">
+        3 训练词向量
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="4%20%E8%AF%8D%E5%90%91%E9%87%8F%E8%BF%81%E7%A7%BB.html" class="md-nav__link">
+        4 词向量迁移
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="5%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5.html" class="md-nav__link">
+        5 迁移学习概念
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="6%20NLP%E4%B8%AD%E7%9A%84%E5%B8%B8%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        6 NLP中的常用预训练模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          7 Transformers库使用
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="7%20Transformers%E5%BA%93%E4%BD%BF%E7%94%A8.html" class="md-nav__link md-nav__link--active">
+        7 Transformers库使用
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-transformers" class="md-nav__link">
+    1 了解Transformers库
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-transformers" class="md-nav__link">
+    2 Transformers库三层应用结构
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-nlp" class="md-nav__link">
+    3 管道方式完成多种NLP任务
+  </a>
+  
+    <nav class="md-nav" aria-label="3 管道方式完成多种NLP任务">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 文本分类任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 特征提取任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 完型填空任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    3.4 阅读理解任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35" class="md-nav__link">
+    3.5 文本摘要任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-ner" class="md-nav__link">
+    3.6 NER任务
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-nlp" class="md-nav__link">
+    4 自动模型方式完成多种NLP任务
+  </a>
+  
+    <nav class="md-nav" aria-label="4 自动模型方式完成多种NLP任务">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    4.1 文本分类任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    4.2 特征提取任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    4.3 完型填空任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44" class="md-nav__link">
+    4.4 阅读理解任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45" class="md-nav__link">
+    4.5 文本摘要任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-ner" class="md-nav__link">
+    4.6 NER任务
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-nlp" class="md-nav__link">
+    5 具体模型方式完成NLP任务
+  </a>
+  
+    <nav class="md-nav" aria-label="5 具体模型方式完成NLP任务">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    5.1 完型填空任务
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    6 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="8%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5.html" class="md-nav__link">
+        8 迁移学习实践
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="9%20NLP%E4%B8%AD%E7%9A%84%E6%A0%87%E5%87%86%E6%95%B0%E6%8D%AE%E9%9B%86%28%E6%8B%93%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        9 NLP中的标准数据集(拓展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章 Bert系列模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章 Bert系列模型" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章 Bert系列模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/1%20BERT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 BERT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/2%20BERT%E6%A8%A1%E5%9E%8B%E7%89%B9%E7%82%B9.html" class="md-nav__link">
+        2 BERT模型特点
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/3%20BERT%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        3 BERT系列模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/4%20ELMo%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        4 ELMo模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/5%20GPT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        5 GPT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/6%20BERT%20GPT%20ELMo%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%B9%E6%AF%94.html" class="md-nav__link">
+        6 BERT GPT ELMo模型的对比
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          第七章 Transformer精选问答(拓展资料)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第七章 Transformer精选问答(拓展资料)" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          第七章 Transformer精选问答(拓展资料)
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/1%20Transformer%20%E5%90%84%E5%AD%90%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8.html" class="md-nav__link">
+        1 Transformer 各子模块作用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/2%20Transformer%20Decoder%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        2 Transformer Decoder模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/3%20Self-attention%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        3 Self attention机制详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/4%20Multi-head%20Attention%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        4 Multi head Attention详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/5%20Transformer%E4%BC%98%E5%8A%BF.html" class="md-nav__link">
+        5 Transformer优势
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-transformers" class="md-nav__link">
+    1 了解Transformers库
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-transformers" class="md-nav__link">
+    2 Transformers库三层应用结构
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-nlp" class="md-nav__link">
+    3 管道方式完成多种NLP任务
+  </a>
+  
+    <nav class="md-nav" aria-label="3 管道方式完成多种NLP任务">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 文本分类任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 特征提取任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 完型填空任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    3.4 阅读理解任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35" class="md-nav__link">
+    3.5 文本摘要任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-ner" class="md-nav__link">
+    3.6 NER任务
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-nlp" class="md-nav__link">
+    4 自动模型方式完成多种NLP任务
+  </a>
+  
+    <nav class="md-nav" aria-label="4 自动模型方式完成多种NLP任务">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    4.1 文本分类任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    4.2 特征提取任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    4.3 完型填空任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44" class="md-nav__link">
+    4.4 阅读理解任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45" class="md-nav__link">
+    4.5 文本摘要任务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-ner" class="md-nav__link">
+    4.6 NER任务
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-nlp" class="md-nav__link">
+    5 具体模型方式完成NLP任务
+  </a>
+  
+    <nav class="md-nav" aria-label="5 具体模型方式完成NLP任务">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    5.1 完型填空任务
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    6 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>7 Transformers库使用</h1>
+
+<h3 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>了解并掌握管道方式完成基本NLP任务</li>
+<li>了解并掌握自动模型方式完成基本NLP任务</li>
+<li>了解并掌握具体模型方式完成基本NLP任务</li>
+</ul>
+<h2 id="1-transformers">1 了解Transformers库<a class="headerlink" href="#1-transformers" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Huggingface总部位于纽约，是一家专注于自然语言处理、人工智能和分布式系统的创业公司。他们所提供的聊天机器人技术一直颇受欢迎，但更出名的是他们在NLP开源社区上的贡献。Huggingface一直致力于自然语言处理NLP技术的平民化(democratize)，希望每个人都能用上最先进(SOTA, state-of-the-art)的NLP技术，而非困窘于训练资源的匮乏。同时Hugging Face专注于NLP技术，拥有大型的开源社区。尤其是在github上开源的自然语言处理，预训练模型库 Transformers，已被下载超过一百万次，github上超过24000个star。</li>
+</ul>
+<ul>
+<li>Huggingface Transformers 是基于一个开源基于 transformer 模型结构提供的预训练语言库。它支持 Pytorch，Tensorflow2.0，并且支持两个框架的相互转换。Transformers 提供了NLP领域大量state-of-art的 预训练语言模型结构的模型和调用框架。</li>
+<li>框架支持了最新的各种NLP预训练语言模型，使用者可快速的进行模型调用，并且支持模型further pretraining 和 下游任务fine-tuning。举个例子Transformers 库提供了很多SOTA的预训练模型，比如BERT, GPT-2, RoBERTa, XLM, DistilBert, XLNet, CTRL。</li>
+<li>社区Transformer的访问地址为：<a href="https://huggingface.co/">https://huggingface.co/</a>，见下图。
+<img src="img2/image-20220510111629947.png" alt="image-20220510111629947" style="zoom:67%;" /></li>
+<li>备注
+    * 1 点击 Model链接可查看、下载预训练模型。点击Datasets链接可查看、下载数据集。点击Docs链接可以阅读预训练模型的编程文档，十分方便
+    * 2 SOTA（state-of-the-art）是指目前对某项任务“最好的”算法或技术</li>
+</ul>
+<h2 id="2-transformers">2 Transformers库三层应用结构<a class="headerlink" href="#2-transformers" title="Permanent link">&para;</a></h2>
+<ul>
+<li>管道（Pipline）方式：高度集成的极简使用方式，只需要几行代码即可实现一个NLP任务。</li>
+<li>自动模型（AutoMode）方式：可载入并使用BERTology系列模型。</li>
+<li>具体模型（SpecificModel）方式：在使用时，需要明确指定具体的模型，并按照每个BERTology系列模型中的特定参数进行调用，该方式相对复杂，但具有较高的灵活度。</li>
+</ul>
+<p><img src="img2/image-20220510120516209.png" alt="image-20220510120516209" style="zoom:50%;" /></p>
+<h2 id="3-nlp">3 管道方式完成多种NLP任务<a class="headerlink" href="#3-nlp" title="Permanent link">&para;</a></h2>
+<p><strong>注意：若虚拟机中已经安装transformers，以下安装步骤不需再次执行</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 注意在执行clone之前，要查看当前是在那个目录下，比如$HOME/nlpdev/目录下</span>
+<span class="c1"># 克隆huggingface的transfomers文件</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">huggingface</span><span class="o">/</span><span class="n">transformers</span><span class="o">.</span><span class="n">git</span>
+
+<span class="c1"># 进行transformers文件夹</span>
+<span class="n">cd</span> <span class="n">transformers</span>
+
+<span class="c1"># 切换transformers到指定版本</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="n">v4</span><span class="mf">.19.0</span>
+
+<span class="c1"># 安装transformers包</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># 安装datasets数据库，</span>
+<span class="c1"># 注意workon xxx虚拟机开发环境，在虚拟机开发环境下安装</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">datasets</span>
+</code></pre></div>
+<h3 id="31">3.1 文本分类任务<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<ul>
+<li>文本分类是指模型可以根据文本中的内容来进行分类。例如根据内容对情绪进行分类，根据内容对商品分类等。文本分类模型一般是通过有监督训练得到的。对文本内容的具体分类，依赖于训练时所使用的样本标签。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 导入工具包</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">pipeline</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># 情感分类任务</span>
+<span class="k">def</span> <span class="nf">dm01_test_classification</span><span class="p">():</span>
+
+    <span class="c1"># 1 使用中文预训练模型chinese_sentiment</span>
+    <span class="c1"># 模型下载地址 git clone https://huggingface.co/techthiyanes/chinese_sentiment</span>
+
+    <span class="c1"># 2 实例化pipeline对象</span>
+    <span class="n">my_model</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;sentiment-analysis&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;./chinese_sentiment&#39;</span><span class="p">)</span>
+    <span class="c1"># my_model = pipeline(task=&#39;sentiment-analysis&#39;, model=&#39;./bert-base-chinese&#39;)</span>
+
+    <span class="c1"># 3 文本送给模型 进行文本分类</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">my_model</span><span class="p">(</span><span class="s1">&#39;我爱北京天安门，天安门上太阳升。&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+<span class="c1"># 结果输出</span>
+        <span class="n">output</span><span class="o">---&gt;</span> <span class="p">[{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;star 5&#39;</span><span class="p">,</span> <span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.6314294338226318</span><span class="p">}]</span>
+</code></pre></div>
+<ul>
+<li>pipeline函数可以自动从官网下载预训练模型，也可以加载本地的预训练模型</li>
+</ul>
+<blockquote>
+<p>transformer库中预训练模型查找和下载</p>
+</blockquote>
+<p><img src="img2/image-20220510134531540.png" alt="image-20220510134531540" style="zoom:50%;" /></p>
+<p><img src="img2/image-20220510134942281.png" alt="image-20220510134942281" style="zoom:50%;" /></p>
+<h3 id="32">3.2 特征提取任务<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<ul>
+<li>特征抽取任务只返回文本处理后的特征，属于预训练模型的范畴。特征抽取任务的输出结果需要和其他模型一起工作。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 特征抽取任务</span>
+<span class="k">def</span> <span class="nf">dm02_test_feature_extraction</span><span class="p">():</span>
+    <span class="c1"># 1 下载中文预训练模型 git clone https://huggingface.co/bert-base-chinese</span>
+
+    <span class="c1"># 2 实例化pipeline对象 返回模型对象</span>
+    <span class="n">my_model</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;feature-extraction&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;./bert-base-chinese&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 给模型送数据 提取语句特征</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">my_model</span><span class="p">(</span><span class="s1">&#39;人生该如何起头&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output---&gt;&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># 输出结果</span>
+<span class="c1"># output---&gt; &lt;class &#39;list&#39;&gt; (1, 9, 768)</span>
+<span class="c1"># 7个字变成9个字原因: [CLS] 人 生 该 如 何 起 头 [SEP]</span>
+</code></pre></div>
+<ul>
+<li>不带任务头输出：特征抽取任务属于不带任务头输出，本bert-base-chinese模型的9个字，每个字的特征维度是768</li>
+<li>带头任务头输出：其他有指定任务类型的比如文本分类，完型填空属于带头任务输出，会根据具体任务类型不同输出不同的结果</li>
+</ul>
+<h3 id="33">3.3 完型填空任务<a class="headerlink" href="#33" title="Permanent link">&para;</a></h3>
+<ul>
+<li>完型填空任务又被叫做“遮蔽语言建模任务”，它属于BERT模型训练过程中的子任务。下面完成一个中文场景的完型填空。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 完型填空任务</span>
+<span class="k">def</span> <span class="nf">dm03_test_fill_mask</span><span class="p">():</span>
+
+    <span class="c1"># 1 下载预训练模型 全词模型git clone https://huggingface.co/hfl/chinese-bert-wwm</span>
+
+    <span class="c1"># 2 实例化pipeline对象 返回一个模型</span>
+    <span class="n">my_model</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;fill-mask&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;chinese-bert-wwm&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 给模型送数据 做预测</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="s1">&#39;我想明天去[MASK]家吃饭。&#39;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">my_model</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+    <span class="c1"># 4 输出预测结果</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+<span class="c1"># 输出结果</span>
+    <span class="c1"># output---&gt;</span>
+    <span class="c1"># [{&#39;score&#39;: 0.34331339597702026, &#39;token&#39;: 1961, &#39;token_str&#39;: &#39;她&#39;, &#39;sequence&#39;: &#39;我 想 明 天 去 她 家 吃 饭.&#39;},</span>
+    <span class="c1"># {&#39;score&#39;: 0.2533259987831116, &#39;token&#39;: 872, &#39;token_str&#39;: &#39;你&#39;, &#39;sequence&#39;: &#39;我 想 明 天 去 你 家 吃 饭.&#39;},</span>
+    <span class="c1"># {&#39;score&#39;: 0.1874391734600067, &#39;token&#39;: 800, &#39;token_str&#39;: &#39;他&#39;, &#39;sequence&#39;: &#39;我 想 明 天 去 他 家 吃 饭.&#39;},</span>
+    <span class="c1"># {&#39;score&#39;: 0.1273055076599121, &#39;token&#39;: 2769, &#39;token_str&#39;: &#39;我&#39;, &#39;sequence&#39;: &#39;我 想 明 天 去 我 家 吃 饭.&#39;},</span>
+    <span class="c1"># {&#39;score&#39;: 0.02162978984415531, &#39;token&#39;: 2644, &#39;token_str&#39;: &#39;您&#39;, &#39;sequence&#39;: &#39;我 想 明 天 去 您 家 吃 饭.&#39;}]</span>
+</code></pre></div>
+<blockquote>
+<p>可以在官网在线查找完型填空结果</p>
+</blockquote>
+<p><img src="img2/image-20220510142812096.png" alt="image-20220510142812096" style="zoom:50%;" /></p>
+<h3 id="34">3.4 阅读理解任务<a class="headerlink" href="#34" title="Permanent link">&para;</a></h3>
+<ul>
+<li>阅读理解任务又称为“抽取式问答任务”，即输入一段文本和一个问题，让模型输出结果。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 阅读理解任务(抽取式问答)</span>
+<span class="k">def</span> <span class="nf">dm04_test_question_answering</span><span class="p">():</span>
+
+    <span class="c1"># 问答语句</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="s1">&#39;我叫张三，我是一个程序员，我的喜好是打篮球。&#39;</span>
+    <span class="n">questions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;我是谁？&#39;</span><span class="p">,</span> <span class="s1">&#39;我是做什么的？&#39;</span><span class="p">,</span> <span class="s1">&#39;我的爱好是什么？&#39;</span><span class="p">]</span>
+
+    <span class="c1"># 1 下载模型 git clone https://huggingface.co/luhua/chinese_pretrain_mrc_roberta_wwm_ext_large</span>
+
+    <span class="c1"># 2 实例化化pipeline 返回模型</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="s1">&#39;question-answering&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;chinese_pretrain_mrc_roberta_wwm_ext_large&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 给模型送数据 的预测结果</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">question</span><span class="o">=</span><span class="n">questions</span><span class="p">))</span>
+
+    <span class="c1"># 输出结果</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    [{&#39;score&#39;: 1.2071758523357623e-12, &#39;start&#39;: 2, &#39;end&#39;: 4, &#39;answer&#39;: &#39;张三&#39;},</span>
+<span class="sd">     {&#39;score&#39;: 2.60890374192968e-06, &#39;start&#39;: 9, &#39;end&#39;: 12, &#39;answer&#39;: &#39;程序员&#39;},</span>
+<span class="sd">     {&#39;score&#39;: 4.1686924134864967e-08, &#39;start&#39;: 18, &#39;end&#39;: 21, &#39;answer&#39;: &#39;打篮球&#39;}]</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+</code></pre></div>
+<h3 id="35">3.5 文本摘要任务<a class="headerlink" href="#35" title="Permanent link">&para;</a></h3>
+<ul>
+<li>摘要生成任务的输入一一段文本，输出是一段概况、简单的文字。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 文本摘要任务</span>
+<span class="k">def</span> <span class="nf">dm05_test_summarization</span><span class="p">():</span>
+
+    <span class="c1"># 1 下载模型 git clone https://huggingface.co/sshleifer/distilbart-cnn-12-6</span>
+
+    <span class="c1"># 2 实例化pipline 返回模型</span>
+    <span class="n">my_model</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="n">task</span> <span class="o">=</span> <span class="s1">&#39;summarization&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;distilbart-cnn-12-6&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 3 准备文本 送给模型</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;BERT is a transformers model pretrained on a large corpus of English data &quot;</span> \
+           <span class="s2">&quot;in a self-supervised fashion. This means it was pretrained on the raw texts &quot;</span> \
+           <span class="s2">&quot;only, with no humans labelling them in any way (which is why it can use lots &quot;</span> \
+           <span class="s2">&quot;of publicly available data) with an automatic process to generate inputs and &quot;</span> \
+           <span class="s2">&quot;labels from those texts. More precisely, it was pretrained with two objectives:Masked &quot;</span> \
+           <span class="s2">&quot;language modeling (MLM): taking a sentence, the model randomly masks 15</span><span class="si">% o</span><span class="s2">f the &quot;</span> \
+           <span class="s2">&quot;words in the input then run the entire masked sentence through the model and has &quot;</span> \
+           <span class="s2">&quot;to predict the masked words. This is different from traditional recurrent neural &quot;</span> \
+           <span class="s2">&quot;networks (RNNs) that usually see the words one after the other, or from autoregressive &quot;</span> \
+           <span class="s2">&quot;models like GPT which internally mask the future tokens. It allows the model to learn &quot;</span> \
+           <span class="s2">&quot;a bidirectional representation of the sentence.Next sentence prediction (NSP): the models&quot;</span> \
+           <span class="s2">&quot; concatenates two masked sentences as inputs during pretraining. Sometimes they correspond to &quot;</span> \
+           <span class="s2">&quot;sentences that were next to each other in the original text, sometimes not. The model then &quot;</span> \
+           <span class="s2">&quot;has to predict if the two sentences were following each other or not.&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">my_model</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="c1"># 4 打印摘要结果</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+<span class="c1"># 输出结果</span>
+<span class="n">output</span><span class="o">---&gt;</span> <span class="p">[{</span><span class="s1">&#39;summary_text&#39;</span><span class="p">:</span> <span class="s1">&#39; BERT is a transformers model pretrained on a large corpus of English data in a self-supervised fashion . It was pretrained with two objectives: Masked language modeling (MLM) and next sentence prediction (NSP) This allows the model to learn a bidirectional representation of the sentence .&#39;</span><span class="p">}]</span>
+</code></pre></div>
+<h3 id="36-ner">3.6 NER任务<a class="headerlink" href="#36-ner" title="Permanent link">&para;</a></h3>
+<ul>
+<li>实体词识别（NER）任务是NLP中的基础任务。它用于识别文本中的人名（PER）、地名（LOC）、组织（ORG）以及其他实体（MISC）等。例如：(王 B-PER)  (小 I-PER)  (明 I-PER)  (在 O)  (办 B-LOC)  (公 I-LOC)  (室 I-LOC)。其中O表示一个非实体，B表示一个实体的开始，I表示一个实体块的内部。</li>
+<li>实体词识别本质上是一个分类任务（又叫序列标注任务），实体词识别是句法分析的基础，而句法分析优势NLP任务的核心。```</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># NER任务</span>
+<span class="k">def</span> <span class="nf">dm06_test_ner</span><span class="p">():</span>
+
+    <span class="c1"># 1 下载模型 git clone https://huggingface.co/uer/roberta-base-finetuned-cluener2020-chinese</span>
+
+    <span class="c1"># 2 实例化pipeline 返回模型</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="s1">&#39;ner&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;roberta-base-finetuned-cluener2020-chinese&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 给模型送数据 打印NER结果</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="s1">&#39;我爱北京天安门，天安门上太阳升。&#39;</span><span class="p">))</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    [{&#39;entity&#39;: &#39;B-address&#39;, &#39;score&#39;: 0.8838121, &#39;index&#39;: 3, &#39;word&#39;: &#39;北&#39;, &#39;start&#39;: 2, &#39;end&#39;: 3},</span>
+<span class="sd">     {&#39;entity&#39;: &#39;I-address&#39;, &#39;score&#39;: 0.83543754, &#39;index&#39;: 4, &#39;word&#39;: &#39;京&#39;, &#39;start&#39;: 3, &#39;end&#39;: 4},</span>
+<span class="sd">     {&#39;entity&#39;: &#39;I-address&#39;, &#39;score&#39;: 0.4240591, &#39;index&#39;: 5, &#39;word&#39;: &#39;天&#39;, &#39;start&#39;: 4, &#39;end&#39;: 5},</span>
+<span class="sd">     {&#39;entity&#39;: &#39;I-address&#39;, &#39;score&#39;: 0.7524443, &#39;index&#39;: 6, &#39;word&#39;: &#39;安&#39;, &#39;start&#39;: 5, &#39;end&#39;: 6},</span>
+<span class="sd">     {&#39;entity&#39;: &#39;I-address&#39;, &#39;score&#39;: 0.6949866, &#39;index&#39;: 7, &#39;word&#39;: &#39;门&#39;, &#39;start&#39;: 6, &#39;end&#39;: 7},</span>
+<span class="sd">     {&#39;entity&#39;: &#39;B-address&#39;, &#39;score&#39;: 0.65552264, &#39;index&#39;: 9, &#39;word&#39;: &#39;天&#39;, &#39;start&#39;: 8, &#39;end&#39;: 9},</span>
+<span class="sd">     {&#39;entity&#39;: &#39;I-address&#39;, &#39;score&#39;: 0.5376768, &#39;index&#39;: 10, &#39;word&#39;: &#39;安&#39;, &#39;start&#39;: 9, &#39;end&#39;: 10},</span>
+<span class="sd">     {&#39;entity&#39;: &#39;I-address&#39;, &#39;score&#39;: 0.510813, &#39;index&#39;: 11, &#39;word&#39;: &#39;门&#39;, &#39;start&#39;: 10, &#39;end&#39;: 11}]</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+</code></pre></div>
+<h2 id="4-nlp">4 自动模型方式完成多种NLP任务<a class="headerlink" href="#4-nlp" title="Permanent link">&para;</a></h2>
+<h3 id="41">4.1 文本分类任务<a class="headerlink" href="#41" title="Permanent link">&para;</a></h3>
+<ul>
+<li>文本分类是指模型可以根据文本中的内容来进行分类。例如根据内容对情绪进行分类，根据内容对商品分类等。文本分类模型一般是通过有监督训练得到的。对文本内容的具体分类，依赖于训练时所使用的样本标签。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 导入工具包</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoConfig</span><span class="p">,</span> <span class="n">AutoModel</span><span class="p">,</span> <span class="n">AutoTokenizer</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModelForSequenceClassification</span><span class="p">,</span> <span class="n">AutoModelForMaskedLM</span><span class="p">,</span> <span class="n">AutoModelForQuestionAnswering</span>
+<span class="c1"># AutoModelForSeq2SeqLM：文本摘要</span>
+<span class="c1"># AutoModelForTokenClassification：ner</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModelForSeq2SeqLM</span><span class="p">,</span> <span class="n">AutoModelForTokenClassification</span>
+
+<span class="c1"># 情感分类任务</span>
+<span class="k">def</span> <span class="nf">dm01_test_classification</span><span class="p">():</span>
+
+    <span class="c1"># 1 加载tokenizer</span>
+    <span class="n">my_tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s1">&#39;./chinese_sentiment&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 2 加载模型</span>
+    <span class="n">my_model</span> <span class="o">=</span> <span class="n">AutoModelForSequenceClassification</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s1">&#39;./chinese_sentiment&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 文本转张量</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;人生该如何起头&#39;</span>
+
+    <span class="c1"># 3-1 return_tensors=&#39;pt&#39; 返回是二维tensor</span>
+    <span class="n">msg_tensor1</span> <span class="o">=</span> <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;msg_tensor1---&gt;&#39;</span><span class="p">,</span> <span class="n">msg_tensor1</span><span class="p">)</span>
+
+    <span class="c1"># 3-2 不用return_tensors=&#39;pt&#39;是一维列表</span>
+    <span class="n">msg_list2</span> <span class="o">=</span> <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;msg_list2---&gt;&#39;</span><span class="p">,</span> <span class="n">msg_list2</span><span class="p">)</span>
+    <span class="n">msg_tensor2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">msg_list2</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;msg_tensor2---&gt;&#39;</span><span class="p">,</span> <span class="n">msg_tensor2</span><span class="p">)</span>
+
+    <span class="c1"># 4 数据送给模型</span>
+    <span class="c1"># 4-1</span>
+    <span class="n">my_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">output1</span> <span class="o">=</span> <span class="n">my_model</span><span class="p">(</span><span class="n">msg_tensor2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;情感分类模型头输出outpout1---&gt;&#39;</span><span class="p">,</span> <span class="n">output1</span><span class="p">)</span>
+    <span class="c1"># 4-2</span>
+    <span class="n">output2</span> <span class="o">=</span> <span class="n">my_model</span><span class="p">(</span><span class="n">msg_tensor2</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;情感分类模型头输出outpout2---&gt;&#39;</span><span class="p">,</span> <span class="n">output2</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>AutoTokenizer、AutoModelForSequenceClassification函数可以自动从官网下载预训练模型，也可以加载本地的预训练模型</li>
+<li>AutoModelForSequenceClassification类管理着分类任务，会根据参数的输入选用不同的模型。</li>
+<li>AutoTokenizer的encode()函数使用return_tensors=’pt‘参数和不使用pt参数对文本编码的结果不同</li>
+<li>AutoTokenizer的encode()函数使用padding='max_length'可以按照最大程度进行补齐，俗称打padding</li>
+<li>调用模型的forward函数输入return_dict=False参数，返回结果也不同</li>
+</ul>
+<blockquote>
+<p>程序运行结果</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">msg_tensor1</span><span class="o">---&gt;</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">101</span><span class="p">,</span>  <span class="mi">782</span><span class="p">,</span> <span class="mi">4495</span><span class="p">,</span> <span class="mi">6421</span><span class="p">,</span> <span class="mi">1963</span><span class="p">,</span>  <span class="mi">862</span><span class="p">,</span> <span class="mi">6629</span><span class="p">,</span> <span class="mi">1928</span><span class="p">,</span>  <span class="mi">102</span><span class="p">]])</span>
+<span class="n">msg_list2</span><span class="o">---&gt;</span> <span class="p">[</span><span class="mi">101</span><span class="p">,</span> <span class="mi">782</span><span class="p">,</span> <span class="mi">4495</span><span class="p">,</span> <span class="mi">6421</span><span class="p">,</span> <span class="mi">1963</span><span class="p">,</span> <span class="mi">862</span><span class="p">,</span> <span class="mi">6629</span><span class="p">,</span> <span class="mi">1928</span><span class="p">,</span> <span class="mi">102</span><span class="p">]</span>
+<span class="n">msg_tensor2</span><span class="o">---&gt;</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">101</span><span class="p">,</span>  <span class="mi">782</span><span class="p">,</span> <span class="mi">4495</span><span class="p">,</span> <span class="mi">6421</span><span class="p">,</span> <span class="mi">1963</span><span class="p">,</span>  <span class="mi">862</span><span class="p">,</span> <span class="mi">6629</span><span class="p">,</span> <span class="mi">1928</span><span class="p">,</span>  <span class="mi">102</span><span class="p">]])</span>
+<span class="n">情感分类模型头输出outpout1</span><span class="o">---&gt;</span> <span class="n">SequenceClassifierOutput</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logits</span><span class="o">=</span><span class="n">tensor</span><span class="p">([[</span><span class="o">-</span><span class="mf">2.7387</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.7528</span><span class="p">,</span>  <span class="mf">0.2273</span><span class="p">,</span>  <span class="mf">2.0507</span><span class="p">,</span>  <span class="mf">1.4128</span><span class="p">]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">AddmmBackward</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">情感分类模型头输出outpout2</span><span class="o">---&gt;</span> <span class="p">(</span><span class="n">tensor</span><span class="p">([[</span><span class="o">-</span><span class="mf">2.7387</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.7528</span><span class="p">,</span>  <span class="mf">0.2273</span><span class="p">,</span>  <span class="mf">2.0507</span><span class="p">,</span>  <span class="mf">1.4128</span><span class="p">]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">AddmmBackward</span><span class="o">&gt;</span><span class="p">),)</span>
+
+<span class="c1">#注1:101代表[CLS] 102代表[SEP]</span>
+</code></pre></div>
+<h3 id="42">4.2 特征提取任务<a class="headerlink" href="#42" title="Permanent link">&para;</a></h3>
+<ul>
+<li>特征抽取任务只返回文本处理后的特征，属于预训练模型的范畴。特征抽取任务的输出结果需要和其他模型一起工作。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 特征提取任务-不带任务输出头的任务</span>
+<span class="k">def</span> <span class="nf">dm02_test_feature_extraction</span><span class="p">():</span>
+    <span class="c1"># 1 加载tokenizer</span>
+    <span class="n">my_tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s1">&#39;./bert-base-chinese&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 2 加载模型</span>
+    <span class="n">my_model</span> <span class="o">=</span> <span class="n">AutoModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name_or_path</span> <span class="o">=</span> <span class="s1">&#39;./bert-base-chinese&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 文本转张量</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;你是谁&#39;</span><span class="p">,</span> <span class="s1">&#39;人生该如何起头&#39;</span><span class="p">]</span>
+    <span class="n">msgs_tensor</span> <span class="o">=</span> <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">encode_plus</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pad_to_max_length</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;msgs_tensor---&gt;&#39;</span><span class="p">,</span> <span class="n">msgs_tensor</span><span class="p">)</span>
+
+    <span class="c1"># 4 给模型送数据提取特征</span>
+    <span class="n">my_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">my_model</span><span class="p">(</span><span class="o">**</span><span class="n">msgs_tensor</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;不带模型头输出output---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;outputs.last_hidden_state.shape---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">last_hidden_state</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># torch.Size([1, 30, 768])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;outputs.pooler_output.shape---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">pooler_output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># torch.Size([1, 768])</span>
+</code></pre></div>
+<ul>
+<li>不带任务头输出：特征抽取任务属于不带任务头输出，本bert-base-chinese模型的9个字，每个字的特征维度是768</li>
+<li>带头任务头输出：其他有指定任务类型的比如文本分类，完型填空属于带头任务输出，会根据具体任务类型不同输出不同的结果</li>
+</ul>
+<blockquote>
+<p>程序运行结果</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">msgs_tensor</span><span class="o">---&gt;</span> 
+<span class="c1"># 1 input_ids对两个句子text2id以后的结果，</span>
+<span class="c1"># 101表示段落开头，第一个102代表第一个句子结束，第二个102点第二个句子结束</span>
+<span class="c1"># 后面的0表示 按照编码要求pad_to_max_length=True和max_length=30补充pad零</span>
+<span class="p">{</span><span class="s1">&#39;input_ids&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">101</span><span class="p">,</span>  <span class="mi">872</span><span class="p">,</span> <span class="mi">3221</span><span class="p">,</span> <span class="mi">6443</span><span class="p">,</span>  <span class="mi">102</span><span class="p">,</span>  <span class="mi">782</span><span class="p">,</span> <span class="mi">4495</span><span class="p">,</span> <span class="mi">6421</span><span class="p">,</span> <span class="mi">1963</span><span class="p">,</span>  <span class="mi">862</span><span class="p">,</span> <span class="mi">6629</span><span class="p">,</span> <span class="mi">1928</span><span class="p">,</span>
+          <span class="mi">102</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>
+            <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">]]),</span> 
+<span class="c1"># 2 token_type_ids表示段落标志0代表第一个句子，1代表第二个句子</span>
+ <span class="s1">&#39;token_type_ids&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+         <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]),</span> 
+<span class="c1"># 3 attention_mask表示注意力机制的掩码数据，1表示有真实数据，0表示是pad数据需要掩码</span>
+ <span class="s1">&#39;attention_mask&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+         <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])}</span>
+
+<span class="c1"># 1 last_hidden_state表示最后一个隐藏层的数据 [1,30,768]</span>
+<span class="c1"># 2 pooler_output表示池化，也就是对最后一个隐藏层再进行线性变换以后平均池化的结果。分类时候使用。</span>
+<span class="n">不带模型头输出output</span><span class="o">---&gt;</span> <span class="n">BaseModelOutputWithPoolingAndCrossAttentions</span><span class="p">(</span>
+  <span class="n">last_hidden_state</span><span class="o">=</span><span class="n">tensor</span><span class="p">([[[</span> <span class="mf">0.7001</span><span class="p">,</span>  <span class="mf">0.4651</span><span class="p">,</span>  <span class="mf">0.2427</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">0.5753</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4330</span><span class="p">,</span>  <span class="mf">0.1878</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.4017</span><span class="p">,</span>  <span class="mf">0.1123</span><span class="p">,</span>  <span class="mf">0.4482</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2614</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2649</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1497</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">1.2000</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4859</span><span class="p">,</span>  <span class="mf">1.1970</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">0.7543</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2405</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2627</span><span class="p">],</span>
+         <span class="o">...</span><span class="p">,</span>
+         <span class="p">[</span> <span class="mf">0.2074</span><span class="p">,</span>  <span class="mf">0.4022</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0448</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0849</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0766</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2134</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.0879</span><span class="p">,</span>  <span class="mf">0.2482</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2356</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">0.2967</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2357</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5138</span><span class="p">],</span>
+         <span class="p">[</span> <span class="mf">0.4944</span><span class="p">,</span>  <span class="mf">0.1340</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2387</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="mf">0.2375</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1011</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3314</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">NativeLayerNormBackward</span><span class="o">&gt;</span><span class="p">),</span> 
+  <span class="n">pooler_output</span><span class="o">=</span><span class="n">tensor</span><span class="p">([[</span> <span class="mf">0.9996</span><span class="p">,</span>  <span class="mf">1.0000</span><span class="p">,</span>  <span class="mf">0.9995</span><span class="p">,</span>  <span class="mf">0.9412</span><span class="p">,</span>  <span class="mf">0.8629</span><span class="p">,</span>  <span class="mf">0.9592</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8144</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9654</span><span class="p">,</span>
+          <span class="mf">0.9892</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9997</span><span class="p">,</span>  <span class="mf">1.0000</span><span class="p">,</span>  <span class="mf">0.9998</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1187</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9373</span><span class="p">,</span>  <span class="mf">0.9999</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0000</span><span class="p">,</span>
+         <span class="o">...</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">0.9967</span><span class="p">,</span>  <span class="mf">1.0000</span><span class="p">,</span>  <span class="mf">0.8626</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9993</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9704</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9993</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9971</span><span class="p">,</span>  <span class="mf">0.8522</span><span class="p">]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">TanhBackward</span><span class="o">&gt;</span><span class="p">),</span> 
+  <span class="n">hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">past_key_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cross_attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="n">outputs</span><span class="o">.</span><span class="n">last_hidden_state</span><span class="o">.</span><span class="n">shape</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">768</span><span class="p">])</span>
+<span class="n">outputs</span><span class="o">.</span><span class="n">pooler_output</span><span class="o">.</span><span class="n">shape</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">768</span><span class="p">])</span>
+</code></pre></div>
+<h3 id="43">4.3 完型填空任务<a class="headerlink" href="#43" title="Permanent link">&para;</a></h3>
+<ul>
+<li>完型填空任务又被叫做“遮蔽语言建模任务”，它属于BERT模型训练过程中的子任务。下面完成一个中文场景的完型填空。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 完型填空任务</span>
+<span class="k">def</span> <span class="nf">dm03_test_fill_mask</span><span class="p">():</span>
+
+    <span class="c1"># 1 加载tokenizer</span>
+    <span class="n">modename</span> <span class="o">=</span> <span class="s2">&quot;chinese-bert-wwm&quot;</span>
+    <span class="c1"># modename = &quot;bert-base-chinese&quot;</span>
+    <span class="n">my_tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">modename</span><span class="p">)</span>
+
+    <span class="c1"># 2 加载模型</span>
+    <span class="n">my_model</span> <span class="o">=</span> <span class="n">AutoModelForMaskedLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">modename</span><span class="p">)</span>
+
+    <span class="c1"># 3 文本转张量</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">encode_plus</span><span class="p">(</span><span class="s1">&#39;我想明天去[MASK]家吃饭.&#39;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;input---&gt;&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span>
+
+    <span class="c1"># 4 给模型送数据提取特征</span>
+    <span class="n">my_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">my_model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output.logits---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">logits</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="c1"># [1,12,21128]</span>
+
+    <span class="c1"># 5 取概率最高</span>
+    <span class="n">mask_pred_idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">logits</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">6</span><span class="p">])</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;打印概率最高的字:&#39;</span><span class="p">,</span> <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">convert_ids_to_tokens</span><span class="p">([</span><span class="n">mask_pred_idx</span><span class="p">]))</span>
+</code></pre></div>
+<blockquote>
+<p>程序运行结果</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1 input_ids 对句子text2id以后的结果 </span>
+<span class="c1"># 2 token_type_ids 句子分段信息</span>
+<span class="c1"># 3 attention_mask 句子掩码信息</span>
+<span class="nb">input</span><span class="o">---&gt;</span> <span class="p">{</span><span class="s1">&#39;input_ids&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">101</span><span class="p">,</span> <span class="mi">2769</span><span class="p">,</span> <span class="mi">2682</span><span class="p">,</span> <span class="mi">3209</span><span class="p">,</span> <span class="mi">1921</span><span class="p">,</span> <span class="mi">1343</span><span class="p">,</span>  <span class="mi">103</span><span class="p">,</span> <span class="mi">2157</span><span class="p">,</span> <span class="mi">1391</span><span class="p">,</span> <span class="mi">7649</span><span class="p">,</span>  <span class="mi">119</span><span class="p">,</span>  <span class="mi">102</span><span class="p">]]),</span> <span class="s1">&#39;token_type_ids&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]),</span> <span class="s1">&#39;attention_mask&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])}</span>
+
+<span class="c1"># 1 logits表示MASK预测的结果，也是一种分类概率</span>
+<span class="c1"># 2 output.logits的分类形状 [1, 12, 21128]</span>
+<span class="c1"># 3 通过 my_tokenizer.convert_ids_to_tokens()函数完成id2text的操作</span>
+<span class="n">output</span><span class="o">---&gt;</span> <span class="n">MaskedLMOutput</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logits</span><span class="o">=</span><span class="n">tensor</span><span class="p">([[[</span> <span class="o">-</span><span class="mf">9.9017</span><span class="p">,</span>  <span class="o">-</span><span class="mf">9.6006</span><span class="p">,</span>  <span class="o">-</span><span class="mf">9.8032</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.9744</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.7402</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.2912</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">14.3878</span><span class="p">,</span> <span class="o">-</span><span class="mf">15.0353</span><span class="p">,</span> <span class="o">-</span><span class="mf">14.7893</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.0437</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.5279</span><span class="p">,</span>  <span class="o">-</span><span class="mf">9.7544</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">14.2215</span><span class="p">,</span> <span class="o">-</span><span class="mf">14.1145</span><span class="p">,</span> <span class="o">-</span><span class="mf">14.5770</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.3246</span><span class="p">,</span>  <span class="o">-</span><span class="mf">4.1784</span><span class="p">,</span>  <span class="o">-</span><span class="mf">4.6072</span><span class="p">],</span>
+         <span class="o">...</span><span class="p">,</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">14.6938</span><span class="p">,</span> <span class="o">-</span><span class="mf">16.8133</span><span class="p">,</span> <span class="o">-</span><span class="mf">15.1296</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">9.2327</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.1931</span><span class="p">,</span> <span class="o">-</span><span class="mf">15.2430</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">10.8649</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.4887</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.5731</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.5378</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.8715</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.3870</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">11.8495</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.8358</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.0314</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.4242</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.2741</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.2787</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">AddBackward0</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">output</span><span class="o">.</span><span class="n">logits</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">21128</span><span class="p">])</span>
+<span class="n">打印概率最高的字</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;她&#39;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="44">4.4 阅读理解任务<a class="headerlink" href="#44" title="Permanent link">&para;</a></h3>
+<ul>
+<li>阅读理解任务又称为“抽取式问答任务”，即输入一段文本和一个问题，让模型输出结果。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 阅读理解任务(抽取式问答)</span>
+<span class="k">def</span> <span class="nf">dm04_test_question_answering</span><span class="p">():</span>
+
+    <span class="c1"># 1 加载tokenizer</span>
+    <span class="n">my_tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s1">&#39;./chinese_pretrain_mrc_roberta_wwm_ext_large&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 2 加载模型</span>
+    <span class="n">my_model</span> <span class="o">=</span> <span class="n">AutoModelForQuestionAnswering</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s1">&#39;./chinese_pretrain_mrc_roberta_wwm_ext_large&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 文本转张量</span>
+    <span class="c1"># 文字中的标点符号如果是中文的话，会影响到预测结果 也可以去掉标点符号</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="s1">&#39;我叫张三 我是一个程序员 我的喜好是打篮球&#39;</span>
+    <span class="n">questions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;我是谁？&#39;</span><span class="p">,</span> <span class="s1">&#39;我是做什么的？&#39;</span><span class="p">,</span> <span class="s1">&#39;我的爱好是什么？&#39;</span><span class="p">]</span>
+
+    <span class="c1"># 4 给模型送数据 模型做抽取式问答</span>
+    <span class="n">my_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">question</span> <span class="ow">in</span> <span class="n">questions</span><span class="p">:</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">encode_plus</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;input---&gt;&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">my_model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">start_logits</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">end_logits</span><span class="p">)</span> <span class="o">+</span><span class="mi">1</span>
+        <span class="n">answer</span> <span class="o">=</span>  <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">convert_ids_to_tokens</span><span class="p">(</span><span class="nb">input</span><span class="p">[</span><span class="s1">&#39;input_ids&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;question:&#39;</span><span class="p">,</span> <span class="n">question</span><span class="p">,</span> <span class="s1">&#39;answer:&#39;</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>程序运行结果：</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># input_ids表示text2id后结果 # token_type_ids表示句子分段信息 # attention_mask表示句子attention掩码信息</span>
+<span class="nb">input</span><span class="o">---&gt;</span> <span class="p">{</span><span class="s1">&#39;input_ids&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">101</span><span class="p">,</span> <span class="mi">2769</span><span class="p">,</span> <span class="mi">3221</span><span class="p">,</span> <span class="mi">6443</span><span class="p">,</span> <span class="mi">8043</span><span class="p">,</span>  <span class="mi">102</span><span class="p">,</span> <span class="mi">2769</span><span class="p">,</span> <span class="mi">1373</span><span class="p">,</span> <span class="mi">2476</span><span class="p">,</span>  <span class="mi">676</span><span class="p">,</span> <span class="mi">2769</span><span class="p">,</span> <span class="mi">3221</span><span class="p">,</span>
+          <span class="mi">671</span><span class="p">,</span>  <span class="mi">702</span><span class="p">,</span> <span class="mi">4923</span><span class="p">,</span> <span class="mi">2415</span><span class="p">,</span> <span class="mi">1447</span><span class="p">,</span> <span class="mi">2769</span><span class="p">,</span> <span class="mi">4638</span><span class="p">,</span> <span class="mi">1599</span><span class="p">,</span> <span class="mi">1962</span><span class="p">,</span> <span class="mi">3221</span><span class="p">,</span> <span class="mi">2802</span><span class="p">,</span> <span class="mi">5074</span><span class="p">,</span>
+         <span class="mi">4413</span><span class="p">,</span>  <span class="mi">102</span><span class="p">]]),</span> <span class="s1">&#39;token_type_ids&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+         <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]),</span> <span class="s1">&#39;attention_mask&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+         <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])}</span>
+
+<span class="c1"># start_logits end_logits分布表示从原文中抽取答案的位置概率</span>
+<span class="c1"># 比如：start_logits的最大值代表句子答案最可能开始的位置</span>
+<span class="c1"># 比如：end_logits的最大值代表句子答案可能结束的位置</span>
+<span class="n">output</span><span class="o">---&gt;</span> <span class="n">QuestionAnsweringModelOutput</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_logits</span><span class="o">=</span><span class="n">tensor</span><span class="p">([[</span> <span class="o">-</span><span class="mf">1.9978</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.4788</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.6324</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.8324</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.4148</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.9371</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.7246</span><span class="p">,</span>
+          <span class="o">-</span><span class="mf">6.6402</span><span class="p">,</span>   <span class="mf">3.9131</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.9533</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.0866</span><span class="p">,</span>  <span class="o">-</span><span class="mf">9.5696</span><span class="p">,</span>  <span class="o">-</span><span class="mf">4.2775</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.9042</span><span class="p">,</span>
+           <span class="mf">0.5753</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.9468</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.0469</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.5334</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.3796</span><span class="p">,</span>  <span class="o">-</span><span class="mf">9.3905</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.0242</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">11.1047</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.7124</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.7293</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.5896</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.6013</span><span class="p">]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">CopyBackwards</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">end_logits</span><span class="o">=</span><span class="n">tensor</span><span class="p">([[</span> <span class="o">-</span><span class="mf">1.3483</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.0141</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.6312</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.6629</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.9607</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.0039</span><span class="p">,</span>  <span class="o">-</span><span class="mf">4.6118</span><span class="p">,</span>
+          <span class="o">-</span><span class="mf">7.4034</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.3499</span><span class="p">,</span>   <span class="mf">4.7159</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.2880</span><span class="p">,</span>  <span class="o">-</span><span class="mf">9.5317</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.6742</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.0915</span><span class="p">,</span>
+          <span class="o">-</span><span class="mf">7.0023</span><span class="p">,</span>  <span class="o">-</span><span class="mf">4.9691</span><span class="p">,</span>   <span class="mf">1.4515</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.8329</span><span class="p">,</span>  <span class="o">-</span><span class="mf">9.0895</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.3742</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.7482</span><span class="p">,</span>
+          <span class="o">-</span><span class="mf">9.8567</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.2930</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.8163</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.7323</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.2525</span><span class="p">]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">CopyBackwards</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="n">question</span><span class="p">:</span> <span class="n">我是谁</span><span class="err">？</span> <span class="n">answer</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;张&#39;</span><span class="p">,</span> <span class="s1">&#39;三&#39;</span><span class="p">]</span>
+<span class="n">question</span><span class="p">:</span> <span class="n">我是做什么的</span><span class="err">？</span> <span class="n">answer</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;程&#39;</span><span class="p">,</span> <span class="s1">&#39;序&#39;</span><span class="p">,</span> <span class="s1">&#39;员&#39;</span><span class="p">]</span>
+<span class="n">question</span><span class="p">:</span> <span class="n">我的爱好是什么</span><span class="err">？</span> <span class="n">answer</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;打&#39;</span><span class="p">,</span> <span class="s1">&#39;篮&#39;</span><span class="p">,</span> <span class="s1">&#39;球&#39;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="45">4.5 文本摘要任务<a class="headerlink" href="#45" title="Permanent link">&para;</a></h3>
+<ul>
+<li>摘要生成任务的输入一一段文本，输出是一段概况、简单的文字。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 文本摘要任务</span>
+<span class="k">def</span> <span class="nf">dm05_test_summarization</span><span class="p">():</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;BERT is a transformers model pretrained on a large corpus of English data &quot;</span> \
+           <span class="s2">&quot;in a self-supervised fashion. This means it was pretrained on the raw texts &quot;</span> \
+           <span class="s2">&quot;only, with no humans labelling them in any way (which is why it can use lots &quot;</span> \
+           <span class="s2">&quot;of publicly available data) with an automatic process to generate inputs and &quot;</span> \
+           <span class="s2">&quot;labels from those texts. More precisely, it was pretrained with two objectives:Masked &quot;</span> \
+           <span class="s2">&quot;language modeling (MLM): taking a sentence, the model randomly masks 15</span><span class="si">% o</span><span class="s2">f the &quot;</span> \
+           <span class="s2">&quot;words in the input then run the entire masked sentence through the model and has &quot;</span> \
+           <span class="s2">&quot;to predict the masked words. This is different from traditional recurrent neural &quot;</span> \
+           <span class="s2">&quot;networks (RNNs) that usually see the words one after the other, or from autoregressive &quot;</span> \
+           <span class="s2">&quot;models like GPT which internally mask the future tokens. It allows the model to learn &quot;</span> \
+           <span class="s2">&quot;a bidirectional representation of the sentence.Next sentence prediction (NSP): the models&quot;</span> \
+           <span class="s2">&quot; concatenates two masked sentences as inputs during pretraining. Sometimes they correspond to &quot;</span> \
+           <span class="s2">&quot;sentences that were next to each other in the original text, sometimes not. The model then &quot;</span> \
+           <span class="s2">&quot;has to predict if the two sentences were following each other or not.&quot;</span>
+
+    <span class="c1"># 1 加载tokenizer</span>
+    <span class="n">my_tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;distilbart-cnn-12-6&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 2 加载模型</span>
+    <span class="n">my_model</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s1">&#39;distilbart-cnn-12-6&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 文本转张量</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">my_tokenizer</span><span class="p">([</span><span class="n">text</span><span class="p">],</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">)</span>
+    <span class="c1"># print(&#39;input---&gt;&#39;, input)</span>
+
+    <span class="c1"># 4 送给模型做摘要</span>
+    <span class="n">my_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">my_model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">input_ids</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+    <span class="c1"># 5 处理摘要结果</span>
+    <span class="c1"># 5-1 decode 的 skip_special_tokens 参数可以去除 token 前面的特殊字符</span>
+    <span class="nb">print</span><span class="p">([</span><span class="n">my_tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_up_tokenization_spaces</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">output</span><span class="p">])</span>
+
+    <span class="c1"># 5-2 convert_ids_to_tokens 函数只能将 ids 还原为 token</span>
+    <span class="c1"># print(my_tokenizer.convert_ids_to_tokens(output[0]))</span>
+</code></pre></div>
+<blockquote>
+<p>程序运行结果：</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">output</span><span class="o">---&gt;</span> <span class="n">tensor</span><span class="p">([[</span>    <span class="mi">2</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span> <span class="mi">11126</span><span class="p">,</span>   <span class="mi">565</span><span class="p">,</span>    <span class="mi">16</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>  <span class="mi">7891</span><span class="p">,</span>   <span class="mi">268</span><span class="p">,</span>  <span class="mi">1421</span><span class="p">,</span> <span class="mi">11857</span><span class="p">,</span>
+         <span class="mi">26492</span><span class="p">,</span>    <span class="mi">15</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>   <span class="mi">739</span><span class="p">,</span> <span class="mi">42168</span><span class="p">,</span>     <span class="mi">9</span><span class="p">,</span>  <span class="mi">2370</span><span class="p">,</span>   <span class="mi">414</span><span class="p">,</span>    <span class="mi">11</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>
+          <span class="mi">1403</span><span class="p">,</span>    <span class="mi">12</span><span class="p">,</span> <span class="mi">16101</span><span class="p">,</span> <span class="mi">25376</span><span class="p">,</span>  <span class="mi">2734</span><span class="p">,</span>   <span class="mi">479</span><span class="p">,</span>    <span class="mi">85</span><span class="p">,</span>    <span class="mi">21</span><span class="p">,</span> <span class="mi">11857</span><span class="p">,</span> <span class="mi">26492</span><span class="p">,</span>
+            <span class="mi">19</span><span class="p">,</span>    <span class="mi">80</span><span class="p">,</span> <span class="mi">10366</span><span class="p">,</span>    <span class="mi">35</span><span class="p">,</span> <span class="mi">31755</span><span class="p">,</span>   <span class="mi">196</span><span class="p">,</span>  <span class="mi">2777</span><span class="p">,</span> <span class="mi">19039</span><span class="p">,</span>    <span class="mi">36</span><span class="p">,</span> <span class="mi">10537</span><span class="p">,</span>
+           <span class="mi">448</span><span class="p">,</span>    <span class="mi">43</span><span class="p">,</span>     <span class="mi">8</span><span class="p">,</span>   <span class="mi">220</span><span class="p">,</span>  <span class="mi">3645</span><span class="p">,</span> <span class="mi">16782</span><span class="p">,</span>    <span class="mi">36</span><span class="p">,</span>   <span class="mi">487</span><span class="p">,</span>  <span class="mi">4186</span><span class="p">,</span>    <span class="mi">43</span><span class="p">,</span>
+            <span class="mi">20</span><span class="p">,</span>  <span class="mi">3092</span><span class="p">,</span> <span class="mi">10146</span><span class="p">,</span> <span class="mi">26511</span><span class="p">,</span>  <span class="mi">1626</span><span class="p">,</span>    <span class="mi">80</span><span class="p">,</span> <span class="mi">24397</span><span class="p">,</span> <span class="mi">11305</span><span class="p">,</span>    <span class="mi">25</span><span class="p">,</span> <span class="mi">16584</span><span class="p">,</span>
+           <span class="mi">148</span><span class="p">,</span> <span class="mi">11857</span><span class="p">,</span> <span class="mi">32155</span><span class="p">,</span>   <span class="mi">479</span><span class="p">,</span>  <span class="mi">7411</span><span class="p">,</span>    <span class="mi">51</span><span class="p">,</span> <span class="mi">20719</span><span class="p">,</span>     <span class="mi">7</span><span class="p">,</span> <span class="mi">11305</span><span class="p">,</span>    <span class="mi">14</span><span class="p">,</span>
+            <span class="mi">58</span><span class="p">,</span>   <span class="mi">220</span><span class="p">,</span>     <span class="mi">7</span><span class="p">,</span>   <span class="mi">349</span><span class="p">,</span>    <span class="mi">97</span><span class="p">,</span>    <span class="mi">11</span><span class="p">,</span>     <span class="mi">5</span><span class="p">,</span>  <span class="mi">1461</span><span class="p">,</span>  <span class="mi">2788</span><span class="p">,</span>     <span class="mi">6</span><span class="p">,</span>
+          <span class="mi">2128</span><span class="p">,</span>    <span class="mi">45</span><span class="p">,</span>   <span class="mi">479</span><span class="p">,</span>     <span class="mi">2</span><span class="p">]])</span>
+
+<span class="p">[</span><span class="s1">&#39;BERT is a transformers model pretrained on a large corpus of English data in a self-supervised fashion . It was pretrained with two objectives: Masked language modeling (MLM) and next sentence prediction (NSP) The models concatenates two masked sentences as inputs during pretraining . Sometimes they correspond to sentences that were next to each other in the original text, sometimes not .&#39;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="46-ner">4.6 NER任务<a class="headerlink" href="#46-ner" title="Permanent link">&para;</a></h3>
+<ul>
+<li>实体词识别（NER）任务是NLP中的基础任务。它用于识别文本中的人名（PER）、地名（LOC）、组织（ORG）以及其他实体（MISC）等。例如：(王 B-PER)  (小 I-PER)  (明 I-PER)  (在 O)  (办 B-LOC)  (公 I-LOC)  (室 I-LOC)。其中O表示一个非实体，B表示一个实体的开始，I表示一个实体块的内部。</li>
+<li>实体词识别本质上是一个分类任务（又叫序列标注任务），实体词识别是句法分析的基础，而句法分析优势NLP任务的核心。```</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># NER任务</span>
+<span class="k">def</span> <span class="nf">dm06_test_ner</span><span class="p">():</span>
+    <span class="c1"># 1 加载tokenizer 加载模型 加载配置文件</span>
+    <span class="c1"># https://huggingface.co/uer/roberta-base-finetuned-cluener2020-chinese</span>
+    <span class="n">my_tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s1">&#39;roberta-base-finetuned-cluener2020-chinese&#39;</span><span class="p">)</span>
+    <span class="n">my_model</span> <span class="o">=</span> <span class="n">AutoModelForTokenClassification</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s1">&#39;roberta-base-finetuned-cluener2020-chinese&#39;</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s1">&#39;roberta-base-finetuned-cluener2020-chinese&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 2 数据张量化</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">encode_plus</span><span class="p">(</span><span class="s1">&#39;我爱北京天安门，天安门上太阳升&#39;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;inputs---&gt;&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">.</span><span class="n">input_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">inputs</span><span class="o">.</span><span class="n">input_ids</span><span class="p">)</span> <span class="c1"># torch.Size([1, 17])</span>
+
+    <span class="c1"># 3 送入模型 预测ner概率 每个字预测的标签概率</span>
+    <span class="n">my_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">logits</span> <span class="o">=</span> <span class="n">my_model</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">input_ids</span><span class="p">)</span><span class="o">.</span><span class="n">logits</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;logits---&gt;&#39;</span><span class="p">,</span> <span class="n">logits</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>           <span class="c1"># torch.Size([1, 17, 32])</span>
+
+    <span class="c1"># 4 对预测数据 进行显示</span>
+    <span class="n">input_tokens</span> <span class="o">=</span> <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">convert_ids_to_tokens</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">input_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;input_tokens---&gt;&#39;</span><span class="p">,</span> <span class="n">input_tokens</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">input_tokens</span><span class="p">,</span> <span class="n">logits</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+
+        <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">all_special_tokens</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># 获得每个字预测概率最大的标签索引</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="c1"># 打印索引对应标签</span>
+        <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">token</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">id2label</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>程序运行结果</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">inputs</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">17</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">101</span><span class="p">,</span> <span class="mi">2769</span><span class="p">,</span> <span class="mi">4263</span><span class="p">,</span> <span class="mi">1266</span><span class="p">,</span>  <span class="mi">776</span><span class="p">,</span> <span class="mi">1921</span><span class="p">,</span> <span class="mi">2128</span><span class="p">,</span> <span class="mi">7305</span><span class="p">,</span> <span class="mi">8024</span><span class="p">,</span> <span class="mi">1921</span><span class="p">,</span> <span class="mi">2128</span><span class="p">,</span> <span class="mi">7305</span><span class="p">,</span>
+          <span class="mi">677</span><span class="p">,</span> <span class="mi">1922</span><span class="p">,</span> <span class="mi">7345</span><span class="p">,</span> <span class="mi">1285</span><span class="p">,</span>  <span class="mi">102</span><span class="p">]])</span>
+
+<span class="n">logits</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span>
+
+<span class="n">input_tokens</span><span class="o">---&gt;</span> <span class="p">[</span><span class="s1">&#39;[CLS]&#39;</span><span class="p">,</span> <span class="s1">&#39;我&#39;</span><span class="p">,</span> <span class="s1">&#39;爱&#39;</span><span class="p">,</span> <span class="s1">&#39;北&#39;</span><span class="p">,</span> <span class="s1">&#39;京&#39;</span><span class="p">,</span> <span class="s1">&#39;天&#39;</span><span class="p">,</span> <span class="s1">&#39;安&#39;</span><span class="p">,</span> <span class="s1">&#39;门&#39;</span><span class="p">,</span> <span class="s1">&#39;，&#39;</span><span class="p">,</span> <span class="s1">&#39;天&#39;</span><span class="p">,</span> <span class="s1">&#39;安&#39;</span><span class="p">,</span> <span class="s1">&#39;门&#39;</span><span class="p">,</span> <span class="s1">&#39;上&#39;</span><span class="p">,</span> <span class="s1">&#39;太&#39;</span><span class="p">,</span> <span class="s1">&#39;阳&#39;</span><span class="p">,</span> <span class="s1">&#39;升&#39;</span><span class="p">,</span> <span class="s1">&#39;[SEP]&#39;</span><span class="p">]</span>
+
+<span class="p">[(</span><span class="s1">&#39;我&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;爱&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;北&#39;</span><span class="p">,</span> <span class="s1">&#39;B-address&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;京&#39;</span><span class="p">,</span> <span class="s1">&#39;I-address&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;天&#39;</span><span class="p">,</span> <span class="s1">&#39;I-address&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;安&#39;</span><span class="p">,</span> <span class="s1">&#39;I-address&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;门&#39;</span><span class="p">,</span> <span class="s1">&#39;I-address&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;，&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;天&#39;</span><span class="p">,</span> <span class="s1">&#39;B-address&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;安&#39;</span><span class="p">,</span> <span class="s1">&#39;I-address&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;门&#39;</span><span class="p">,</span> <span class="s1">&#39;I-address&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;上&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;太&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;阳&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;升&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">)]</span>
+</code></pre></div>
+<h2 id="5-nlp">5 具体模型方式完成NLP任务<a class="headerlink" href="#5-nlp" title="Permanent link">&para;</a></h2>
+<h3 id="51">5.1 完型填空任务<a class="headerlink" href="#51" title="Permanent link">&para;</a></h3>
+<ul>
+<li>完型填空任务又被叫做“遮蔽语言建模任务”，它属于BERT模型训练过程中的子任务。下面完成一个中文场景的完型填空。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 具体模型完型填空任务</span>
+<span class="k">def</span> <span class="nf">dm01_test_bert_fill_mask</span><span class="p">():</span>
+
+    <span class="c1"># 1 加载tokenizer</span>
+    <span class="n">modename</span> <span class="o">=</span> <span class="s2">&quot;bert-base-chinese&quot;</span>
+    <span class="n">my_tokenizer</span> <span class="o">=</span> <span class="n">BertTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">modename</span><span class="p">)</span>
+
+    <span class="c1"># 2 加载模型</span>
+    <span class="n">my_model</span> <span class="o">=</span> <span class="n">BertForMaskedLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">modename</span><span class="p">)</span>
+
+    <span class="c1"># 3 文本转张量</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">encode_plus</span><span class="p">(</span><span class="s1">&#39;我想明天去[MASK]家吃饭&#39;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;input---&gt;&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span>
+
+    <span class="c1"># 4 给模型送数据提取特征</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">my_model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output.logits---&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">logits</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># [1,11,21128]</span>
+
+    <span class="c1"># 5 取概率最高</span>
+    <span class="n">mask_pred_idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">logits</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">6</span><span class="p">])</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;打印概率最高的字:&#39;</span><span class="p">,</span> <span class="n">my_tokenizer</span><span class="o">.</span><span class="n">convert_ids_to_tokens</span><span class="p">([</span><span class="n">mask_pred_idx</span><span class="p">]))</span>
+</code></pre></div>
+<blockquote>
+<p>程序运行结果</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># input_ids表示text2id后结果 # token_type_ids表示句子分段信息 # attention_mask表示句子attention掩码信息</span>
+<span class="nb">input</span><span class="o">---&gt;</span> <span class="p">{</span><span class="s1">&#39;input_ids&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span> <span class="mi">101</span><span class="p">,</span> <span class="mi">2769</span><span class="p">,</span> <span class="mi">2682</span><span class="p">,</span> <span class="mi">3209</span><span class="p">,</span> <span class="mi">1921</span><span class="p">,</span> <span class="mi">1343</span><span class="p">,</span>  <span class="mi">103</span><span class="p">,</span> <span class="mi">2157</span><span class="p">,</span> <span class="mi">1391</span><span class="p">,</span> <span class="mi">7649</span><span class="p">,</span>  <span class="mi">102</span><span class="p">]]),</span> <span class="s1">&#39;token_type_ids&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]),</span> <span class="s1">&#39;attention_mask&#39;</span><span class="p">:</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])}</span>
+
+<span class="n">output</span><span class="o">---&gt;</span> <span class="n">MaskedLMOutput</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logits</span><span class="o">=</span><span class="n">tensor</span><span class="p">([[[</span> <span class="o">-</span><span class="mf">8.1771</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.1008</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.1191</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.8355</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.9482</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.9834</span><span class="p">],</span>
+         <span class="p">[</span> <span class="o">-</span><span class="mf">8.2775</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.1251</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.1655</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.8471</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.4265</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.1365</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">14.1093</span><span class="p">,</span> <span class="o">-</span><span class="mf">13.1037</span><span class="p">,</span> <span class="o">-</span><span class="mf">14.6324</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.0959</span><span class="p">,</span>  <span class="o">-</span><span class="mf">3.7550</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.7456</span><span class="p">],</span>
+         <span class="o">...</span><span class="p">,</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">16.2103</span><span class="p">,</span> <span class="o">-</span><span class="mf">16.7243</span><span class="p">,</span> <span class="o">-</span><span class="mf">15.9876</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.9727</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.2757</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.3852</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">13.5615</span><span class="p">,</span> <span class="o">-</span><span class="mf">13.7670</span><span class="p">,</span> <span class="o">-</span><span class="mf">13.4497</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.8282</span><span class="p">,</span>  <span class="o">-</span><span class="mf">4.9095</span><span class="p">,</span>  <span class="o">-</span><span class="mf">9.1699</span><span class="p">],</span>
+         <span class="p">[</span><span class="o">-</span><span class="mf">10.3200</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.1068</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.4439</span><span class="p">,</span>  <span class="o">...</span><span class="p">,</span>  <span class="o">-</span><span class="mf">6.6468</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.0597</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.5027</span><span class="p">]]],</span>
+       <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">AddBackward0</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="n">output</span><span class="o">.</span><span class="n">logits</span><span class="o">---&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">21128</span><span class="p">])</span>
+</code></pre></div>
+<h2 id="6">6 小结<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<ul>
+<li>了解Huggingface Transformers
+    * Huggingface Transformers 是基于一个开源基于 transformer 模型结构提供的预训练语言。框架支持了最新的各种NLP预训练语言模型，使用者可快速的进行模型调用，并且支持模型further pretraining 和 下游任务fine-tuning</li>
+<li>使用管道方式完成多种NLP任务
+    * 文本分类任务sentiment-analysis、特征提取任务feature-extraction、完型填空任务fill-mask、阅读理解任务question-answering、文本摘要任务summarization、NER任务ner</li>
+<li>使用自动模型方式完成NLP任务
+    * 对Aoto系列模型类进行使用AutoModel、AutoTokenizer、AutoModelForSequenceClassification、AutoModelForMaskedLM、AutoModelForQuestionAnswering、AutoModelForSeq2SeqLM、AutoModelForTokenClassification</li>
+<li>使用具体模型方式完成NLP任务
+    * 使用具体模型比如BertTokenizer等进行具体NLP任务开发</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="6%20NLP%E4%B8%AD%E7%9A%84%E5%B8%B8%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 6 NLP中的常用预训练模型" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              6 NLP中的常用预训练模型
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="8%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 8 迁移学习实践" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              8 迁移学习实践
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

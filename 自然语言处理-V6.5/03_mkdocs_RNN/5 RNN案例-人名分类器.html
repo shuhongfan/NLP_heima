@@ -1,0 +1,2813 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>5 RNN案例 人名分类器 - 自然语言处理基础V6.5</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="自然语言处理基础V6.5" class="md-header__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            自然语言处理基础V6.5
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              5 RNN案例 人名分类器
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="自然语言处理基础V6.5" class="md-nav__button md-logo" aria-label="自然语言处理基础V6.5" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    自然语言处理基础V6.5
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章 自然语言处理入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章 自然语言处理入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章 自然语言处理入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_mkdocs_NLP/1_%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8.html" class="md-nav__link">
+        1 自然语言处理入门
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章 文本预处理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章 文本预处理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章 文本预处理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/1%20%E8%AE%A4%E8%AF%86%E6%96%87%E6%9C%AC%E9%A2%84%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        1 认识文本预处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/2%20%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        2 文本处理的基本方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/3%20%E6%96%87%E6%9C%AC%E5%BC%A0%E9%87%8F%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.html" class="md-nav__link">
+        3 文本张量表示方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/4%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90.html" class="md-nav__link">
+        4 文本数据分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/5%20%E6%96%87%E6%9C%AC%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86.html" class="md-nav__link">
+        5 文本特征处理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/6%20%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA.html" class="md-nav__link">
+        6 文本数据增强
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_mkdocs_preprocess/7%20jieba%E8%AF%8D%E6%80%A7%E5%AF%B9%E7%85%A7%E8%A1%A8.html" class="md-nav__link">
+        7 jieba词性对照表
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章 RNN及其变体
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章 RNN及其变体" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章 RNN及其变体
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="1%20%E8%AE%A4%E8%AF%86RNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        1 认识RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="2%20%E4%BC%A0%E7%BB%9FRNN%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        2 传统RNN模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3%20LSTM%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        3 LSTM模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="4%20GRU%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        4 GRU模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          5 RNN案例 人名分类器
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="5%20RNN%E6%A1%88%E4%BE%8B-%E4%BA%BA%E5%90%8D%E5%88%86%E7%B1%BB%E5%99%A8.html" class="md-nav__link md-nav__link--active">
+        5 RNN案例 人名分类器
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 案例介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2  案例步骤
+  </a>
+  
+    <nav class="md-nav" aria-label="2  案例步骤">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    2.1 导入必备的工具包
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    2.2 数据预处理
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 数据预处理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    1 获取常用的字符数量
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    2 国家名种类数和个数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 读数据到内存
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-nameclassdataset" class="md-nav__link">
+    4 构建数据源NameClassDataset
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    5 构建迭代器遍历数据
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-rnn" class="md-nav__link">
+    2.3 构建RNN模型
+  </a>
+  
+    <nav class="md-nav" aria-label="2.3 构建RNN模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-rnn" class="md-nav__link">
+    1 构建RNN模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lstm" class="md-nav__link">
+    2 构建LSTM模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gru" class="md-nav__link">
+    3 构建GRU模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-rnn_lstm_gru" class="md-nav__link">
+    4 模型RNN_LSTM_GRU测试
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24" class="md-nav__link">
+    2.4 构建训练函数并进行训练
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4 构建训练函数并进行训练">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-rnn_1" class="md-nav__link">
+    1 构建RNN训练函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lstm_1" class="md-nav__link">
+    2 构建LSTM训练函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gru_1" class="md-nav__link">
+    3 构建GRU训练函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 模型训练并制图
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5_1" class="md-nav__link">
+    5 模型训练结果分析
+  </a>
+  
+    <nav class="md-nav" aria-label="5 模型训练结果分析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_2" class="md-nav__link">
+    1 损失对比曲线分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_2" class="md-nav__link">
+    2 训练耗时分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    3 训练准确率分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    4 结论
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25" class="md-nav__link">
+    2.5 构建预测函数并进行预测
+  </a>
+  
+    <nav class="md-nav" aria-label="2.5 构建预测函数并进行预测">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-rnn_2" class="md-nav__link">
+    1 构建RNN预测函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lstm_2" class="md-nav__link">
+    2 构建LSTM预测函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gru_2" class="md-nav__link">
+    3 构建GRU预测函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-rnn_lstm_gru_1" class="md-nav__link">
+    4 构建RNN_LSTM_GRU预测调用函数
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3_2" class="md-nav__link">
+    3 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="6%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D1.html" class="md-nav__link">
+        6 注意力机制介绍1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="7%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D2.html" class="md-nav__link">
+        7 注意力机制介绍2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="8%20RNN%E6%A1%88%E4%BE%8B-seq2seq%E8%8B%B1%E8%AF%91%E6%B3%95.html" class="md-nav__link">
+        8 RNN案例 seq2seq英译法
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章 Transformer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章 Transformer" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章 Transformer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/1%20Transformer%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 Transformer背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/2%20%E8%AE%A4%E8%AF%86Transformer%E6%9E%B6%E6%9E%84.html" class="md-nav__link">
+        2 认识Transformer架构
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/3%20%E8%BE%93%E5%85%A5%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        3 输入部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/4%20%E7%BC%96%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        4 编码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/5%20%E8%A7%A3%E7%A0%81%E5%99%A8%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        5 解码器部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/6%20%E8%BE%93%E5%87%BA%E9%83%A8%E5%88%86%E5%AE%9E%E7%8E%B0.html" class="md-nav__link">
+        6 输出部分实现
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mkdocs_transformer/7%20%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA.html" class="md-nav__link">
+        7 模型构建
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章 迁移学习
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章 迁移学习" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章 迁移学习
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/1%20fasttext%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 fasttext工具介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/2%20fasttext%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB.html" class="md-nav__link">
+        2 fasttext文本分类
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/3%20%E8%AE%AD%E7%BB%83%E8%AF%8D%E5%90%91%E9%87%8F.html" class="md-nav__link">
+        3 训练词向量
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/4%20%E8%AF%8D%E5%90%91%E9%87%8F%E8%BF%81%E7%A7%BB.html" class="md-nav__link">
+        4 词向量迁移
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/5%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5.html" class="md-nav__link">
+        5 迁移学习概念
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/6%20NLP%E4%B8%AD%E7%9A%84%E5%B8%B8%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B.html" class="md-nav__link">
+        6 NLP中的常用预训练模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/7%20Transformers%E5%BA%93%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        7 Transformers库使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/8%20%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5.html" class="md-nav__link">
+        8 迁移学习实践
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_mkdocs_translearning/9%20NLP%E4%B8%AD%E7%9A%84%E6%A0%87%E5%87%86%E6%95%B0%E6%8D%AE%E9%9B%86%28%E6%8B%93%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        9 NLP中的标准数据集(拓展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章 Bert系列模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章 Bert系列模型" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章 Bert系列模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/1%20BERT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1 BERT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/2%20BERT%E6%A8%A1%E5%9E%8B%E7%89%B9%E7%82%B9.html" class="md-nav__link">
+        2 BERT模型特点
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/3%20BERT%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        3 BERT系列模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/4%20ELMo%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        4 ELMo模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/5%20GPT%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        5 GPT模型介绍
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_mkdocs_bert_pretrained_model/6%20BERT%20GPT%20ELMo%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%B9%E6%AF%94.html" class="md-nav__link">
+        6 BERT GPT ELMo模型的对比
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          第七章 Transformer精选问答(拓展资料)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第七章 Transformer精选问答(拓展资料)" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          第七章 Transformer精选问答(拓展资料)
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/1%20Transformer%20%E5%90%84%E5%AD%90%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8.html" class="md-nav__link">
+        1 Transformer 各子模块作用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/2%20Transformer%20Decoder%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        2 Transformer Decoder模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/3%20Self-attention%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        3 Self attention机制详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/4%20Multi-head%20Attention%E8%AF%A6%E8%A7%A3.html" class="md-nav__link">
+        4 Multi head Attention详解
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_mkdocs_review_model/5%20Transformer%E4%BC%98%E5%8A%BF.html" class="md-nav__link">
+        5 Transformer优势
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 案例介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2  案例步骤
+  </a>
+  
+    <nav class="md-nav" aria-label="2  案例步骤">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    2.1 导入必备的工具包
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    2.2 数据预处理
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 数据预处理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    1 获取常用的字符数量
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    2 国家名种类数和个数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 读数据到内存
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-nameclassdataset" class="md-nav__link">
+    4 构建数据源NameClassDataset
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    5 构建迭代器遍历数据
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-rnn" class="md-nav__link">
+    2.3 构建RNN模型
+  </a>
+  
+    <nav class="md-nav" aria-label="2.3 构建RNN模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-rnn" class="md-nav__link">
+    1 构建RNN模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lstm" class="md-nav__link">
+    2 构建LSTM模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gru" class="md-nav__link">
+    3 构建GRU模型
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-rnn_lstm_gru" class="md-nav__link">
+    4 模型RNN_LSTM_GRU测试
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24" class="md-nav__link">
+    2.4 构建训练函数并进行训练
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4 构建训练函数并进行训练">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-rnn_1" class="md-nav__link">
+    1 构建RNN训练函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lstm_1" class="md-nav__link">
+    2 构建LSTM训练函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gru_1" class="md-nav__link">
+    3 构建GRU训练函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 模型训练并制图
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5_1" class="md-nav__link">
+    5 模型训练结果分析
+  </a>
+  
+    <nav class="md-nav" aria-label="5 模型训练结果分析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_2" class="md-nav__link">
+    1 损失对比曲线分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_2" class="md-nav__link">
+    2 训练耗时分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    3 训练准确率分析
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    4 结论
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25" class="md-nav__link">
+    2.5 构建预测函数并进行预测
+  </a>
+  
+    <nav class="md-nav" aria-label="2.5 构建预测函数并进行预测">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-rnn_2" class="md-nav__link">
+    1 构建RNN预测函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lstm_2" class="md-nav__link">
+    2 构建LSTM预测函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gru_2" class="md-nav__link">
+    3 构建GRU预测函数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-rnn_lstm_gru_1" class="md-nav__link">
+    4 构建RNN_LSTM_GRU预测调用函数
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3_2" class="md-nav__link">
+    3 小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>5 RNN案例 人名分类器</h1>
+
+<h3 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>了解有关人名分类问题和有关数据.</li>
+<li>掌握使用RNN构建人名分类器实现过程.</li>
+</ul>
+<h2 id="1">1 案例介绍<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>关于人名分类问题:<p>以一个人名为输入, 使用模型帮助我们判断它最有可能是来自哪一个国家的人名, 这在某些国际化公司的业务中具有重要意义, 在用户注册过程中, 会根据用户填写的名字直接给他分配可能的国家或地区选项, 以及该国家或地区的国旗, 限制手机号码位数等等.</p>
+</li>
+</ul>
+<ul>
+<li>
+<p>人名分类数据预览 </p>
+<ul>
+<li>数据存放路径：$(home)/data/name_classfication.txt</li>
+<li>数据格式说明 每一行第一个单词为人名，第二个单词为国家名。中间用制表符tab分割</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code>Huffmann    German
+Hummel  German
+Hummel  German
+Hutmacher   German
+Ingersleben German
+Jaeger  German
+Jager   German
+Deng    Chinese
+Ding    Chinese
+Dong    Chinese
+Dou Chinese
+Duan    Chinese
+Eng Chinese
+Fan Chinese
+Fei Chinese
+Abaimov Russian
+Abakeliya   Russian
+Abakovsky   Russian
+Abakshin    Russian
+Abakumoff   Russian
+Abakumov    Russian
+Abakumtsev  Russian
+Abakushin   Russian
+Abalakin    Russian
+</code></pre></div>
+<h2 id="2">2  案例步骤<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>整个案例的实现可分为以下五个步骤</p>
+<ul>
+<li>第一步导入必备的工具包</li>
+<li>第二步对data文件中的数据进行处理，满足训练要求</li>
+<li>第三步构建RNN模型(包括传统RNN, LSTM以及GRU)</li>
+<li>第四步构建训练函数并进行训练</li>
+<li>第五步构建预测函数并进行预测</li>
+</ul>
+<h3 id="21">2.1 导入必备的工具包<a class="headerlink" href="#21" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 导入torch工具</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="c1"># 导入nn准备构建模型</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+<span class="c1"># 导入torch的数据源 数据迭代器工具包</span>
+<span class="kn">from</span>  <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DataLoader</span>
+<span class="c1"># 用于获得常见字母及字符规范化</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="c1"># 导入时间工具包</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="c1"># 引入制图工具包  </span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="c1"># 从io中导入文件打开方法</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="nb">open</span>
+</code></pre></div>
+<h3 id="22">2.2 数据预处理<a class="headerlink" href="#22" title="Permanent link">&para;</a></h3>
+<p>这里需要对data文件中的数据进行处理，满足训练要求。</p>
+<h4 id="1_1">1 获取常用的字符数量<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 获取所有常用字符包括字母和常用标点</span>
+<span class="n">all_letters</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="s2">&quot; .,;&#39;&quot;</span>
+
+<span class="c1"># 获取常用字符数量</span>
+<span class="n">n_letters</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_letters</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;n_letter:&quot;</span><span class="p">,</span> <span class="n">n_letters</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>n_letter: 57
+</code></pre></div>
+<h4 id="2_1">2 国家名种类数和个数<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 国家名 种类数</span>
+<span class="n">categorys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Italian&#39;</span><span class="p">,</span> <span class="s1">&#39;English&#39;</span><span class="p">,</span> <span class="s1">&#39;Arabic&#39;</span><span class="p">,</span> <span class="s1">&#39;Spanish&#39;</span><span class="p">,</span> <span class="s1">&#39;Scottish&#39;</span><span class="p">,</span> <span class="s1">&#39;Irish&#39;</span><span class="p">,</span> <span class="s1">&#39;Chinese&#39;</span><span class="p">,</span> <span class="s1">&#39;Vietnamese&#39;</span><span class="p">,</span> <span class="s1">&#39;Japanese&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;French&#39;</span><span class="p">,</span> <span class="s1">&#39;Greek&#39;</span><span class="p">,</span> <span class="s1">&#39;Dutch&#39;</span><span class="p">,</span> <span class="s1">&#39;Korean&#39;</span><span class="p">,</span> <span class="s1">&#39;Polish&#39;</span><span class="p">,</span> <span class="s1">&#39;Portuguese&#39;</span><span class="p">,</span> <span class="s1">&#39;Russian&#39;</span><span class="p">,</span> <span class="s1">&#39;Czech&#39;</span><span class="p">,</span> <span class="s1">&#39;German&#39;</span><span class="p">]</span>
+<span class="c1"># 国家名 个数</span>
+<span class="n">categorynum</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">categorys</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;categorys---&gt;&#39;</span><span class="p">,</span> <span class="n">categorys</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">categorys</span><span class="o">---&gt;</span> <span class="p">[</span><span class="s1">&#39;Italian&#39;</span><span class="p">,</span> <span class="s1">&#39;English&#39;</span><span class="p">,</span> <span class="s1">&#39;Arabic&#39;</span><span class="p">,</span> <span class="s1">&#39;Spanish&#39;</span><span class="p">,</span> <span class="s1">&#39;Scottish&#39;</span><span class="p">,</span> <span class="s1">&#39;Irish&#39;</span><span class="p">,</span> <span class="s1">&#39;Chinese&#39;</span><span class="p">,</span> <span class="s1">&#39;Vietnamese&#39;</span><span class="p">,</span> <span class="s1">&#39;Japanese&#39;</span><span class="p">,</span> <span class="s1">&#39;French&#39;</span><span class="p">,</span> <span class="s1">&#39;Greek&#39;</span><span class="p">,</span> <span class="s1">&#39;Dutch&#39;</span><span class="p">,</span> <span class="s1">&#39;Korean&#39;</span><span class="p">,</span> <span class="s1">&#39;Polish&#39;</span><span class="p">,</span> <span class="s1">&#39;Portuguese&#39;</span><span class="p">,</span> <span class="s1">&#39;Russian&#39;</span><span class="p">,</span> <span class="s1">&#39;Czech&#39;</span><span class="p">,</span> <span class="s1">&#39;German&#39;</span><span class="p">]</span>
+<span class="n">categorynum</span><span class="o">---&gt;</span> <span class="mi">18</span>
+</code></pre></div>
+<h4 id="3">3 读数据到内存<a class="headerlink" href="#3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 思路分析</span>
+<span class="c1"># 1 打开数据文件 open(filename, mode=&#39;r&#39;, encoding=&#39;utf-8&#39;)</span>
+<span class="c1"># 2 按行读文件、提取样本x 样本y line.strip().split(&#39;\t&#39;)</span>
+<span class="c1"># 3 返回样本x的列表、样本y的列表 my_list_x, my_list_y</span>
+<span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span><span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="c1"># 打开文件</span>
+    <span class="k">with</span>  <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="c1"># 按照行读数据</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c1"># 按照行提取样本x 样本y</span>
+            <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">my_list_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">my_list_y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># 打印样本的数量</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list_x-&gt;&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_list_x</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list_y-&gt;&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_list_y</span><span class="p">))</span>
+
+    <span class="c1"># 返回样本x的列表、样本y的列表</span>
+    <span class="k">return</span> <span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span>
+</code></pre></div>
+<h4 id="4-nameclassdataset">4 构建数据源NameClassDataset<a class="headerlink" href="#4-nameclassdataset" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 原始数据 -&gt; 数据源NameClassDataset --&gt; 数据迭代器DataLoader</span>
+<span class="c1"># 构造数据源 NameClassDataset，把语料转换成x y</span>
+<span class="c1"># 1 init函数 设置样本x和y self.my_list_x self.my_list_y 条目数self.sample_len</span>
+<span class="c1"># 2 __len__(self)函数  获取样本条数</span>
+<span class="c1"># 3 __getitem__(self, index)函数 获取第几条样本数据</span>
+<span class="c1">#       按索引 获取数据样本 x y</span>
+<span class="c1">#       样本x one-hot张量化 tensor_x[li][all_letters.find(letter)] = 1</span>
+<span class="c1">#       样本y 张量化 torch.tensor(categorys.index(y), dtype=torch.long)</span>
+<span class="c1">#       返回tensor_x, tensor_y</span>
+<span class="k">class</span> <span class="nc">NameClassDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span><span class="p">):</span>
+
+        <span class="c1"># 样本x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">my_list_x</span> <span class="o">=</span> <span class="n">my_list_x</span>
+
+        <span class="c1"># 样本y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">my_list_y</span> <span class="o">=</span> <span class="n">my_list_y</span>
+
+        <span class="c1"># 样本条目数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_list_x</span><span class="p">)</span>
+
+    <span class="c1"># 获取样本条数</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_len</span>
+
+    <span class="c1"># 获取第几条 样本数据</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+
+        <span class="c1"># 对index异常值进行修正 [0, self.sample_len-1]</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_len</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># 按索引获取 数据样本 x y</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_list_x</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_list_y</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+        <span class="c1"># 样本x one-hot张量化</span>
+        <span class="n">tensor_x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">n_letters</span><span class="p">)</span>
+        <span class="c1"># 遍历人名 的 每个字母 做成one-hot编码</span>
+        <span class="k">for</span> <span class="n">li</span><span class="p">,</span> <span class="n">letter</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="c1"># letter2indx 使用all_letters.find(letter)查找字母在all_letters表中的位置 给one-hot赋值</span>
+            <span class="n">tensor_x</span><span class="p">[</span><span class="n">li</span><span class="p">][</span><span class="n">all_letters</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">letter</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># 样本y 张量化</span>
+        <span class="n">tensor_y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">categorys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+
+        <span class="c1"># 返回结果</span>
+        <span class="k">return</span> <span class="n">tensor_x</span><span class="p">,</span> <span class="n">tensor_y</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>分析<ul>
+<li>文本张量化，这里也就是人名张量化是通过one-hot编码来完成。</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code># 将字符串(单词粒度)转化为张量表示，如：&quot;ab&quot; ---&gt;
+# tensor([[[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+#          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+#          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+#          0., 0., 0., 0., 0., 0.]],
+
+#        [[0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+#          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+#          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+#          0., 0., 0., 0., 0., 0.]]])
+</code></pre></div>
+<h4 id="5">5 构建迭代器遍历数据<a class="headerlink" href="#5" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_NameClassDataset</span><span class="p">():</span>
+
+    <span class="c1"># 1 获取数据</span>
+    <span class="n">myfilename</span> <span class="o">=</span> <span class="s1">&#39;./data/name_classfication.txt&#39;</span>
+    <span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="n">myfilename</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list_x length&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_list_x</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list_y length&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_list_y</span><span class="p">))</span>
+
+    <span class="c1"># 2 实例化dataset对象</span>
+    <span class="n">nameclassdataset</span> <span class="o">=</span> <span class="n">NameClassDataset</span><span class="p">(</span><span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span><span class="p">)</span>
+
+    <span class="c1"># 3 实例化dataloader</span>
+    <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">nameclassdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span>  <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span> <span class="p">(</span><span class="n">mydataloader</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x.shape&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y.shape&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">break</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>my_list_x length 20074
+my_list_y length 20074
+x.shape torch.Size([1, 5, 57]) tensor([[[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0.],
+         [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0.],
+         [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0.],
+         [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0.],
+         [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+          0., 0., 0., 0., 0., 0.]]])
+y.shape torch.Size([1]) tensor([15])
+</code></pre></div>
+<h3 id="23-rnn">2.3 构建RNN模型<a class="headerlink" href="#23-rnn" title="Permanent link">&para;</a></h3>
+<h4 id="1-rnn">1 构建RNN模型<a class="headerlink" href="#1-rnn" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># RNN类 实现思路分析：</span>
+<span class="c1"># 1 init函数 准备三个层 self.rnn self.linear self.softmax=nn.LogSoftmax(dim=-1)</span>
+<span class="c1">#    def __init__(self, input_size, hidden_size, output_size, num_layers=1)</span>
+
+<span class="c1"># 2 forward(input, hidden)函数</span>
+<span class="c1">#   让数据经过三个层 返回softmax结果和hn</span>
+<span class="c1">#   形状变化 [seqlen,1,57],[1,1,128]) -&gt; [seqlen,1,128],[1,1,128]</span>
+
+<span class="c1"># 3 初始化隐藏层输入数据 inithidden()</span>
+<span class="c1">#   形状[self.num_layers, 1, self.hidden_size]</span>
+<span class="k">class</span> <span class="nc">RNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">output_size</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RNN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 1 init函数 准备三个层 self.rnn self.linear self.softmax=nn.LogSoftmax(dim=-1)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_size</span> <span class="o">=</span> <span class="n">input_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_size</span> <span class="o">=</span> <span class="n">output_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span> <span class="o">=</span> <span class="n">num_layers</span>
+
+        <span class="c1"># 定义rnn层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">RNN</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">)</span>
+
+        <span class="c1"># 定义linear层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_size</span><span class="p">)</span>
+
+        <span class="c1"># 定义softmax层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;input [6,57]-2维矩阵 hidden[1,1,57] - 3维矩阵&#39;&#39;&#39;</span>
+
+        <span class="c1"># 数据形状 [6,57] -&gt; [6,1,57]</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># 1 数据经过模型 提取事物特征</span>
+        <span class="c1"># 数据形状 [seqlen,1,57],[1,1,128]) -&gt; [seqlen,1,18],[1,1,128]</span>
+        <span class="n">rr</span><span class="p">,</span> <span class="n">hn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+
+        <span class="c1"># 数据形状 [seqlen,1,128] - [1, 128]  eg:[6,1,128] --&gt; [1,128]</span>
+        <span class="n">tmprr</span> <span class="o">=</span> <span class="n">rr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># 2 数据经过全连接层 [1,128] --&gt;[1,18]</span>
+        <span class="n">tmprr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">tmprr</span><span class="p">)</span>
+
+        <span class="c1"># 3 数据经过softmax层返回</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">tmprr</span><span class="p">),</span> <span class="n">hn</span>
+
+    <span class="k">def</span> <span class="nf">inithidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 初始化隐藏层输入数据 inithidden()</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>torch.unsqueeze演示:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>&gt;&gt;&gt; x = torch.tensor([1, 2, 3, 4])
+&gt;&gt;&gt; torch.unsqueeze(x, 0)
+tensor([[ 1,  2,  3,  4]])
+&gt;&gt;&gt; torch.unsqueeze(x, 1)
+tensor([[ 1],
+        [ 2],
+        [ 3],
+        [ 4]])
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm01_test_myrnn</span><span class="p">():</span>
+
+    <span class="c1"># 1 实例化rnn对象</span>
+    <span class="n">myrnn</span> <span class="o">=</span> <span class="n">RNN</span><span class="p">(</span><span class="mi">57</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;myrnn---&gt;&#39;</span><span class="p">,</span> <span class="n">myrnn</span><span class="p">)</span>
+
+    <span class="c1"># 2 准备数据</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">57</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">hidden</span> <span class="o">=</span> <span class="n">myrnn</span><span class="o">.</span><span class="n">inithidden</span><span class="p">()</span>
+
+    <span class="c1"># 3 给模型1次性的送数据</span>
+    <span class="c1"># [seqlen, 57], [1, 1, 128]) -&gt; [1,18], [1,1,128]</span>
+    <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">myrnn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;一次性的送数据：output-&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;hidden-&gt;&#39;</span><span class="p">,</span> <span class="n">hidden</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="c1"># 4 给模型1个字符1个字符的喂数据</span>
+    <span class="n">hidden</span> <span class="o">=</span> <span class="n">myrnn</span><span class="o">.</span><span class="n">inithidden</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">tmpinput</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">myrnn</span><span class="p">(</span><span class="n">tmpinput</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+
+    <span class="c1"># 最后一次ouput</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;一个字符一个字符的送数据output-&gt;&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>调用结果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">myrnn</span><span class="o">---&gt;</span> <span class="n">RNN</span><span class="p">(</span>
+  <span class="p">(</span><span class="n">rnn</span><span class="p">):</span> <span class="n">RNN</span><span class="p">(</span><span class="mi">57</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">linear</span><span class="p">):</span> <span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">softmax</span><span class="p">):</span> <span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">57</span><span class="p">])</span>
+<span class="n">一次性的送数据</span><span class="err">：</span><span class="n">output</span><span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">18</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span><span class="o">-</span><span class="mf">2.8194</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.1730</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.3112</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9715</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0997</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8097</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8016</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8738</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.7229</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8181</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.7881</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0218</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9169</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.6193</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8507</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9684</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.8589</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8273</span><span class="p">]],</span> <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">LogSoftmaxBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">hidden</span><span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">128</span><span class="p">])</span>
+<span class="n">一个字符一个字符的送数据output</span><span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">18</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span><span class="o">-</span><span class="mf">2.8194</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.1730</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.3112</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9715</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0997</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8097</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8016</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8738</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.7229</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8181</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.7881</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0218</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9169</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.6193</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8507</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9684</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.8589</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8273</span><span class="p">]],</span> <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">LogSoftmaxBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="2-lstm">2 构建LSTM模型<a class="headerlink" href="#2-lstm" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># LSTM类 实现思路分析：</span>
+<span class="c1"># 1 init函数 准备三个层 self.rnn self.linear self.softmax=nn.LogSoftmax(dim=-1)</span>
+<span class="c1">#    def __init__(self, input_size, hidden_size, output_size, num_layers=1)</span>
+
+<span class="c1"># 2 forward(input, hidden)函数</span>
+<span class="c1">#   让数据经过三个层 返回softmax结果和hn</span>
+<span class="c1">#   形状变化 [seqlen,1,57],[1,1,128]) -&gt; [seqlen,1,128],[1,1,128]</span>
+
+<span class="c1"># 3 初始化隐藏层输入数据 inithidden()</span>
+<span class="c1">#   形状[self.num_layers, 1, self.hidden_size]</span>
+<span class="k">class</span> <span class="nc">LSTM</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">output_size</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LSTM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 1 init函数 准备三个层 self.rnn self.linear self.softmax=nn.LogSoftmax(dim=-1)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_size</span> <span class="o">=</span> <span class="n">input_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_size</span> <span class="o">=</span> <span class="n">output_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span> <span class="o">=</span> <span class="n">num_layers</span>
+
+        <span class="c1"># 定义rnn层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">)</span>
+
+        <span class="c1"># 定义linear层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_size</span><span class="p">)</span>
+
+        <span class="c1"># 定义softmax层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="c1"># 让数据经过三个层 返回softmax结果和 hn c</span>
+        <span class="c1"># 数据形状 [6,57] -&gt; [6,1,52]</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># 把数据送给模型 提取事物特征</span>
+        <span class="c1"># 数据形状 [seqlen,1,57],[1,1,128], [1,1,128]) -&gt; [seqlen,1,18],[1,1,128],[1,1,128]</span>
+        <span class="n">rr</span><span class="p">,</span> <span class="p">(</span><span class="n">hn</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
+        <span class="c1"># 数据形状 [seqlen,1,128] - [1, 128]</span>
+        <span class="n">tmprr</span> <span class="o">=</span> <span class="n">rr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">tmprr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">tmprr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">tmprr</span><span class="p">),</span> <span class="n">hn</span><span class="p">,</span> <span class="n">cn</span>
+
+    <span class="k">def</span> <span class="nf">inithidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 初始化隐藏层输入数据 inithidden()</span>
+        <span class="n">hidden</span> <span class="o">=</span> <span class="n">c</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">c</span>
+</code></pre></div>
+<h4 id="3-gru">3 构建GRU模型<a class="headerlink" href="#3-gru" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># GRU类 实现思路分析：</span>
+<span class="c1"># 1 init函数 准备三个层 self.rnn self.linear self.softmax=nn.LogSoftmax(dim=-1)</span>
+<span class="c1">#    def __init__(self, input_size, hidden_size, output_size, num_layers=1)</span>
+
+<span class="c1"># 2 forward(input, hidden)函数</span>
+<span class="c1">#   让数据经过三个层 返回softmax结果和hn</span>
+<span class="c1">#   形状变化 [seqlen,1,57],[1,1,128]) -&gt; [seqlen,1,128],[1,1,128]</span>
+
+<span class="c1"># 3 初始化隐藏层输入数据 inithidden()</span>
+<span class="c1">#   形状[self.num_layers, 1, self.hidden_size]</span>
+<span class="k">class</span> <span class="nc">GRU</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">output_size</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GRU</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 1 init函数 准备三个层 self.rnn self.linear self.softmax=nn.LogSoftmax(dim=-1)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_size</span> <span class="o">=</span> <span class="n">input_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_size</span> <span class="o">=</span> <span class="n">output_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span> <span class="o">=</span> <span class="n">num_layers</span>
+
+        <span class="c1"># 定义rnn层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">GRU</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">)</span>
+
+        <span class="c1"># 定义linear层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_size</span><span class="p">)</span>
+
+        <span class="c1"># 定义softmax层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">):</span>
+        <span class="c1"># 让数据经过三个层 返回softmax结果和hn</span>
+        <span class="c1"># 数据形状 [6,57] -&gt; [6,1,52]</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># 把数据送给模型 提取事物特征</span>
+        <span class="c1"># 数据形状 [seqlen,1,57],[1,1,128]) -&gt; [seqlen,1,18],[1,1,128]</span>
+        <span class="n">rr</span><span class="p">,</span> <span class="n">hn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="c1"># 数据形状 [seqlen,1,128] - [1, 128]</span>
+        <span class="n">tmprr</span> <span class="o">=</span> <span class="n">rr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">tmprr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">tmprr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">tmprr</span><span class="p">),</span> <span class="n">hn</span>
+
+    <span class="k">def</span> <span class="nf">inithidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 初始化隐藏层输入数据 inithidden()</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="4-rnn_lstm_gru">4 模型RNN_LSTM_GRU测试<a class="headerlink" href="#4-rnn_lstm_gru" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_rnn_lstm_gru</span><span class="p">():</span>
+
+    <span class="c1"># one-hot编码特征57（n_letters），也是RNN的输入尺寸</span>
+    <span class="n">input_size</span> <span class="o">=</span> <span class="mi">57</span>
+
+    <span class="c1"># 定义隐层的最后一维尺寸大小</span>
+    <span class="n">n_hidden</span> <span class="o">=</span> <span class="mi">128</span>
+
+    <span class="c1"># 输出尺寸为语言类别总数n_categories # 1个字符预测成18个类别</span>
+    <span class="n">output_size</span> <span class="o">=</span> <span class="mi">18</span>
+
+    <span class="c1"># 1 获取数据</span>
+    <span class="n">myfilename</span> <span class="o">=</span> <span class="s1">&#39;./data/name_classfication.txt&#39;</span>
+    <span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span>  <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="n">myfilename</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;categorys---&gt;&#39;</span><span class="p">,</span> <span class="n">categorys</span><span class="p">)</span>
+
+    <span class="c1"># 2 实例化dataset对象</span>
+    <span class="n">nameclassdataset</span> <span class="o">=</span> <span class="n">NameClassDataset</span><span class="p">(</span><span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span><span class="p">)</span>
+
+    <span class="c1"># 3 实例化dataloader</span>
+    <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">nameclassdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">my_rnn</span> <span class="o">=</span> <span class="n">RNN</span><span class="p">(</span><span class="n">n_letters</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="n">categorynum</span><span class="p">)</span>
+    <span class="n">my_lstm</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="n">n_letters</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="n">categorynum</span><span class="p">)</span>
+    <span class="n">my_gru</span> <span class="o">=</span> <span class="n">GRU</span><span class="p">(</span><span class="n">n_letters</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="n">categorynum</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;rnn 模型&#39;</span><span class="p">,</span> <span class="n">my_rnn</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;lstm 模型&#39;</span><span class="p">,</span> <span class="n">my_lstm</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;gru 模型&#39;</span><span class="p">,</span> <span class="n">my_gru</span><span class="p">)</span>
+
+    <span class="k">for</span>  <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span> <span class="p">(</span><span class="n">mydataloader</span><span class="p">):</span>
+        <span class="c1"># print(&#39;x.shape&#39;, x.shape, x)</span>
+        <span class="c1"># print(&#39;y.shape&#39;, y.shape, y)</span>
+        <span class="c1"># 初始化一个三维的隐层0张量, 也是初始的细胞状态张量</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_rnn</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">my_rnn</span><span class="o">.</span><span class="n">inithidden</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rnn output.shape---&gt;:&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">break</span>
+
+    <span class="k">for</span>  <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span> <span class="p">(</span><span class="n">mydataloader</span><span class="p">):</span>
+        <span class="c1"># print(&#39;x.shape&#39;, x.shape, x)</span>
+        <span class="c1"># print(&#39;y.shape&#39;, y.shape, y)</span>
+        <span class="n">hidden</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">my_lstm</span><span class="o">.</span><span class="n">inithidden</span><span class="p">()</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">my_lstm</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lstm output.shape---&gt;:&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">break</span>
+
+    <span class="k">for</span>  <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span> <span class="p">(</span><span class="n">mydataloader</span><span class="p">):</span>
+        <span class="c1"># print(&#39;x.shape&#39;, x.shape, x)</span>
+        <span class="c1"># print(&#39;y.shape&#39;, y.shape, y)</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_gru</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">my_gru</span><span class="o">.</span><span class="n">inithidden</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;gru output.shape---&gt;:&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">break</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">rnn</span> <span class="n">模型</span> <span class="n">RNN</span><span class="p">(</span>
+  <span class="p">(</span><span class="n">rnn</span><span class="p">):</span> <span class="n">RNN</span><span class="p">(</span><span class="mi">57</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">linear</span><span class="p">):</span> <span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">softmax</span><span class="p">):</span> <span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">lstm</span> <span class="n">模型</span> <span class="n">LSTM</span><span class="p">(</span>
+  <span class="p">(</span><span class="n">rnn</span><span class="p">):</span> <span class="n">LSTM</span><span class="p">(</span><span class="mi">57</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">linear</span><span class="p">):</span> <span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">softmax</span><span class="p">):</span> <span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">gru</span> <span class="n">模型</span> <span class="n">GRU</span><span class="p">(</span>
+  <span class="p">(</span><span class="n">rnn</span><span class="p">):</span> <span class="n">GRU</span><span class="p">(</span><span class="mi">57</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">linear</span><span class="p">):</span> <span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">softmax</span><span class="p">):</span> <span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">rnn</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="o">---&gt;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">18</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span><span class="o">-</span><span class="mf">2.9552</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9024</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8828</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.7737</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8387</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0154</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8587</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9567</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.8406</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0098</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8152</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8472</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9561</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8780</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8332</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8117</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.9560</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9384</span><span class="p">]],</span> <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">LogSoftmaxBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">lstm</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="o">---&gt;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">18</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span><span class="o">-</span><span class="mf">2.9283</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0017</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8902</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8179</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8484</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8152</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9654</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8846</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.8642</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8602</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8860</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9505</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8806</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9436</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8388</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9312</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.9241</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8211</span><span class="p">]],</span> <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">LogSoftmaxBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">gru</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="o">---&gt;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">18</span><span class="p">])</span> <span class="n">tensor</span><span class="p">([[</span><span class="o">-</span><span class="mf">2.8898</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0236</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.7403</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8986</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8163</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9486</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8674</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9294</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.8889</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0082</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8785</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8741</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8736</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.7923</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.9261</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8990</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.9456</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8668</span><span class="p">]],</span> <span class="n">grad_fn</span><span class="o">=&lt;</span><span class="n">LogSoftmaxBackward0</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="24">2.4 构建训练函数并进行训练<a class="headerlink" href="#24" title="Permanent link">&para;</a></h3>
+<h4 id="1-rnn_1">1 构建RNN训练函数<a class="headerlink" href="#1-rnn_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code># 思路分析
+# 从文件获取数据、实例化数据源对象nameclassdataset 数据迭代器对象mydataloader
+# 实例化模型对象my_rnn 损失函数对象mycrossentropyloss=nn.NLLLoss() 优化器对象myadam
+# 定义模型训练的参数
+#       starttime total_iter_num total_loss  total_loss_list total_acc_num  total_acc_list
+# 外层for循环 控制轮数 for epoch_idx in range(epochs)
+# 内层for循环 控制迭代次数 for i, (x, y) in enumerate(mydataloader)
+    # 给模型喂数据   # 计算损失  # 梯度清零 # 反向传播  # 梯度更新
+    # 计算辅助信息   # 累加总损失和准确数 每100次训练计算一个总体平均损失 总体平均准确率 每2000次训练 打印日志
+    # 其他          # 预测对错 i_predit_tag = (1 if torch.argmax(output).item() == y.item() else 0)
+
+# 模型保存
+    # torch.save(my_rnn.state_dict(), &#39;./my_rnn_model_%d.bin&#39; % (epoch_idx + 1))
+# 返回 平均损失列表total_loss_list, 时间total_time, 平均准确total_acc_list
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># 模型训练参数</span>
+<span class="n">mylr</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">my_train_rnn</span><span class="p">():</span>
+
+    <span class="c1"># 获取数据</span>
+    <span class="n">myfilename</span> <span class="o">=</span> <span class="s1">&#39;./data/name_classfication.txt&#39;</span>
+    <span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="n">myfilename</span><span class="p">)</span>
+
+    <span class="c1"># 实例化dataset对象</span>
+    <span class="n">nameclassdataset</span> <span class="o">=</span> <span class="n">NameClassDataset</span><span class="p">(</span><span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span><span class="p">)</span>
+
+    <span class="c1"># 实例化 模型</span>
+    <span class="n">input_size</span> <span class="o">=</span> <span class="mi">57</span>
+    <span class="n">n_hidden</span> <span class="o">=</span> <span class="mi">128</span>
+    <span class="n">output_size</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">my_rnn</span> <span class="o">=</span> <span class="n">RNN</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="n">output_size</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_rnn模型---&gt;&#39;</span><span class="p">,</span> <span class="n">my_rnn</span><span class="p">)</span>
+
+    <span class="c1"># 实例化 损失函数 adam优化器</span>
+    <span class="n">mycrossentropyloss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">NLLLoss</span><span class="p">()</span>
+    <span class="n">myadam</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">my_rnn</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">mylr</span><span class="p">)</span>
+
+    <span class="c1"># 定义模型训练参数</span>
+    <span class="n">starttime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">total_iter_num</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 已训练的样本数</span>
+    <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># 已训练的损失和</span>
+    <span class="n">total_loss_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 每100个样本求一次平均损失 形成损失列表</span>
+    <span class="n">total_acc_num</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 已训练样本预测准确总数</span>
+    <span class="n">total_acc_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 每100个样本求一次平均准确率 形成平均准确率列表</span>
+
+    <span class="c1"># 外层for循环 控制轮数</span>
+    <span class="k">for</span> <span class="n">epoch_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+
+        <span class="c1"># 实例化dataloader</span>
+        <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">nameclassdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 内层for循环 控制迭代次数</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mydataloader</span><span class="p">):</span>
+            <span class="c1"># 给模型喂数据</span>
+            <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_rnn</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">my_rnn</span><span class="o">.</span><span class="n">inithidden</span><span class="p">())</span>
+
+            <span class="c1"># 计算损失</span>
+            <span class="n">myloss</span> <span class="o">=</span> <span class="n">mycrossentropyloss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+            <span class="c1"># 梯度清零</span>
+            <span class="n">myadam</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+            <span class="c1"># 反向传播</span>
+            <span class="n">myloss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+            <span class="c1"># 梯度更新</span>
+            <span class="n">myadam</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+            <span class="c1"># 计算总损失</span>
+            <span class="n">total_iter_num</span> <span class="o">=</span> <span class="n">total_iter_num</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">total_loss</span> <span class="o">=</span> <span class="n">total_loss</span> <span class="o">+</span> <span class="n">myloss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+            <span class="c1"># 计算总准确率</span>
+            <span class="n">i_predit_tag</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">y</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">total_acc_num</span> <span class="o">=</span> <span class="n">total_acc_num</span> <span class="o">+</span> <span class="n">i_predit_tag</span>
+
+            <span class="c1"># 每100次训练 求一次平均损失 平均准确率</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">total_iter_num</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">tmploss</span> <span class="o">=</span> <span class="n">total_loss</span><span class="o">/</span><span class="n">total_iter_num</span>
+                <span class="n">total_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmploss</span><span class="p">)</span>
+
+                <span class="n">tmpacc</span> <span class="o">=</span> <span class="n">total_acc_num</span><span class="o">/</span><span class="n">total_iter_num</span>
+                <span class="n">total_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmpacc</span><span class="p">)</span>
+
+            <span class="c1"># 每2000次训练 打印日志</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">total_iter_num</span> <span class="o">%</span> <span class="mi">2000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">tmploss</span> <span class="o">=</span> <span class="n">total_loss</span> <span class="o">/</span> <span class="n">total_iter_num</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;轮次:</span><span class="si">%d</span><span class="s1">, 损失:</span><span class="si">%.6f</span><span class="s1">, 时间:</span><span class="si">%d</span><span class="s1">，准确率:</span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">epoch_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmploss</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">tmpacc</span><span class="p">))</span>
+
+        <span class="c1"># 每个轮次保存模型</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">my_rnn</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s1">&#39;./my_rnn_model_</span><span class="si">%d</span><span class="s1">.bin&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">epoch_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># 计算总时间</span>
+    <span class="n">total_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">total_loss_list</span><span class="p">,</span> <span class="n">total_time</span><span class="p">,</span> <span class="n">total_acc_list</span>
+</code></pre></div>
+<h4 id="2-lstm_1">2 构建LSTM训练函数<a class="headerlink" href="#2-lstm_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 思路分析</span>
+<span class="c1"># 同RNN实现分析</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">my_train_lstm</span><span class="p">():</span>
+
+    <span class="c1"># 获取数据</span>
+    <span class="n">myfilename</span> <span class="o">=</span> <span class="s1">&#39;./data/name_classfication.txt&#39;</span>
+    <span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="n">myfilename</span><span class="p">)</span>
+
+    <span class="c1"># 实例化dataset对象</span>
+    <span class="n">nameclassdataset</span> <span class="o">=</span> <span class="n">NameClassDataset</span><span class="p">(</span><span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span><span class="p">)</span>
+
+    <span class="c1"># 实例化 模型</span>
+    <span class="n">input_size</span> <span class="o">=</span> <span class="mi">57</span>
+    <span class="n">n_hidden</span> <span class="o">=</span> <span class="mi">128</span>
+    <span class="n">output_size</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">my_lstm</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="n">output_size</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_lstm模型---&gt;&#39;</span><span class="p">,</span> <span class="n">my_lstm</span><span class="p">)</span>
+
+    <span class="c1"># 实例化 损失函数 adam优化器</span>
+    <span class="n">mycrossentropyloss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">NLLLoss</span><span class="p">()</span>
+    <span class="n">myadam</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">my_lstm</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">mylr</span><span class="p">)</span>
+
+    <span class="c1"># 定义模型训练参数</span>
+    <span class="n">starttime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">total_iter_num</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 已训练的样本数</span>
+    <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># 已训练的损失和</span>
+    <span class="n">total_loss_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 每100个样本求一次平均损失 形成损失列表</span>
+    <span class="n">total_acc_num</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 已训练样本预测准确总数</span>
+    <span class="n">total_acc_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 每100个样本求一次平均准确率 形成平均准确率列表</span>
+
+    <span class="c1"># 外层for循环 控制轮数</span>
+    <span class="k">for</span> <span class="n">epoch_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+
+        <span class="c1"># 实例化dataloader</span>
+        <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">nameclassdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 内层for循环 控制迭代次数</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mydataloader</span><span class="p">):</span>
+            <span class="c1"># 给模型喂数据</span>
+            <span class="n">hidden</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">my_lstm</span><span class="o">.</span><span class="n">inithidden</span><span class="p">()</span>
+            <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">my_lstm</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+
+            <span class="c1"># 计算损失</span>
+            <span class="n">myloss</span> <span class="o">=</span> <span class="n">mycrossentropyloss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+            <span class="c1"># 梯度清零</span>
+            <span class="n">myadam</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+            <span class="c1"># 反向传播</span>
+            <span class="n">myloss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+            <span class="c1"># 梯度更新</span>
+            <span class="n">myadam</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+            <span class="c1"># 计算总损失</span>
+            <span class="n">total_iter_num</span> <span class="o">=</span> <span class="n">total_iter_num</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">total_loss</span> <span class="o">=</span> <span class="n">total_loss</span> <span class="o">+</span> <span class="n">myloss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+            <span class="c1"># 计算总准确率</span>
+            <span class="n">i_predit_tag</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">y</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">total_acc_num</span> <span class="o">=</span> <span class="n">total_acc_num</span> <span class="o">+</span> <span class="n">i_predit_tag</span>
+
+            <span class="c1"># 每100次训练 求一次平均损失 平均准确率</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">total_iter_num</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">tmploss</span> <span class="o">=</span> <span class="n">total_loss</span><span class="o">/</span><span class="n">total_iter_num</span>
+                <span class="n">total_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmploss</span><span class="p">)</span>
+
+                <span class="n">tmpacc</span> <span class="o">=</span> <span class="n">total_acc_num</span><span class="o">/</span><span class="n">total_iter_num</span>
+                <span class="n">total_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmpacc</span><span class="p">)</span>
+
+            <span class="c1"># 每2000次训练 打印日志</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">total_iter_num</span> <span class="o">%</span> <span class="mi">2000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">tmploss</span> <span class="o">=</span> <span class="n">total_loss</span> <span class="o">/</span> <span class="n">total_iter_num</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;轮次:</span><span class="si">%d</span><span class="s1">, 损失:</span><span class="si">%.6f</span><span class="s1">, 时间:</span><span class="si">%d</span><span class="s1">，准确率:</span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">epoch_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmploss</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">tmpacc</span><span class="p">))</span>
+
+        <span class="c1"># 每个轮次保存模型</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">my_lstm</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s1">&#39;./my_lstm_model_</span><span class="si">%d</span><span class="s1">.bin&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">epoch_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># 计算总时间</span>
+    <span class="n">total_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">total_loss_list</span><span class="p">,</span> <span class="n">total_time</span><span class="p">,</span> <span class="n">total_acc_list</span>
+</code></pre></div>
+<h4 id="3-gru_1">3 构建GRU训练函数<a class="headerlink" href="#3-gru_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 思路分析</span>
+<span class="c1"># 同RNN实现分析</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">my_train_gru</span><span class="p">():</span>
+
+    <span class="c1"># 获取数据</span>
+    <span class="n">myfilename</span> <span class="o">=</span> <span class="s1">&#39;./data/name_classfication.txt&#39;</span>
+    <span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="n">myfilename</span><span class="p">)</span>
+
+    <span class="c1"># 实例化dataset对象</span>
+    <span class="n">nameclassdataset</span> <span class="o">=</span> <span class="n">NameClassDataset</span><span class="p">(</span><span class="n">my_list_x</span><span class="p">,</span> <span class="n">my_list_y</span><span class="p">)</span>
+
+    <span class="c1"># 实例化 模型</span>
+    <span class="n">input_size</span> <span class="o">=</span> <span class="mi">57</span>
+    <span class="n">n_hidden</span> <span class="o">=</span> <span class="mi">128</span>
+    <span class="n">output_size</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">my_gru</span> <span class="o">=</span> <span class="n">GRU</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="n">output_size</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_gru模型---&gt;&#39;</span><span class="p">,</span> <span class="n">my_gru</span><span class="p">)</span>
+
+    <span class="c1"># 实例化 损失函数 adam优化器</span>
+    <span class="n">mycrossentropyloss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">NLLLoss</span><span class="p">()</span>
+    <span class="n">myadam</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">my_gru</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">mylr</span><span class="p">)</span>
+
+    <span class="c1"># 定义模型训练参数</span>
+    <span class="n">starttime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">total_iter_num</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 已训练的样本数</span>
+    <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># 已训练的损失和</span>
+    <span class="n">total_loss_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 每100个样本求一次平均损失 形成损失列表</span>
+    <span class="n">total_acc_num</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 已训练样本预测准确总数</span>
+    <span class="n">total_acc_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 每100个样本求一次平均准确率 形成平均准确率列表</span>
+
+    <span class="c1"># 外层for循环 控制轮数</span>
+    <span class="k">for</span> <span class="n">epoch_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+
+        <span class="c1"># 实例化dataloader</span>
+        <span class="n">mydataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">nameclassdataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 内层for循环 控制迭代次数</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mydataloader</span><span class="p">):</span>
+            <span class="c1"># 给模型喂数据</span>
+            <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_gru</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">my_gru</span><span class="o">.</span><span class="n">inithidden</span><span class="p">())</span>
+
+            <span class="c1"># 计算损失</span>
+            <span class="n">myloss</span> <span class="o">=</span> <span class="n">mycrossentropyloss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+            <span class="c1"># 梯度清零</span>
+            <span class="n">myadam</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+            <span class="c1"># 反向传播</span>
+            <span class="n">myloss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+            <span class="c1"># 梯度更新</span>
+            <span class="n">myadam</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+            <span class="c1"># 计算总损失</span>
+            <span class="n">total_iter_num</span> <span class="o">=</span> <span class="n">total_iter_num</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">total_loss</span> <span class="o">=</span> <span class="n">total_loss</span> <span class="o">+</span> <span class="n">myloss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+            <span class="c1"># 计算总准确率</span>
+            <span class="n">i_predit_tag</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">y</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">total_acc_num</span> <span class="o">=</span> <span class="n">total_acc_num</span> <span class="o">+</span> <span class="n">i_predit_tag</span>
+
+            <span class="c1"># 每100次训练 求一次平均损失 平均准确率</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">total_iter_num</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">tmploss</span> <span class="o">=</span> <span class="n">total_loss</span><span class="o">/</span><span class="n">total_iter_num</span>
+                <span class="n">total_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmploss</span><span class="p">)</span>
+
+                <span class="n">tmpacc</span> <span class="o">=</span> <span class="n">total_acc_num</span><span class="o">/</span><span class="n">total_iter_num</span>
+                <span class="n">total_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmpacc</span><span class="p">)</span>
+
+            <span class="c1"># 每2000次训练 打印日志</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">total_iter_num</span> <span class="o">%</span> <span class="mi">2000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">tmploss</span> <span class="o">=</span> <span class="n">total_loss</span> <span class="o">/</span> <span class="n">total_iter_num</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;轮次:</span><span class="si">%d</span><span class="s1">, 损失:</span><span class="si">%.6f</span><span class="s1">, 时间:</span><span class="si">%d</span><span class="s1">，准确率:</span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">epoch_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmploss</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">tmpacc</span><span class="p">))</span>
+
+        <span class="c1"># 每个轮次保存模型</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">my_gru</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s1">&#39;./my_gru_model_</span><span class="si">%d</span><span class="s1">.bin&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">epoch_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># 计算总时间</span>
+    <span class="n">total_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">total_loss_list</span><span class="p">,</span> <span class="n">total_time</span><span class="p">,</span> <span class="n">total_acc_list</span>
+</code></pre></div>
+<h4 id="4">4 模型训练并制图<a class="headerlink" href="#4" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_train_rnn_lstm_gru</span><span class="p">():</span>
+    <span class="n">total_loss_list_rnn</span><span class="p">,</span> <span class="n">total_time_rnn</span><span class="p">,</span> <span class="n">total_acc_list_rnn</span> <span class="o">=</span> <span class="n">my_train_rnn</span><span class="p">()</span>
+
+    <span class="n">total_loss_list_lstm</span><span class="p">,</span> <span class="n">total_time_lstm</span><span class="p">,</span> <span class="n">total_acc_list_lstm</span> <span class="o">=</span> <span class="n">my_train_lstm</span><span class="p">()</span>
+
+    <span class="n">total_loss_list_gru</span><span class="p">,</span> <span class="n">total_time_gru</span><span class="p">,</span> <span class="n">total_acc_list_gru</span> <span class="o">=</span> <span class="n">my_train_gru</span><span class="p">()</span>
+
+    <span class="c1"># 绘制损失对比曲线</span>
+    <span class="c1"># 创建画布0</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># # 绘制损失对比曲线</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">total_loss_list_rnn</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;RNN&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">total_loss_list_lstm</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;LSTM&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">total_loss_list_gru</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;GRU&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;./img/RNN_LSTM_GRU_loss2.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># 绘制柱状图</span>
+    <span class="c1"># 创建画布1</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">x_data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;RNN&quot;</span><span class="p">,</span> <span class="s2">&quot;LSTM&quot;</span><span class="p">,</span> <span class="s2">&quot;GRU&quot;</span><span class="p">]</span>
+    <span class="n">y_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">total_time_rnn</span><span class="p">,</span> <span class="n">total_time_lstm</span><span class="p">,</span> <span class="n">total_time_gru</span><span class="p">]</span>
+    <span class="c1"># 绘制训练耗时对比柱状图</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_data</span><span class="p">)),</span> <span class="n">y_data</span><span class="p">,</span> <span class="n">tick_label</span><span class="o">=</span><span class="n">x_data</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;./img/RNN_LSTM_GRU_period2.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># 绘制准确率对比曲线</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">total_acc_list_rnn</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;RNN&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">total_acc_list_lstm</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;LSTM&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">total_acc_list_gru</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;GRU&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;./img/RNN_LSTM_GRU_acc2.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>RNN模型训练日志输出:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">1.002102</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">54</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.700</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.993880</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">56</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.703</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.986200</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">58</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.705</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.981136</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">61</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.706</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.976931</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">63</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.707</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.972190</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">65</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.708</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.967081</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">68</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.710</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.964384</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">70</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.711</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.958782</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">72</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.713</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.955343</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">75</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.713</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.950741</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">77</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.715</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.945756</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">80</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.716</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.942663</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">82</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.717</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.939319</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">84</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.718</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.936169</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">87</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.719</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.933440</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">89</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.720</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.930918</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">91</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.720</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.927330</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">94</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.721</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>LSTM模型训练日志输出:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.805885</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">118</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.759</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.794148</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">123</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.762</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.783356</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">128</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.765</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.774931</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">133</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.767</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.765427</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">137</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.769</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.757254</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">142</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.771</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.750375</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">147</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.773</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.743092</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">152</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.775</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.732983</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">157</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.778</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.723816</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">162</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.780</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.716507</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">167</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.782</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.708377</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">172</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.785</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.700820</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">177</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.787</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.694714</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">182</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.788</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.688386</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">187</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.790</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.683056</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">191</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.791</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.677051</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">196</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.793</span>
+<span class="n">轮次</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">损失</span><span class="p">:</span><span class="mf">0.671668</span><span class="p">,</span> <span class="n">时间</span><span class="p">:</span><span class="mi">201</span><span class="err">，</span><span class="n">准确率</span><span class="p">:</span><span class="mf">0.794</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>GRU模型训练日志输出:</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>轮次:3, 损失:0.743891, 时间:106，准确率:0.772
+轮次:3, 损失:0.733144, 时间:111，准确率:0.775
+轮次:3, 损失:0.723484, 时间:116，准确率:0.777
+轮次:3, 损失:0.714760, 时间:120，准确率:0.780
+轮次:3, 损失:0.706929, 时间:125，准确率:0.782
+轮次:3, 损失:0.698657, 时间:130，准确率:0.784
+轮次:3, 损失:0.690443, 时间:134，准确率:0.787
+轮次:3, 损失:0.683878, 时间:139，准确率:0.789
+轮次:4, 损失:0.674766, 时间:144，准确率:0.791
+轮次:4, 损失:0.665543, 时间:148，准确率:0.794
+轮次:4, 损失:0.657179, 时间:153，准确率:0.796
+轮次:4, 损失:0.650314, 时间:157，准确率:0.798
+轮次:4, 损失:0.643698, 时间:162，准确率:0.800
+轮次:4, 损失:0.637341, 时间:167，准确率:0.802
+轮次:4, 损失:0.632063, 时间:171，准确率:0.803
+轮次:4, 损失:0.626060, 时间:176，准确率:0.805
+轮次:4, 损失:0.621460, 时间:180，准确率:0.806
+轮次:4, 损失:0.616704, 时间:185，准确率:0.808
+</code></pre></div>
+<h4 id="5_1">5 模型训练结果分析<a class="headerlink" href="#5_1" title="Permanent link">&para;</a></h4>
+<h5 id="1_2">1 损失对比曲线分析<a class="headerlink" href="#1_2" title="Permanent link">&para;</a></h5>
+<p><img alt="avatar" src="img/rnn_lstm_gru_loss14.png" /></p>
+<ul>
+<li>左图：1个轮次损失对比曲线，右图4个轮次损失对比曲线</li>
+<li>模型训练的损失降低快慢代表模型收敛程度。由图可知, 传统RNN的模型第一个轮次开始收敛情况最好，然后是GRU, 最后是LSTM, 这是因为RNN模型简单参数少，见效快。随着训练数据的增加，GRU效果最好、LSTM效果次之、RNN效果排最后。</li>
+<li>所以在以后的模型选用时， 要通过对任务的分析以及实验对比, 选择最适合的模型。</li>
+</ul>
+<h5 id="2_2">2 训练耗时分析<a class="headerlink" href="#2_2" title="Permanent link">&para;</a></h5>
+<p>训练耗时对比图:</p>
+<p><img alt="avatar" src="img/rnn_lstm_gru_time.png" /></p>
+<ul>
+<li>模型训练的耗时长短代表模型的计算复杂度，由图可知， 也正如我们之前的理论分析，传统RNN复杂度最低， 耗时几乎只是后两者的一半, 然后是GRU，最后是复杂度最高的LSTM。</li>
+</ul>
+<h5 id="3_1">3 训练准确率分析<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h5>
+<p>训练准确率对比图:</p>
+<p><img alt="avatar" src="img/rnn_lstm_gru_acc.png" /></p>
+<ul>
+<li>由图可知， GRU效果最好、LSTM效果次之、RNN效果排最后。</li>
+</ul>
+<h5 id="4_1">4 结论<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h5>
+<p>模型选用一般应通过实验对比，并非越复杂或越先进的模型表现越好，而是需要结合自己的特定任务，从对数据的分析和实验结果中获得最佳答案。</p>
+<h3 id="25">2.5 构建预测函数并进行预测<a class="headerlink" href="#25" title="Permanent link">&para;</a></h3>
+<h4 id="1-rnn_2">1 构建RNN预测函数<a class="headerlink" href="#1-rnn_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1 构建传统RNN预测函数</span>
+<span class="n">my_path_rnn</span> <span class="o">=</span> <span class="s1">&#39;./model/my_rnn_model_1.bin&#39;</span>
+<span class="n">my_path_lstm</span> <span class="o">=</span> <span class="s1">&#39;./model/my_lstm_model_1.bin&#39;</span>
+<span class="n">my_path_gru</span> <span class="o">=</span> <span class="s1">&#39;./model/my_gru_model_1.bin&#39;</span>
+
+<span class="c1"># 将人名转化为onehot张量</span>
+<span class="c1"># eg &#39;bai&#39; --&gt; [3,57]</span>
+<span class="k">def</span> <span class="nf">lineToTensor</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="c1"># 文本张量化x</span>
+    <span class="n">tensor_x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">n_letters</span><span class="p">)</span>
+    <span class="c1"># 遍历这个人名中的每个字符索引和字符</span>
+    <span class="k">for</span> <span class="n">li</span><span class="p">,</span> <span class="n">letter</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="c1"># letter在字符串all_letters中的位置 就是onehot张量1索引的位置</span>
+        <span class="c1"># letter在字符串all_letters中的位置 使用字符串find()方法获取</span>
+        <span class="n">tensor_x</span><span class="p">[</span><span class="n">li</span><span class="p">][</span><span class="n">all_letters</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">letter</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">tensor_x</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># 思路分析</span>
+<span class="c1"># 1 输入文本数据 张量化one-hot</span>
+<span class="c1"># 2 实例化模型 加载已训练模型参数 m.load_state_dict(torch.load(my_path_rnn))</span>
+<span class="c1"># 3 模型预测 with torch.no_grad()</span>
+<span class="c1"># 4 从预测结果中取出前3名,显示打印结果 output.topk(3, 1, True)</span>
+<span class="c1">#   category_idx = topi[0][i] category = categorys[category_idx]</span>
+
+<span class="c1"># 构建rnn预测函数</span>
+<span class="k">def</span> <span class="nf">my_predict_rnn</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+
+    <span class="n">n_letters</span> <span class="o">=</span> <span class="mi">57</span>
+    <span class="n">n_hidden</span> <span class="o">=</span> <span class="mi">128</span>
+    <span class="n">n_categories</span> <span class="o">=</span> <span class="mi">18</span>
+
+
+    <span class="c1"># 输入文本, 张量化one-hot</span>
+    <span class="n">x_tensor</span> <span class="o">=</span> <span class="n">lineToTensor</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># 实例化模型 加载已训练模型参数</span>
+    <span class="n">my_rnn</span> <span class="o">=</span> <span class="n">RNN</span><span class="p">(</span><span class="n">n_letters</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="n">n_categories</span><span class="p">)</span>
+    <span class="n">my_rnn</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">my_path_rnn</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="c1"># 模型预测</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_rnn</span><span class="p">(</span><span class="n">x_tensor</span><span class="p">,</span> <span class="n">my_rnn</span><span class="o">.</span><span class="n">inithidden</span><span class="p">())</span>
+
+        <span class="c1"># 从预测结果中取出前3名</span>
+        <span class="c1"># 3表示取前3名, 1表示要排序的维度, True表示是否返回最大或是最下的元素</span>
+        <span class="n">topv</span><span class="p">,</span> <span class="n">topi</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;rnn =&gt;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">topv</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">category_idx</span> <span class="o">=</span> <span class="n">topi</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">categorys</span><span class="p">[</span><span class="n">category_idx</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1"> value:</span><span class="si">%d</span><span class="s1">  category:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="p">))</span>
+</code></pre></div>
+<h4 id="2-lstm_2">2 构建LSTM预测函数<a class="headerlink" href="#2-lstm_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 构建LSTM 预测函数</span>
+<span class="k">def</span> <span class="nf">my_predict_lstm</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+
+    <span class="n">n_letters</span> <span class="o">=</span> <span class="mi">57</span>
+    <span class="n">n_hidden</span> <span class="o">=</span> <span class="mi">128</span>
+    <span class="n">n_categories</span> <span class="o">=</span> <span class="mi">18</span>
+
+    <span class="c1"># 输入文本, 张量化one-hot</span>
+    <span class="n">x_tensor</span> <span class="o">=</span> <span class="n">lineToTensor</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># 实例化模型 加载已训练模型参数</span>
+    <span class="n">my_lstm</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="n">n_letters</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="n">n_categories</span><span class="p">)</span>
+    <span class="n">my_lstm</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">my_path_lstm</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="c1"># 模型预测</span>
+        <span class="n">hidden</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">my_lstm</span><span class="o">.</span><span class="n">inithidden</span><span class="p">()</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">my_lstm</span><span class="p">(</span><span class="n">x_tensor</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+
+        <span class="c1"># 从预测结果中取出前3名</span>
+        <span class="c1"># 3表示取前3名, 1表示要排序的维度, True表示是否返回最大或是最下的元素</span>
+        <span class="n">topv</span><span class="p">,</span> <span class="n">topi</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;rnn =&gt;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">topv</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">category_idx</span> <span class="o">=</span> <span class="n">topi</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">categorys</span><span class="p">[</span><span class="n">category_idx</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1"> value:</span><span class="si">%d</span><span class="s1">  category:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1"> value:</span><span class="si">%d</span><span class="s1">  category:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="p">))</span>
+</code></pre></div>
+<h4 id="3-gru_2">3 构建GRU预测函数<a class="headerlink" href="#3-gru_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 构建GRU 预测函数</span>
+<span class="k">def</span> <span class="nf">my_predict_gru</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+
+    <span class="n">n_letters</span> <span class="o">=</span> <span class="mi">57</span>
+    <span class="n">n_hidden</span> <span class="o">=</span> <span class="mi">128</span>
+    <span class="n">n_categories</span> <span class="o">=</span> <span class="mi">18</span>
+
+    <span class="c1"># 输入文本, 张量化one-hot</span>
+    <span class="n">x_tensor</span> <span class="o">=</span> <span class="n">lineToTensor</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># 实例化模型 加载已训练模型参数</span>
+    <span class="n">my_gru</span> <span class="o">=</span> <span class="n">GRU</span><span class="p">(</span><span class="n">n_letters</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="n">n_categories</span><span class="p">)</span>
+    <span class="n">my_gru</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">my_path_gru</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="c1"># 模型预测</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">my_gru</span><span class="p">(</span><span class="n">x_tensor</span><span class="p">,</span> <span class="n">my_gru</span><span class="o">.</span><span class="n">inithidden</span><span class="p">())</span>
+
+        <span class="c1"># 从预测结果中取出前3名</span>
+        <span class="c1"># 3表示取前3名, 1表示要排序的维度, True表示是否返回最大或是最下的元素</span>
+        <span class="n">topv</span><span class="p">,</span> <span class="n">topi</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;rnn =&gt;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">topv</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">category_idx</span> <span class="o">=</span> <span class="n">topi</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">categorys</span><span class="p">[</span><span class="n">category_idx</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1"> value:</span><span class="si">%d</span><span class="s1">  category:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="p">))</span>
+</code></pre></div>
+<h4 id="4-rnn_lstm_gru_1">4 构建RNN_LSTM_GRU预测调用函数<a class="headerlink" href="#4-rnn_lstm_gru_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dm_test_predic_rnn_lstm_gru</span><span class="p">():</span>
+        <span class="c1"># 把三个函数的入口地址 组成列表，统一输入数据进行测试</span>
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="p">[</span><span class="n">my_predict_rnn</span><span class="p">,</span> <span class="n">my_predict_lstm</span><span class="p">,</span> <span class="n">my_predict_gru</span><span class="p">]:</span>
+        <span class="n">func</span><span class="p">(</span><span class="s1">&#39;zhang&#39;</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<ul>
+<li>输出效果</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code>rnn =&gt; zhang
+     value:0  category:Russian
+     value:0  category:Chinese
+     value:-4  category:German
+rnn =&gt; zhang
+     value:0  category:Chinese
+     value:-1  category:Russian
+     value:-1  category:German
+rnn =&gt; zhang
+     value:0  category:Russian
+     value:0  category:Chinese
+     value:-2  category:Korean
+</code></pre></div>
+<h2 id="3_2">3 小结<a class="headerlink" href="#3_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>学习了关于人名分类问题:
+    以一个人名为输入, 使用模型帮助我们判断它最有可能是来自哪一个国家的人名, 这在某些国际化公司的业务中具有重要意义, 在用户注册过程中, 会根据用户填写的名字直接给他分配可能的国家或地区选项, 以及该国家或地区的国旗, 限制手机号码位数等等.</li>
+</ul>
+<ul>
+<li>人名分类器的实现可分为以下五个步骤:
+    * 第一步: 导入必备的工具包
+    * 第二步: 对data文件中的数据进行处理，满足训练要求
+    * 第三步: 构建RNN模型(包括传统RNN, LSTM以及GRU)
+    * 第四步: 构建训练函数并进行训练
+    * 第五步: 构建评估函数并进行预测</li>
+</ul>
+<ul>
+<li>第一步: 导入必备的工具包
+    * python版本使用3.7.x, pytorch版本使用1.6.1</li>
+<li>第二步: 对data文件中的数据进行处理，满足训练要求
+    * 读原始数据到内存，构建出模型需要的数据x，标签y，然后把数据转成数据源，最后再封装成数据迭代器
+    * 从编程实现来看，文本数值化，数值张量化是通过one-hot编码一步完成的</li>
+<li>第三步: 构建RNN模型
+    * 构建传统的RNN模型的类class RNN.
+    * 构建LSTM模型的类class LSTM.
+    * 构建GRU模型的类class GRU. </li>
+<li>第四步: 构建训练函数并进行训练
+    * 实例化数据迭代器对象
+    * 实例化模型对象、损失函数对象、优化器对象
+    * 定义模型训练的参数
+    * 训练模型
+      * 外层for循环 控制轮数
+      * 内层for循环 控制迭代次数，给模型喂数据，计算损失 ，梯度清零 ，反向传播 ， 梯度更新，打印日志
+    *  模型保存</li>
+<li>损失对比曲线分析:
+    * 传统RNN的模型第一个轮次开始收敛情况最好，然后是GRU, 最后是LSTM, 这是因为RNN模型简单参数少，见效快。
+    * 随着训练数据的增加，GRU效果最好、LSTM效果次之、RNN效果排最后</li>
+<li>训练耗时对比图分析:
+    * 模型训练的耗时长短代表模型的计算复杂度，由图可知，也正如我们之前的理论分析，传统RNN复杂度最低，耗时几乎只是后两者的一半，然后是GRU，最后是复杂度最高的LSTM</li>
+<li>结论:
+    * 模型选用一般应通过实验对比， 并非越复杂或越先进的模型表现越好， 而是需要结合自己的特定任务，从对数据的分析和实验结果中获得最佳答案</li>
+<li>第五步: 构建预测函数并进行预测
+    * 构建传统RNN预测函数
+    * 构建LSTM预测函数
+    * 构建GRU预测函数
+    * 构建预测函数调用函数</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="4%20GRU%E6%A8%A1%E5%9E%8B.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 4 GRU模型" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              4 GRU模型
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="6%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E4%BB%8B%E7%BB%8D1.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 6 注意力机制介绍1" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              6 注意力机制介绍1
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>
